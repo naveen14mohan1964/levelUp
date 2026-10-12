@@ -1,0 +1,81 @@
+/* LinkedIn → Referrals hub */
+.top-gap-sm { margin-top: 0.4rem; }
+.small-btn { padding: 0.25rem 0.6rem; font-size: 0.8rem; }
+.table-wrap { overflow-x: auto; max-width: 100%; }
+.field-inline { display: flex; flex-direction: column; gap: 0.2rem; margin-top: 0.35rem; }
+.field-inline select { width: 100%; }
+
+.ref-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.6rem; }
+.ref-kpi { background: var(--surface-2); border-radius: 10px; padding: 0.6rem 0.75rem; display: flex; flex-direction: column; gap: 0.15rem; }
+.ref-kpi strong { font-size: 1.35rem; color: var(--accent); }
+.ref-kpi span { font-size: 0.78rem; color: var(--muted); }
+.ref-kpi.warn strong { color: var(--warn); }
+.ref-stage-strip { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.8rem; }
+.ref-stage-chip { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 999px; padding: 0.2rem 0.65rem; font-size: 0.8rem; cursor: pointer; }
+.ref-stage-chip strong { color: var(--text); margin-left: 0.2rem; }
+.ref-stage-chip:hover { border-color: var(--accent); }
+
+.ref-hub-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 0.9rem; align-items: start; }
+@media (max-width: 900px) { .ref-hub-grid { grid-template-columns: minmax(0, 1fr); } }
+.ref-queue, .ref-alerts, .ref-companies { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.55rem; }
+.ref-person { display: flex; gap: 0.7rem; align-items: flex-start; padding: 0.7rem; border: 1px solid var(--border); border-radius: 10px; }
+.ref-rank { color: var(--muted); font-weight: 700; min-width: 1.2rem; }
+.ref-person-main { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.ref-person-side { display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem; }
+.ref-name { font-weight: 600; font-size: 1rem; padding: 0; }
+.ref-next { color: var(--accent); margin-top: 0.3rem; }
+.ref-fit { display: inline-grid; place-items: center; min-width: 2.4rem; height: 2.4rem; border-radius: 50%; font-weight: 700; border: 2px solid var(--border); }
+.ref-fit-hi { border-color: var(--success); color: var(--success); }
+.ref-fit-mid { border-color: var(--streak); color: var(--streak); }
+.ref-fit-lo { color: var(--muted); }
+.ref-tier { font-size: 0.72rem; }
+.ref-tier-1 { background: color-mix(in srgb, var(--success) 18%, transparent); color: var(--success); }
+.ref-tier-2 { background: color-mix(in srgb, var(--dsa) 18%, transparent); color: var(--dsa); }
+.ref-tier-3 { background: color-mix(in srgb, var(--muted) 18%, transparent); color: var(--muted); }
+.ref-str-strong { color: var(--success); border-color: var(--success); }
+.ref-str-warm { color: var(--streak); border-color: var(--streak); }
+.ref-str-cold { color: var(--muted); }
+.ref-chip { color: var(--text); }
+
+.ref-alert { padding: 0.6rem 0.7rem; border-radius: 10px; background: var(--surface-2); border-left: 3px solid var(--border); overflow-wrap: anywhere; }
+.ref-alert-follow_up, .ref-alert-revisit { border-left-color: var(--streak); }
+.ref-alert-stop { border-left-color: var(--danger); }
+.ref-alert-moved { border-left-color: var(--success); }
+.ref-alert-single, .ref-alert-no_contact, .ref-alert-dormant { border-left-color: var(--dsa); }
+
+.ref-search { flex: 1; min-width: 220px; }
+.ref-table td { vertical-align: top; }
+.ref-tier-legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; align-items: center; }
+.ref-company { display: flex; gap: 0.8rem; justify-content: space-between; padding: 0.65rem 0.7rem; border: 1px solid var(--border); border-radius: 10px; }
+.ref-company.off { opacity: 0.55; }
+.ref-company-main { min-width: 0; overflow-wrap: anywhere; }
+.ref-company-side { display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem; flex-shrink: 0; }
+.ref-tier-select { font-size: 0.78rem; padding: 0.1rem 0.3rem; }
+@media (max-width: 560px) { .ref-company { flex-direction: column; } .ref-company-side { flex-direction: row; align-items: center; } }
+
+.ref-board { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(230px, 1fr); gap: 0.6rem; overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 0.9rem; }
+@media (max-width: 760px) { .ref-board { grid-auto-flow: row; grid-auto-columns: auto; overflow-x: visible; } }
+.ref-col { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.6rem; min-height: 120px; display: flex; flex-direction: column; gap: 0.5rem; }
+.ref-col-head { margin: 0 0 0.2rem; font-size: 0.9rem; }
+.ref-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 0.6rem; cursor: grab; overflow-wrap: anywhere; }
+.ref-card.overdue { border-color: var(--warn); }
+.ref-card select { max-width: 100%; }
+
+.ref-funnel { list-style: none; padding: 0; margin: 0.4rem 0; display: grid; gap: 0.45rem; }
+.ref-funnel li { display: grid; grid-template-columns: minmax(110px, 160px) 1fr auto; gap: 0.6rem; align-items: center; }
+.ref-cov-some { color: var(--success); font-weight: 600; }
+.ref-cov-none { color: var(--muted); }
+.ref-steps { padding-left: 1.2rem; display: grid; gap: 0.35rem; }
+.ref-settings { display: grid; gap: 0.7rem; }
+.ref-settings textarea { width: 100%; }
+.ref-reasons, .ref-timeline { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.25rem; }
+.ref-pts { display: inline-block; min-width: 2.2rem; color: var(--success); font-weight: 600; }
+.ref-msg { background: var(--surface-2); border-radius: 10px; padding: 0.55rem 0.7rem; }
+.ref-msg p { margin: 0.35rem 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.ref-jobs { list-style: none; margin: 0.4rem 0 0; padding: 0; display: grid; gap: 0.55rem; }
+.ref-job { display: flex; gap: 0.8rem; justify-content: space-between; padding: 0.7rem; border: 1px solid var(--border); border-radius: 10px; }
+.ref-job-main { min-width: 0; overflow-wrap: anywhere; }
+.ref-job-title { font-weight: 600; font-size: 1rem; }
+.ref-job-why { list-style: none; padding: 0; margin: 0.3rem 0 0; display: flex; flex-wrap: wrap; gap: 0.15rem 0.8rem; }
+.ref-new { background: color-mix(in srgb, var(--success) 18%, transparent); color: var(--success); font-size: 0.7rem; }
+@media (max-width: 560px) { .ref-job { flex-direction: column; } .ref-job .ref-person-side { flex-direction: row; flex-wrap: wrap; align-items: center; } }

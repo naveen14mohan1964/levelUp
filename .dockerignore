@@ -1,0 +1,10 @@
+**/node_modules
+client/dist
+server/.env
+server/uploads
+server/test
+logs
+.env
+.claude
+branding
+*.log

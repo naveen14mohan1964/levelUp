@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1128 191" role="img" aria-label="Level Up cover">
+  <defs><linearGradient id="cbg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0A1222"/><stop offset="1" stop-color="#10264A"/></linearGradient>
+  <linearGradient id="cr" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#2DD4BF"/><stop offset="1" stop-color="#60A5FA"/></linearGradient></defs>
+  <rect width="1128" height="191" fill="url(#cbg)"/>
+  <g opacity="0.10" fill="url(#cr)"><rect x="760" y="120" width="46" height="71" rx="8"/><rect x="822" y="92" width="46" height="99" rx="8"/><rect x="884" y="64" width="46" height="127" rx="8"/><rect x="946" y="36" width="46" height="155" rx="8"/><rect x="1008" y="8" width="46" height="183" rx="8"/></g>
+  <text x="300" y="92" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif" font-size="38" font-weight="700" fill="#E6EDF7">Building in public, one step at a time</text>
+  <text x="300" y="132" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif" font-size="22" font-weight="500" fill="#94A3B8" letter-spacing="3">DSA · FULL-STACK PROJECTS · LEARNING NOTES</text>
+</svg>

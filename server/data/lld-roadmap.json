@@ -1,0 +1,769 @@
+{
+  "about": "Low-level design (object-oriented design + machine coding) from scratch to advanced, in Java: OOP → SOLID and clean code → UML → creational, structural and behavioural patterns → concurrency → the 90-minute machine-coding method → classic problems (parking lot, Splitwise, BookMyShow, elevator, LRU, rate limiter) → DDD, TDD and mock interviews. Builds go into your own lld-practice repo, so you finish with a portfolio. Links checked 2026-10-12.",
+  "levels": [
+    {
+      "n": 1,
+      "title": "OOP foundations in Java",
+      "goal": "Model real things as clean objects: the base every design builds on.",
+      "lessons": [
+        {
+          "title": "Classes, objects and encapsulation",
+          "minutes": 45,
+          "learn": "A class bundles state and behaviour; encapsulation hides state behind methods so its rules (invariants) can't be broken from outside.",
+          "links": [
+            [
+              "Oracle: Object-oriented programming concepts",
+              "https://docs.oracle.com/javase/tutorial/java/concepts/index.html"
+            ],
+            [
+              "dev.java: Classes and objects",
+              "https://dev.java/learn/classes-objects/"
+            ]
+          ],
+          "build": "Model a BankAccount in Java with a private balance, deposit/withdraw that reject invalid amounts, and 3 JUnit tests.",
+          "check": "Why should balance be private with methods instead of a public field?",
+          "id": "LLD1-1"
+        },
+        {
+          "title": "Abstraction and interfaces",
+          "minutes": 45,
+          "learn": "Interfaces describe what something can do, not how. Code against the interface so implementations can change freely.",
+          "links": [
+            [
+              "dev.java: Interfaces",
+              "https://dev.java/learn/interfaces/"
+            ],
+            [
+              "Oracle: Defining an interface",
+              "https://docs.oracle.com/javase/tutorial/java/IandI/createinterface.html"
+            ]
+          ],
+          "build": "Define a PaymentMethod interface with Card and UPI implementations, and a Checkout class that only knows the interface.",
+          "check": "What changes in Checkout when you add a Wallet payment method?",
+          "id": "LLD1-2"
+        },
+        {
+          "title": "Inheritance vs composition",
+          "minutes": 45,
+          "learn": "Inheritance is \"is-a\" and couples you to the parent; composition is \"has-a\" and is usually more flexible. Prefer composition.",
+          "links": [
+            [
+              "Baeldung: Inheritance and composition in Java",
+              "https://www.baeldung.com/java-inheritance-composition"
+            ]
+          ],
+          "build": "Refactor a Bird → FlyingBird → Penguin inheritance mess into composition with a FlyBehaviour field.",
+          "check": "Give one sign that inheritance is the wrong tool?",
+          "id": "LLD1-3"
+        },
+        {
+          "title": "Polymorphism, equality and immutable values",
+          "minutes": 45,
+          "learn": "Polymorphism lets one call do the right thing per type. Correct equals/hashCode and immutable value objects prevent subtle bugs in maps and sets.",
+          "links": [
+            [
+              "dev.java: Records",
+              "https://dev.java/learn/records/"
+            ],
+            [
+              "Martin Fowler: Value Object",
+              "https://martinfowler.com/bliki/ValueObject.html"
+            ]
+          ],
+          "build": "Write a Money record with currency checks, use it as a HashMap key, and prove equal amounts match in a test.",
+          "check": "Why must objects used as map keys be immutable?",
+          "id": "LLD1-4"
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "title": "SOLID and clean code",
+      "goal": "Write code that is easy to change: the principles interviewers probe.",
+      "lessons": [
+        {
+          "title": "Single responsibility and open/closed",
+          "minutes": 45,
+          "learn": "SRP: one reason to change per class. OCP: add behaviour by adding code, not editing working code.",
+          "links": [
+            [
+              "DigitalOcean: SOLID, the first five principles",
+              "https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design"
+            ],
+            [
+              "Baeldung: SOLID principles",
+              "https://www.baeldung.com/solid-principles"
+            ]
+          ],
+          "build": "Split an InvoiceService that calculates, prints and emails by responsibility, then add a new tax rule without editing existing classes.",
+          "check": "What is a \"reason to change\" in SRP?",
+          "id": "LLD2-1"
+        },
+        {
+          "title": "Liskov, interface segregation, dependency inversion",
+          "minutes": 45,
+          "learn": "Subtypes must keep the parent's promises; prefer small interfaces; depend on abstractions and inject dependencies.",
+          "links": [
+            [
+              "Baeldung: SOLID principles",
+              "https://www.baeldung.com/solid-principles"
+            ]
+          ],
+          "build": "Find a fat interface in your own code (or a sample), split it, and inject dependencies through constructors.",
+          "check": "How does dependency inversion make code testable?",
+          "id": "LLD2-2"
+        },
+        {
+          "title": "DRY, KISS, YAGNI and naming",
+          "minutes": 30,
+          "learn": "Remove real duplication, keep it simple, don't build for imaginary futures, and name things for the reader.",
+          "links": [
+            [
+              "Google Java Style Guide",
+              "https://google.github.io/styleguide/javaguide.html"
+            ]
+          ],
+          "build": "Review one Level Up server file: rename 5 unclear names and delete one premature abstraction.",
+          "check": "When is duplicating code better than abstracting it?",
+          "id": "LLD2-3"
+        },
+        {
+          "title": "Code smells and refactoring",
+          "minutes": 45,
+          "learn": "Smells (long method, feature envy, primitive obsession…) point to design problems; small, tested refactorings fix them safely.",
+          "links": [
+            [
+              "Refactoring.Guru: Code smells",
+              "https://refactoring.guru/refactoring/smells"
+            ],
+            [
+              "Refactoring catalog (Martin Fowler)",
+              "https://refactoring.com/catalog/"
+            ]
+          ],
+          "build": "Pick 3 smells in a sample project and refactor each while keeping the tests green.",
+          "check": "Name a refactoring that fixes primitive obsession?",
+          "id": "LLD2-4"
+        },
+        {
+          "title": "Checkpoint: design-review your own code",
+          "minutes": 45,
+          "learn": "Reviewing design is a skill: look at responsibilities, coupling, naming and tests, then suggest the smallest useful change.",
+          "links": [
+            [
+              "Google engineering practices: what to look for in a review",
+              "https://google.github.io/eng-practices/review/reviewer/looking-for.html"
+            ]
+          ],
+          "build": "Write a one-page SOLID review of one Level Up module (what's good + 3 improvements) and apply one of them.",
+          "check": "Which SOLID principle does your chosen module break most, and why?",
+          "id": "LLD2-5"
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "title": "UML and modelling",
+      "goal": "Turn a problem statement into entities, relationships and flows before coding.",
+      "lessons": [
+        {
+          "title": "From requirements to entities",
+          "minutes": 45,
+          "learn": "Nouns become candidate classes, verbs become methods. Find the core entities, their data and their responsibilities.",
+          "links": [
+            [
+              "awesome-low-level-design (problems + solutions)",
+              "https://github.com/ashishps1/awesome-low-level-design"
+            ],
+            [
+              "uml-diagrams.org: Class diagrams",
+              "https://www.uml-diagrams.org/class-diagrams-overview.html"
+            ]
+          ],
+          "build": "For a library system, list the entities, attributes and responsibilities from a 10-line problem statement.",
+          "check": "How do you decide whether something is a class or just an attribute?",
+          "id": "LLD3-1"
+        },
+        {
+          "title": "Class diagrams and relationships",
+          "minutes": 45,
+          "learn": "Association, aggregation, composition, dependency and multiplicity: the vocabulary of every LLD answer.",
+          "links": [
+            [
+              "uml-diagrams.org: Class diagrams",
+              "https://www.uml-diagrams.org/class-diagrams-overview.html"
+            ],
+            [
+              "Mermaid: class diagrams",
+              "https://mermaid.js.org/syntax/classDiagram.html"
+            ]
+          ],
+          "build": "Draw the library class diagram in Mermaid inside a README, with multiplicities and composition vs aggregation.",
+          "check": "What's the difference between aggregation and composition?",
+          "id": "LLD3-2"
+        },
+        {
+          "title": "Sequence and state diagrams",
+          "minutes": 45,
+          "learn": "Sequence diagrams show who calls whom over time; state diagrams show an object's lifecycle.",
+          "links": [
+            [
+              "Mermaid: sequence diagrams",
+              "https://mermaid.js.org/syntax/sequenceDiagram.html"
+            ],
+            [
+              "Mermaid: state diagrams",
+              "https://mermaid.js.org/syntax/stateDiagram.html"
+            ]
+          ],
+          "build": "Draw the sequence for \"borrow a book\" and a state diagram for a Book (available → borrowed → overdue → returned).",
+          "check": "When is a state diagram more useful than a sequence diagram?",
+          "id": "LLD3-3"
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "title": "Creational patterns",
+      "goal": "Create objects without hard-wiring concrete classes.",
+      "lessons": [
+        {
+          "title": "Singleton (and why to be careful)",
+          "minutes": 30,
+          "learn": "One instance, global access. Easy to misuse: hidden dependencies and hard tests. Know the thread-safe versions.",
+          "links": [
+            [
+              "Refactoring.Guru: singleton",
+              "https://refactoring.guru/design-patterns/singleton"
+            ]
+          ],
+          "build": "Implement a thread-safe lazy Singleton (holder idiom) and an enum Singleton; write why dependency injection is usually better.",
+          "check": "Why are Singletons hard to test?",
+          "id": "LLD4-1"
+        },
+        {
+          "title": "Factory Method and Abstract Factory",
+          "minutes": 45,
+          "learn": "Let subclasses or factories decide which class to create, so callers depend only on interfaces.",
+          "links": [
+            [
+              "Refactoring.Guru: factory method",
+              "https://refactoring.guru/design-patterns/factory-method"
+            ],
+            [
+              "Refactoring.Guru: abstract factory",
+              "https://refactoring.guru/design-patterns/abstract-factory"
+            ]
+          ],
+          "build": "Build a NotificationFactory returning Email/SMS/Push senders, then an abstract factory for light/dark UI widgets.",
+          "check": "When would you pick Abstract Factory over Factory Method?",
+          "id": "LLD4-2"
+        },
+        {
+          "title": "Builder",
+          "minutes": 30,
+          "learn": "Build complex objects step by step, with validation at the end, instead of giant constructors.",
+          "links": [
+            [
+              "Refactoring.Guru: builder",
+              "https://refactoring.guru/design-patterns/builder"
+            ]
+          ],
+          "build": "Create an HttpRequest builder with a required URL, optional headers and timeout, and validation in build().",
+          "check": "What problem does Builder solve that constructors don't?",
+          "id": "LLD4-3"
+        },
+        {
+          "title": "Prototype + choosing a creational pattern",
+          "minutes": 30,
+          "learn": "Clone configured objects instead of rebuilding them; then learn to match a creation problem to the right pattern.",
+          "links": [
+            [
+              "Refactoring.Guru: prototype",
+              "https://refactoring.guru/design-patterns/prototype"
+            ],
+            [
+              "Refactoring.Guru: the pattern catalog",
+              "https://refactoring.guru/design-patterns/catalog"
+            ]
+          ],
+          "build": "Clone a configured game Level template with Prototype, and write a 5-line cheat sheet: problem → creational pattern.",
+          "check": "Which creational pattern fits \"many optional parameters\"?",
+          "id": "LLD4-4"
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "title": "Structural patterns",
+      "goal": "Compose objects into flexible structures.",
+      "lessons": [
+        {
+          "title": "Adapter and Facade",
+          "minutes": 45,
+          "learn": "Adapter makes an incompatible interface fit; Facade gives a simple front door to a complex subsystem.",
+          "links": [
+            [
+              "Refactoring.Guru: adapter",
+              "https://refactoring.guru/design-patterns/adapter"
+            ],
+            [
+              "Refactoring.Guru: facade",
+              "https://refactoring.guru/design-patterns/facade"
+            ]
+          ],
+          "build": "Wrap a legacy XML weather API behind a JSON WeatherProvider interface (Adapter) and add a TravelFacade over 3 services.",
+          "check": "How is an Adapter different from a Facade?",
+          "id": "LLD5-1"
+        },
+        {
+          "title": "Decorator",
+          "minutes": 45,
+          "learn": "Add responsibilities by wrapping objects, without subclass explosion. Order of wrapping matters.",
+          "links": [
+            [
+              "Refactoring.Guru: decorator",
+              "https://refactoring.guru/design-patterns/decorator"
+            ]
+          ],
+          "build": "Stack logging, caching and retry decorators around a DataSource and show that the order changes behaviour.",
+          "check": "Why prefer Decorator over many subclasses?",
+          "id": "LLD5-2"
+        },
+        {
+          "title": "Proxy and Composite",
+          "minutes": 45,
+          "learn": "Proxy controls access (lazy loading, caching, security); Composite treats single items and groups the same way.",
+          "links": [
+            [
+              "Refactoring.Guru: proxy",
+              "https://refactoring.guru/design-patterns/proxy"
+            ],
+            [
+              "Refactoring.Guru: composite",
+              "https://refactoring.guru/design-patterns/composite"
+            ]
+          ],
+          "build": "Build a lazy-loading ImageProxy and a file-system Composite (File/Folder) that computes total size.",
+          "check": "Name two real uses of Proxy?",
+          "id": "LLD5-3"
+        },
+        {
+          "title": "Bridge and Flyweight",
+          "minutes": 30,
+          "learn": "Bridge separates an abstraction from its implementation; Flyweight shares common state to save memory.",
+          "links": [
+            [
+              "Refactoring.Guru: bridge",
+              "https://refactoring.guru/design-patterns/bridge"
+            ],
+            [
+              "Refactoring.Guru: flyweight",
+              "https://refactoring.guru/design-patterns/flyweight"
+            ]
+          ],
+          "build": "Separate Shape from Renderer with Bridge, then render 10,000 trees sharing Flyweight tree types and compare memory.",
+          "check": "What does Flyweight share, and what does it keep per object?",
+          "id": "LLD5-4"
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "title": "Behavioural patterns",
+      "goal": "Model how objects communicate and change behaviour.",
+      "lessons": [
+        {
+          "title": "Strategy",
+          "minutes": 30,
+          "learn": "Swap algorithms at runtime behind one interface: the most-used pattern in machine coding rounds.",
+          "links": [
+            [
+              "Refactoring.Guru: strategy",
+              "https://refactoring.guru/design-patterns/strategy"
+            ]
+          ],
+          "build": "Swap pricing strategies (regular, festive sale, member) at runtime in a checkout, and add one without touching Checkout.",
+          "check": "How does Strategy relate to the open/closed principle?",
+          "id": "LLD6-1"
+        },
+        {
+          "title": "Observer",
+          "minutes": 30,
+          "learn": "Subjects notify subscribers of changes, keeping them loosely coupled.",
+          "links": [
+            [
+              "Refactoring.Guru: observer",
+              "https://refactoring.guru/design-patterns/observer"
+            ]
+          ],
+          "build": "Implement a stock ticker where displays subscribe and unsubscribe, then compare it with a simple event bus.",
+          "check": "What can go wrong if observers are never unsubscribed?",
+          "id": "LLD6-2"
+        },
+        {
+          "title": "State and Command",
+          "minutes": 45,
+          "learn": "State moves behaviour into state classes; Command turns requests into objects (queue, log, undo).",
+          "links": [
+            [
+              "Refactoring.Guru: state",
+              "https://refactoring.guru/design-patterns/state"
+            ],
+            [
+              "Refactoring.Guru: command",
+              "https://refactoring.guru/design-patterns/command"
+            ]
+          ],
+          "build": "Model a vending machine with State classes (idle, has-coin, dispensing) and an undoable Command for a text editor.",
+          "check": "When does a switch statement deserve to become the State pattern?",
+          "id": "LLD6-3"
+        },
+        {
+          "title": "Template Method and Chain of Responsibility",
+          "minutes": 45,
+          "learn": "Template Method fixes an algorithm's skeleton; Chain of Responsibility passes a request along handlers.",
+          "links": [
+            [
+              "Refactoring.Guru: template method",
+              "https://refactoring.guru/design-patterns/template-method"
+            ],
+            [
+              "Refactoring.Guru: chain of responsibility",
+              "https://refactoring.guru/design-patterns/chain-of-responsibility"
+            ]
+          ],
+          "build": "Build a request pipeline (auth → rate limit → validation → handler) as a chain, and a report generator with template steps.",
+          "check": "How is Chain of Responsibility similar to Express middleware?",
+          "id": "LLD6-4"
+        },
+        {
+          "title": "Iterator, Visitor and pattern misuse",
+          "minutes": 30,
+          "learn": "Iterator walks collections without exposing them; Visitor adds operations to stable structures. Patterns are tools, not goals.",
+          "links": [
+            [
+              "Refactoring.Guru: iterator",
+              "https://refactoring.guru/design-patterns/iterator"
+            ],
+            [
+              "Refactoring.Guru: visitor",
+              "https://refactoring.guru/design-patterns/visitor"
+            ]
+          ],
+          "build": "Write a custom iterator over a tree, and list 3 pattern misuses you've seen with how to avoid them.",
+          "check": "When is using a design pattern a bad idea?",
+          "id": "LLD6-5"
+        }
+      ]
+    },
+    {
+      "n": 7,
+      "title": "Concurrency for LLD",
+      "goal": "Design thread-safe classes: a common machine-coding twist.",
+      "lessons": [
+        {
+          "title": "Threads, synchronized and visibility",
+          "minutes": 60,
+          "learn": "Race conditions, synchronized blocks, volatile and atomics: what each guarantees.",
+          "links": [
+            [
+              "Oracle: Concurrency tutorial",
+              "https://docs.oracle.com/javase/tutorial/essential/concurrency/"
+            ],
+            [
+              "Baeldung: Java concurrency",
+              "https://www.baeldung.com/java-concurrency"
+            ]
+          ],
+          "build": "Make a counter thread-safe three ways (synchronized, AtomicInteger, LongAdder) and benchmark 8 threads.",
+          "check": "What does volatile guarantee, and what doesn't it?",
+          "id": "LLD7-1"
+        },
+        {
+          "title": "Locks, executors and concurrent collections",
+          "minutes": 60,
+          "learn": "Use thread pools instead of raw threads, ReentrantLock when you need more control, and concurrent collections for shared maps and queues.",
+          "links": [
+            [
+              "Oracle: Executors",
+              "https://docs.oracle.com/javase/tutorial/essential/concurrency/executors.html"
+            ],
+            [
+              "Java 21 API: java.util.concurrent",
+              "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/package-summary.html"
+            ]
+          ],
+          "build": "Process 1,000 tasks with an ExecutorService and a ConcurrentHashMap, plus one ReentrantLock-protected resource.",
+          "check": "Why is ConcurrentHashMap better than a synchronized HashMap under load?",
+          "id": "LLD7-2"
+        },
+        {
+          "title": "Producer–consumer and deadlocks",
+          "minutes": 60,
+          "learn": "Bounded queues decouple producers from consumers; deadlocks need four conditions, so break one of them.",
+          "links": [
+            [
+              "Baeldung: Producer–consumer problem",
+              "https://www.baeldung.com/java-producer-consumer-problem"
+            ],
+            [
+              "Oracle: Deadlock",
+              "https://docs.oracle.com/javase/tutorial/essential/concurrency/deadlock.html"
+            ]
+          ],
+          "build": "Build a bounded BlockingQueue pipeline, then reproduce a deadlock with two locks and fix it with lock ordering.",
+          "check": "What are the four conditions for a deadlock?",
+          "id": "LLD7-3"
+        },
+        {
+          "title": "Checkpoint: thread-safe LRU cache",
+          "minutes": 60,
+          "learn": "The classic: a HashMap plus a doubly linked list gives O(1) get and put; then make it safe for concurrent use.",
+          "links": [
+            [
+              "LeetCode 146: LRU Cache",
+              "https://leetcode.com/problems/lru-cache/"
+            ]
+          ],
+          "build": "Implement an LRU cache (HashMap + doubly linked list), pass LeetCode 146, then make it thread-safe and test with 8 threads.",
+          "check": "Which operations in your LRU cache need a lock, and why?",
+          "id": "LLD7-4"
+        }
+      ]
+    },
+    {
+      "n": 8,
+      "title": "The machine-coding method",
+      "goal": "Deliver a working, extensible design in 90 minutes.",
+      "lessons": [
+        {
+          "title": "The 90-minute framework",
+          "minutes": 30,
+          "learn": "Clarify requirements (5 min) → entities and relationships (10) → interfaces (10) → core code (50) → demo, tests and extensions (15). Working code beats perfect diagrams.",
+          "links": [
+            [
+              "awesome-low-level-design (problems + solutions)",
+              "https://github.com/ashishps1/awesome-low-level-design"
+            ]
+          ],
+          "build": "Write your own one-page machine-coding checklist and keep it at the top of your lld-practice repo.",
+          "check": "What should you clarify before writing any code?",
+          "id": "LLD8-1"
+        },
+        {
+          "title": "Practice: parking lot",
+          "minutes": 90,
+          "learn": "The most-asked LLD problem: floors, spot types, tickets, pricing and payments.",
+          "links": [
+            [
+              "awesome-low-level-design (problems + solutions)",
+              "https://github.com/ashishps1/awesome-low-level-design"
+            ]
+          ],
+          "build": "Timebox 90 minutes: parking lot with floors, spot types, tickets, a pricing strategy and an in-memory repository; commit it.",
+          "check": "How would you add EV charging spots without rewriting?",
+          "id": "LLD8-2"
+        },
+        {
+          "title": "Practice: Snake and Ladder",
+          "minutes": 60,
+          "learn": "A game problem that tests clean rules, configuration and turn handling.",
+          "links": [
+            [
+              "awesome-low-level-design (problems + solutions)",
+              "https://github.com/ashishps1/awesome-low-level-design"
+            ]
+          ],
+          "build": "Build Snake & Ladder with a configurable board, players and a dice strategy in 60 minutes, with tests for win detection.",
+          "check": "Where did you put the game rules, and why there?",
+          "id": "LLD8-3"
+        },
+        {
+          "title": "Code quality under time pressure",
+          "minutes": 30,
+          "learn": "Interviewers judge readability and extensibility: clear names, small methods, interfaces at the boundaries, no God class, a few tests.",
+          "links": [
+            [
+              "Google engineering practices: what to look for in a review",
+              "https://google.github.io/eng-practices/review/reviewer/looking-for.html"
+            ]
+          ],
+          "build": "Score your parking lot code 1–5 on correctness, SOLID, naming, tests and extensibility, then fix the lowest score.",
+          "check": "What would you skip when time runs out, and what would you never skip?",
+          "id": "LLD8-4"
+        }
+      ]
+    },
+    {
+      "n": 9,
+      "title": "Classic LLD problems",
+      "goal": "Solve the problems product companies ask most.",
+      "lessons": [
+        {
+          "title": "Splitwise (expense sharing)",
+          "minutes": 90,
+          "learn": "Users, groups, split types and debt simplification: tests modelling and correctness with money.",
+          "links": [
+            [
+              "awesome-low-level-design (problems + solutions)",
+              "https://github.com/ashishps1/awesome-low-level-design"
+            ]
+          ],
+          "build": "Implement users, groups, equal/exact/percent splits and simplify-debts, with unit tests for each split type.",
+          "check": "How do you keep balances correct when a split doesn't divide evenly?",
+          "id": "LLD9-1"
+        },
+        {
+          "title": "BookMyShow (seat booking)",
+          "minutes": 90,
+          "learn": "Theatres, shows, seats and bookings, with the hard part: concurrent seat selection.",
+          "links": [
+            [
+              "awesome-low-level-design (problems + solutions)",
+              "https://github.com/ashishps1/awesome-low-level-design"
+            ]
+          ],
+          "build": "Model theatres, shows, seats and bookings, and prevent double booking with a seat lock that expires.",
+          "check": "How do you stop two users booking the same seat at the same time?",
+          "id": "LLD9-2"
+        },
+        {
+          "title": "Elevator system",
+          "minutes": 90,
+          "learn": "Requests, directions and scheduling: a favourite for State and Strategy.",
+          "links": [
+            [
+              "awesome-low-level-design (problems + solutions)",
+              "https://github.com/ashishps1/awesome-low-level-design"
+            ]
+          ],
+          "build": "Design elevators with requests, direction and a scheduling strategy (nearest car), and simulate 3 elevators.",
+          "check": "Which pattern lets you swap the scheduling algorithm?",
+          "id": "LLD9-3"
+        },
+        {
+          "title": "Rate limiter and logger",
+          "minutes": 60,
+          "learn": "Token bucket vs sliding window behind one interface; a logger with levels and pluggable outputs.",
+          "links": [
+            [
+              "Wikipedia: Token bucket",
+              "https://en.wikipedia.org/wiki/Token_bucket"
+            ],
+            [
+              "awesome-low-level-design (problems + solutions)",
+              "https://github.com/ashishps1/awesome-low-level-design"
+            ]
+          ],
+          "build": "Implement token-bucket and sliding-window rate limiters behind one interface, and a logger with levels and pluggable sinks.",
+          "check": "Token bucket or sliding window: which one allows bursts?",
+          "id": "LLD9-4"
+        },
+        {
+          "title": "Food delivery order flow",
+          "minutes": 90,
+          "learn": "Restaurants, carts, order states and delivery assignment: State + Strategy together.",
+          "links": [
+            [
+              "awesome-low-level-design (problems + solutions)",
+              "https://github.com/ashishps1/awesome-low-level-design"
+            ]
+          ],
+          "build": "Model a Swiggy-style flow (restaurant, cart, order states, delivery-partner assignment strategy) with State and Strategy.",
+          "check": "In which states can an order be cancelled, and which class enforces that?",
+          "id": "LLD9-5"
+        },
+        {
+          "title": "Checkpoint: your LLD portfolio repo",
+          "minutes": 60,
+          "learn": "Five well-documented solutions show design skill better than fifty half-done ones.",
+          "links": [
+            [
+              "awesome-low-level-design (problems + solutions)",
+              "https://github.com/ashishps1/awesome-low-level-design"
+            ],
+            [
+              "GitHub: managing your profile README",
+              "https://docs.github.com/en/account-and-profile/how-tos/profile-customization/managing-your-profile-readme"
+            ]
+          ],
+          "build": "Publish an lld-practice repo with 5 solved problems, each with a README: requirements, a Mermaid class diagram, how to run the tests.",
+          "check": "Which problem shows your design skills best, and why?",
+          "id": "LLD9-6"
+        }
+      ]
+    },
+    {
+      "n": 10,
+      "title": "Advanced LLD and interviews",
+      "goal": "Design for change, test it, and explain trade-offs like a senior engineer.",
+      "lessons": [
+        {
+          "title": "Domain-driven design essentials",
+          "minutes": 45,
+          "learn": "Entities, value objects, aggregates and bounded contexts: the language for modelling complex business logic.",
+          "links": [
+            [
+              "Martin Fowler: DDD Aggregate",
+              "https://martinfowler.com/bliki/DDD_Aggregate.html"
+            ],
+            [
+              "Martin Fowler: Bounded Context",
+              "https://martinfowler.com/bliki/BoundedContext.html"
+            ]
+          ],
+          "build": "Identify entities, value objects and aggregates in Level Up's referrals hub and write down the aggregate boundaries.",
+          "check": "What is an aggregate root responsible for?",
+          "id": "LLD10-1"
+        },
+        {
+          "title": "Designing for testability (TDD)",
+          "minutes": 45,
+          "learn": "Red → green → refactor. Writing the test first pushes you towards small, decoupled designs.",
+          "links": [
+            [
+              "Martin Fowler: Test-driven development",
+              "https://martinfowler.com/bliki/TestDrivenDevelopment.html"
+            ],
+            [
+              "JUnit 5 user guide",
+              "https://junit.org/junit5/docs/current/user-guide/"
+            ]
+          ],
+          "build": "TDD a small feature (coupon rules) red → green → refactor, committing after each step.",
+          "check": "How did writing the test first change your design?",
+          "id": "LLD10-2"
+        },
+        {
+          "title": "Extensibility with events",
+          "minutes": 45,
+          "learn": "Events let you add features (notifications, analytics) without touching core classes.",
+          "links": [
+            [
+              "Martin Fowler: What do you mean by \"event-driven\"?",
+              "https://martinfowler.com/articles/201701-event-driven.html"
+            ]
+          ],
+          "build": "Make your Splitwise solution emit events (ExpenseAdded) and add a notification plugin without changing the core classes.",
+          "check": "Which of Fowler's event-driven patterns did you use?",
+          "id": "LLD10-3"
+        },
+        {
+          "title": "Mock LLD interview",
+          "minutes": 60,
+          "learn": "Practise thinking aloud: clarify, model, code, and handle follow-ups about extensions and concurrency.",
+          "links": [
+            [
+              "awesome-low-level-design (problems + solutions)",
+              "https://github.com/ashishps1/awesome-low-level-design"
+            ]
+          ],
+          "build": "Do a timed mock on an unseen problem (a friend or the Level Up mentor as interviewer) and write down what you'd improve.",
+          "check": "What follow-up question about your design was hardest to answer?",
+          "id": "LLD10-4"
+        }
+      ]
+    }
+  ]
+}

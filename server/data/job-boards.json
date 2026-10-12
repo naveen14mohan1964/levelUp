@@ -1,0 +1,355 @@
+{
+ "about": "Public job-board APIs of target companies (verified 2026-10-09 by sampling real postings). Providers publish these APIs so other sites can list openings. Edit a company's board in the app if it changes.",
+ "boards": [
+  {
+   "company": "Airbyte",
+   "provider": "ashby",
+   "token": "airbyte"
+  },
+  {
+   "company": "AlphaGrep",
+   "provider": "greenhouse",
+   "token": "alphagrepsecurities"
+  },
+  {
+   "company": "Arista Networks",
+   "provider": "smartrecruiters",
+   "token": "aristanetworks"
+  },
+  {
+   "company": "Atlan",
+   "provider": "ashby",
+   "token": "atlan"
+  },
+  {
+   "company": "Canonical",
+   "provider": "greenhouse",
+   "token": "canonical"
+  },
+  {
+   "company": "Cars24",
+   "provider": "smartrecruiters",
+   "token": "cars24"
+  },
+  {
+   "company": "Coinbase",
+   "provider": "greenhouse",
+   "token": "coinbase"
+  },
+  {
+   "company": "Commvault",
+   "provider": "greenhouse",
+   "token": "commvault"
+  },
+  {
+   "company": "Confluent",
+   "provider": "ashby",
+   "token": "confluent"
+  },
+  {
+   "company": "Continental",
+   "provider": "smartrecruiters",
+   "token": "continental"
+  },
+  {
+   "company": "Coupa",
+   "provider": "lever",
+   "token": "coupa"
+  },
+  {
+   "company": "CRED",
+   "provider": "lever",
+   "token": "cred"
+  },
+  {
+   "company": "Databricks",
+   "provider": "greenhouse",
+   "token": "databricks"
+  },
+  {
+   "company": "DigitalOcean",
+   "provider": "greenhouse",
+   "token": "digitalocean98"
+  },
+  {
+   "company": "Docker",
+   "provider": "ashby",
+   "token": "docker"
+  },
+  {
+   "company": "Druva",
+   "provider": "greenhouse",
+   "token": "druva"
+  },
+  {
+   "company": "Elastic",
+   "provider": "greenhouse",
+   "token": "elastic"
+  },
+  {
+   "company": "Freshworks",
+   "provider": "smartrecruiters",
+   "token": "freshworks"
+  },
+  {
+   "company": "GitLab",
+   "provider": "greenhouse",
+   "token": "gitlab"
+  },
+  {
+   "company": "Glance",
+   "provider": "greenhouse",
+   "token": "glance"
+  },
+  {
+   "company": "Glean",
+   "provider": "greenhouse",
+   "token": "gleanwork"
+  },
+  {
+   "company": "Grab",
+   "provider": "smartrecruiters",
+   "token": "grab"
+  },
+  {
+   "company": "Grafana Labs",
+   "provider": "greenhouse",
+   "token": "grafanalabs"
+  },
+  {
+   "company": "Graviton Research Capital",
+   "provider": "greenhouse",
+   "token": "gravitonresearchcapital"
+  },
+  {
+   "company": "Groww",
+   "provider": "greenhouse",
+   "token": "groww"
+  },
+  {
+   "company": "Harness",
+   "provider": "greenhouse",
+   "token": "harnessinc"
+  },
+  {
+   "company": "Hevo Data",
+   "provider": "lever",
+   "token": "hevodata"
+  },
+  {
+   "company": "HighRadius",
+   "provider": "greenhouse",
+   "token": "highradius"
+  },
+  {
+   "company": "InMobi",
+   "provider": "greenhouse",
+   "token": "inmobi"
+  },
+  {
+   "company": "JFrog",
+   "provider": "greenhouse",
+   "token": "jfrog"
+  },
+  {
+   "company": "Kore.ai",
+   "provider": "smartrecruiters",
+   "token": "koreai"
+  },
+  {
+   "company": "Meesho",
+   "provider": "lever",
+   "token": "meesho"
+  },
+  {
+   "company": "Mindtickle",
+   "provider": "smartrecruiters",
+   "token": "mindtickle"
+  },
+  {
+   "company": "Model N",
+   "provider": "lever",
+   "token": "modeln"
+  },
+  {
+   "company": "MongoDB",
+   "provider": "greenhouse",
+   "token": "mongodb"
+  },
+  {
+   "company": "Netlify",
+   "provider": "greenhouse",
+   "token": "netlify"
+  },
+  {
+   "company": "NK Securities Research",
+   "provider": "greenhouse",
+   "token": "nksecuritiesresearch"
+  },
+  {
+   "company": "Observe.AI",
+   "provider": "greenhouse",
+   "token": "observeai"
+  },
+  {
+   "company": "Okta",
+   "provider": "greenhouse",
+   "token": "okta"
+  },
+  {
+   "company": "Oyster HR",
+   "provider": "ashby",
+   "token": "oyster"
+  },
+  {
+   "company": "Paytm",
+   "provider": "lever",
+   "token": "paytm"
+  },
+  {
+   "company": "Pocket FM",
+   "provider": "lever",
+   "token": "pocketfm"
+  },
+  {
+   "company": "Polygon Labs",
+   "provider": "ashby",
+   "token": "polygon-labs"
+  },
+  {
+   "company": "PostHog",
+   "provider": "ashby",
+   "token": "posthog"
+  },
+  {
+   "company": "Pure Storage",
+   "provider": "greenhouse",
+   "token": "purestorage"
+  },
+  {
+   "company": "Rockstar Games",
+   "provider": "greenhouse",
+   "token": "rockstargames"
+  },
+  {
+   "company": "Rubrik",
+   "provider": "greenhouse",
+   "token": "rubrik"
+  },
+  {
+   "company": "Sarvam AI",
+   "provider": "ashby",
+   "token": "sarvam"
+  },
+  {
+   "company": "Scaler",
+   "provider": "smartrecruiters",
+   "token": "interviewbit"
+  },
+  {
+   "company": "ServiceNow",
+   "provider": "smartrecruiters",
+   "token": "servicenow"
+  },
+  {
+   "company": "Snowflake",
+   "provider": "ashby",
+   "token": "snowflake"
+  },
+  {
+   "company": "Stripe",
+   "provider": "greenhouse",
+   "token": "stripe"
+  },
+  {
+   "company": "Supabase",
+   "provider": "ashby",
+   "token": "supabase"
+  },
+  {
+   "company": "Swiggy",
+   "provider": "smartrecruiters",
+   "token": "swiggy"
+  },
+  {
+   "company": "Tekion",
+   "provider": "ashby",
+   "token": "tekion"
+  },
+  {
+   "company": "Thoughtworks",
+   "provider": "greenhouse",
+   "token": "thoughtworks"
+  },
+  {
+   "company": "Toptal",
+   "provider": "lever",
+   "token": "toptal"
+  },
+  {
+   "company": "Tower Research Capital",
+   "provider": "greenhouse",
+   "token": "towerresearchcapital"
+  },
+  {
+   "company": "Turing",
+   "provider": "greenhouse",
+   "token": "turing"
+  },
+  {
+   "company": "Twilio",
+   "provider": "greenhouse",
+   "token": "twilio"
+  },
+  {
+   "company": "Unacademy",
+   "provider": "smartrecruiters",
+   "token": "unacademy"
+  },
+  {
+   "company": "Upstox",
+   "provider": "smartrecruiters",
+   "token": "upstox"
+  },
+  {
+   "company": "Vercel",
+   "provider": "greenhouse",
+   "token": "vercel"
+  },
+  {
+   "company": "Whatfix",
+   "provider": "smartrecruiters",
+   "token": "whatfix"
+  },
+  {
+   "company": "Wikimedia Foundation",
+   "provider": "greenhouse",
+   "token": "wikimedia"
+  },
+  {
+   "company": "WorldQuant",
+   "provider": "greenhouse",
+   "token": "worldquant"
+  },
+  {
+   "company": "Zapier",
+   "provider": "ashby",
+   "token": "zapier"
+  },
+  {
+   "company": "Zeta",
+   "provider": "lever",
+   "token": "zeta"
+  },
+  {
+   "company": "Zscaler",
+   "provider": "greenhouse",
+   "token": "zscaler"
+  },
+  {
+   "company": "Zuora",
+   "provider": "greenhouse",
+   "token": "zuora"
+  }
+ ]
+}

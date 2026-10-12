@@ -1,0 +1,62 @@
+/* =====================================================================
+   Today (Home): the hero card with Start / Just 5 minutes, focus timer, up next, wins this week.
+   ===================================================================== */
+.today-streak { font-size: 0.92rem; color: var(--muted); margin: 0 0 0.6rem; }
+.today-streak.on { color: var(--streak); }
+.section-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin: 1.2rem 0 0.6rem; font-family: var(--font-body); font-weight: 700; }
+
+/* ---------- hero ---------- */
+.hero { padding: 1.4rem 1.5rem 1.5rem; margin-bottom: 0; }
+.hero-kicker { display: flex; flex-wrap: wrap; gap: 0.3rem 0.8rem; align-items: center; font-size: 0.8rem; }
+.hero-track { font-weight: 700; color: var(--brand-text); text-transform: uppercase; letter-spacing: 0.06em; }
+.hero-level { color: var(--muted); }
+.hero-title { font-size: clamp(1.45rem, 2.4vw, 2.1rem); font-weight: 700; line-height: 1.2; margin: 0.5rem 0 0.6rem; overflow-wrap: anywhere; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; color: var(--muted); font-size: 0.88rem; }
+.hero-meta span:first-child { color: var(--text); font-weight: 600; }
+.hero-reason { font-style: italic; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-top: 1.2rem; }
+.btn-lg { padding: 0.6rem 1.1rem; font-size: 0.98rem; border-radius: 12px; min-height: 44px; }
+.btn-xl { padding: 0.75rem 2.1rem; font-size: 1.12rem; border-radius: 14px; min-height: 52px; font-family: var(--font-display); letter-spacing: 0.01em; box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35); }
+.btn.ghost { background: transparent; }
+.hero-open { font-weight: 600; margin-left: 0.25rem; }
+.hero-finished { margin-top: 1.1rem; }
+.hero-finished strong { display: block; font-size: 1.02rem; }
+
+/* ---------- focus timer ---------- */
+.focus-panel { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem 1.1rem; margin-top: 1.1rem; }
+.focus-panel .hero-actions { margin-top: 0; margin-left: auto; }
+.focus-clock { font-family: var(--font-display); font-size: 2.2rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; color: var(--focus); }
+.focus-chip {
+  display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; color: var(--focus);
+  background: color-mix(in srgb, var(--focus) 12%, transparent); border: 1px solid color-mix(in srgb, var(--focus) 35%, transparent);
+  border-radius: 999px; padding: 0.2rem 0.6rem; width: fit-content;
+}
+.focus-chip strong { font-variant-numeric: tabular-nums; }
+.focus-chip span { color: var(--muted); }
+.focus-chip:hover { text-decoration: none; border-color: var(--focus); }
+
+/* ---------- up next ---------- */
+.upnext { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; }
+.upnext-card {
+  width: 100%; height: 100%; margin: 0; text-align: left; cursor: pointer; color: var(--text); font: inherit;
+  display: flex; flex-direction: column; gap: 0.3rem; padding: 0.85rem 0.95rem;
+}
+.upnext-card:hover { box-shadow: var(--shadow-3); }
+.upnext-track { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.upnext-title { font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+.upnext-meta { font-size: 0.78rem; color: var(--muted); margin-top: auto; }
+
+/* ---------- wins this week ---------- */
+.wins h2 { margin-bottom: 0.6rem; }
+.wins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.win { display: flex; flex-direction: column; gap: 0.05rem; padding: 0.6rem 0.7rem; border-radius: var(--radius-sm); background: var(--glass-strong); }
+.win strong { font-family: var(--font-display); font-size: 1.3rem; font-variant-numeric: tabular-nums; }
+.win span:last-child { font-size: 0.75rem; color: var(--muted); }
+.wins .empty-state { padding: 0.6rem 0.4rem 0.4rem; }
+
+@media (max-width: 760px) {
+  .hero { padding: 1.1rem 1rem 1.2rem; }
+  .btn-xl { flex: 1 1 100%; }
+  .hero-actions .btn-lg { flex: 1 1 auto; }
+  .focus-panel .hero-actions { margin-left: 0; width: 100%; }
+}

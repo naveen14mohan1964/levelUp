@@ -1,0 +1,29 @@
+{
+  "name": "dsa-tracker-server",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js --no-jobs --dev-tools",
+    "db:setup": "node src/setup-db.js",
+    "db:reset": "node src/setup-db.js --reset",
+    "test": "node --require ./test/env.js --test --test-concurrency=1 --test-reporter=spec \"test/*.test.js\"",
+    "test:ai": "node --require ./test/env.js --test --test-concurrency=1 --test-reporter=spec test/ai.test.js"
+  },
+  "description": "DSA Tracker API (Express + SQL Server)",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.0",
+    "dotenv": "^18.0.5",
+    "express": "^5.2.1",
+    "mssql": "^12.7.2",
+    "multer": "^2.4.0",
+    "zod": "^4.6.5"
+  },
+  "private": true,
+  "devDependencies": {
+    "playwright-core": "^1.63.0"
+  },
+  "optionalDependencies": {
+    "msnodesqlv8": "^5.5.0"
+  }
+}

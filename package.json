@@ -1,0 +1,36 @@
+{
+  "name": "dsa-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DSA study-plan tracker: React + Express + SQL Server",
+  "scripts": {
+    "setup": "npm install && npm --prefix server install && npm --prefix client install && npm run db:setup",
+    "plan:build": "node scripts/build-plan.js",
+    "plan:shift": "node scripts/shift-plan.js",
+    "db:setup": "npm --prefix server run db:setup",
+    "db:reset": "npm --prefix server run db:reset",
+    "dev": "concurrently -k -n api,web -c blue,magenta \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
+    "build": "npm --prefix client run build",
+    "start": "npm run build && npm --prefix server start",
+    "test": "npm --prefix client run build && npm --prefix server test",
+    "test:ai": "npm --prefix server run test:ai",
+    "check:links": "node scripts/check-links.js",
+    "app:start": "npm run build && pm2 startOrReload ecosystem.config.js --update-env",
+    "app:update": "npm run app:start",
+    "app:stop": "pm2 stop levelup-tracker",
+    "app:status": "pm2 status",
+    "app:logs": "pm2 logs levelup-tracker --lines 50",
+    "app:autostart": "node scripts/autostart.js",
+    "app:autostart:remove": "node scripts/autostart.js --remove",
+    "exercises:fetch": "node scripts/fetch-exercise-demos.js",
+    "docker:up": "docker compose up -d --build",
+    "docker:migrate": "node scripts/docker-migrate.js",
+    "docker:logs": "docker compose logs -f --tail=100 app",
+    "docker:down": "docker compose down",
+    "docker:status": "docker compose ps"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5",
+    "pm2": "^7.0.4"
+  }
+}

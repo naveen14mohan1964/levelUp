@@ -1,0 +1,160 @@
+/* =====================================================================
+   Level map (components/LevelMap.jsx): a path rail with a node per level.
+   complete = green ✓ · current = hero card with the glow border · open = catch-up · locked = dimmed + lock
+   ===================================================================== */
+.lmap { list-style: none; margin: 0; padding: 0; }
+.lmap-level { scroll-margin-top: 1rem; position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 0 0.75rem; padding-bottom: 0.9rem; }
+.lmap-level > .card { margin: 0; }
+
+/* the path: a line from this node down to the next one (green once this level is complete) */
+.lmap-level::before {
+  content: ''; position: absolute; left: 21px; top: 44px; bottom: -2px; width: 2px; border-radius: 2px;
+  background: var(--border);
+}
+.lmap-level:last-child::before { display: none; }
+.lmap-level.seg-done::before { background: linear-gradient(180deg, var(--success), color-mix(in srgb, var(--success) 40%, var(--border))); }
+
+.lmap-node {
+  position: relative; z-index: 1; width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; font-variant-numeric: tabular-nums;
+  background: var(--glass-strong); border: 2px solid var(--border); color: var(--muted);
+}
+.is-complete > .lmap-node {
+  background: var(--success); border-color: var(--success); color: var(--on-bright);
+  box-shadow: 0 0 16px rgba(52, 211, 153, 0.45);
+}
+.is-current > .lmap-node {
+  background: linear-gradient(140deg, var(--brand-glow), var(--brand)); border-color: var(--brand-glow); color: var(--on-brand);
+  box-shadow: 0 0 0 5px rgba(139, 92, 246, 0.18), 0 0 22px rgba(139, 92, 246, 0.55);
+}
+.is-open > .lmap-node { border-color: var(--focus); color: var(--focus); }
+.lmap-level.is-locked { opacity: 1; filter: none; } /* dim the card once, not the whole row too */
+.is-locked > .lmap-node { opacity: 0.75; }
+.lmap-card.is-locked:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* ---------- cards ---------- */
+.lmap-kicker { font-size: 0.74rem; color: var(--muted); letter-spacing: 0.02em; }
+.lmap-now { color: var(--brand-text); font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; }
+.lmap-title { font-family: var(--font-display); font-weight: 600; font-size: 1rem; margin: 0; overflow-wrap: anywhere; }
+.lmap-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.4rem 0.8rem; margin-top: 0.15rem; }
+.lmap-card.is-locked { padding-top: 0.7rem; padding-bottom: 0.75rem; }
+
+.lmap-head {
+  width: 100%; display: flex; align-items: center; gap: 0.75rem; text-align: left; cursor: pointer;
+  background: none; border: 0; padding: 0; color: inherit; font: inherit;
+}
+.lmap-head-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+.lmap-count { font-size: 0.8rem; color: var(--focus); white-space: nowrap; }
+.lmap-done { border-color: color-mix(in srgb, var(--success) 45%, transparent); box-shadow: var(--shadow-2), 0 0 18px rgba(52, 211, 153, 0.12); }
+.lmap-done .lmap-count { color: var(--success); font-weight: 700; }
+
+.lmap-hero { padding: 1.2rem 1.3rem 1.1rem; }
+.lmap-hero-title { font-size: clamp(1.25rem, 2vw, 1.6rem); margin: 0.3rem 0 0.2rem; overflow-wrap: anywhere; }
+.lmap-goal { color: var(--muted); margin: 0.2rem 0 0.6rem; max-width: 85ch; }
+.lmap-progress { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
+.lmap-lessons { display: flex; flex-direction: column; gap: 0.45rem; margin-top: 0.8rem; }
+.lmap-lessons > div > .card { margin: 0; }
+
+/* ---------- lesson rows ---------- */
+.lrow {
+  display: flex; align-items: center; gap: 0.65rem; padding: 0.6rem 0.75rem; border-radius: var(--radius-sm);
+  background: var(--glass-strong); border: 1px solid transparent; color: var(--text);
+}
+.lrow-icon {
+  width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; border: 1.5px solid var(--border); color: var(--muted);
+}
+.lrow-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.lrow-title { font-weight: 500; overflow-wrap: anywhere; }
+.lrow-meta { font-size: 0.76rem; color: var(--muted); }
+.lrow.is-done .lrow-icon { background: var(--success); border-color: var(--success); color: var(--on-bright); font-weight: 700; }
+.lrow.is-done .lrow-title { color: var(--muted); }
+.lrow.is-current { border-color: color-mix(in srgb, var(--brand-glow) 60%, transparent); background: color-mix(in srgb, var(--brand) 14%, var(--glass-strong)); }
+.lrow.is-current .lrow-icon { background: var(--brand); border-color: var(--brand); color: var(--on-brand); }
+.lrow.is-open .lrow-icon { border-color: var(--focus); color: var(--focus); }
+.lrow.is-locked { opacity: 0.7; filter: saturate(0.4); }
+.lrow-next {
+  font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap;
+  color: var(--on-brand); background: var(--brand); border-radius: 999px; padding: 0.1rem 0.5rem;
+}
+.lrow-link { display: block; color: inherit; border-radius: var(--radius-sm); }
+.lrow-link:hover { text-decoration: none; }
+.lrow-link:hover .lrow { border-color: var(--glass-border); background: color-mix(in srgb, var(--text) 6%, var(--glass-strong)); }
+.lrow-link:hover .lrow.is-current { border-color: var(--brand-glow); }
+
+/* AI lesson cards + project rows inside the map */
+.ai-lesson.is-current { border-color: color-mix(in srgb, var(--brand-glow) 60%, transparent); }
+.ptask.is-current { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand-glow) 60%, transparent); background: color-mix(in srgb, var(--brand) 10%, transparent); }
+.ptask.is-done { opacity: 0.85; }
+.lmap-lessons .ptask { background: var(--glass-strong); }
+
+@media (max-width: 760px) {
+  .lmap-level { grid-template-columns: 34px minmax(0, 1fr); gap: 0 0.55rem; scroll-margin-top: 130px; /* below the sticky phone header */ }
+  .lmap-level::before { left: 16px; top: 34px; }
+  .lmap-node { width: 34px; height: 34px; font-size: 0.9rem; }
+  .lmap-hero { padding: 1rem 0.95rem; }
+}
+
+/* =====================================================================
+   Unlock sequence (LevelMap phases): pop green → path draws → lock shakes + breaks → next level arrives
+   ===================================================================== */
+.just-done > .lmap-node { animation: node-pop 0.6s var(--ease-spring) both; }
+.just-done > .card { animation: done-flash 1.2s ease-out both; }
+@keyframes node-pop { 0% { transform: scale(0.6); } 60% { transform: scale(1.18); } 100% { transform: scale(1); } }
+@keyframes done-flash { 0% { opacity: 0.6; transform: scale(0.985); } 40% { opacity: 1; transform: scale(1.01); } 100% { transform: scale(1); } }
+
+/* glowing path drawing down from the finished level to the next */
+.lmap-path-anim {
+  position: absolute; left: 20px; top: 44px; bottom: -2px; width: 4px; border-radius: 4px; z-index: 0; pointer-events: none;
+  background: linear-gradient(180deg, var(--success), var(--brand-glow));
+  box-shadow: 0 0 12px rgba(52, 211, 153, 0.7), 0 0 22px rgba(139, 92, 246, 0.5);
+  transform-origin: top center; animation: path-draw 0.75s ease-in-out both;
+}
+@keyframes path-draw { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+/* the lock: shake, then the shackle flies off and the body pops away */
+.breaking > .lmap-node { opacity: 1; color: var(--brand-text); border-color: var(--brand-glow); animation: lock-shake 0.5s ease-in-out both; }
+.breaking > .card { opacity: 0.8; }
+.lock-breaking .lock-shackle { transform-box: fill-box; transform-origin: 100% 100%; animation: shackle-off 0.45s 0.45s ease-in both; }
+.lock-breaking .lock-body { transform-box: fill-box; transform-origin: center; animation: body-pop 0.35s 0.5s ease-in both; }
+@keyframes lock-shake {
+  0%, 100% { transform: rotate(0); } 15% { transform: rotate(-14deg); } 30% { transform: rotate(12deg); }
+  45% { transform: rotate(-9deg); } 60% { transform: rotate(7deg); } 75% { transform: rotate(-4deg); }
+}
+@keyframes shackle-off { to { transform: translate(4px, -9px) rotate(35deg); opacity: 0; } }
+@keyframes body-pop { 60% { transform: scale(1.35); opacity: 0.8; } to { transform: scale(0.4); opacity: 0; } }
+
+/* the new current level grows into the hero card */
+.arriving > .lmap-node { animation: node-pop 0.6s var(--ease-spring) both; }
+.arriving > .lmap-hero { animation: hero-in 0.65s var(--ease-spring) both; }
+@keyframes hero-in { from { opacity: 0; transform: scale(0.94) translateY(8px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .just-done > .lmap-node, .just-done > .card, .lmap-path-anim, .breaking > .lmap-node, .lock-breaking *, .arriving > * { animation: none !important; }
+}
+
+/* =====================================================================
+   LEVEL COMPLETE overlay (components/LevelComplete.jsx)
+   ===================================================================== */
+.lvl-done-backdrop {
+  position: fixed; inset: 0; z-index: 900; display: flex; align-items: center; justify-content: center; padding: 1rem;
+  background: radial-gradient(circle at 50% 40%, rgba(124, 58, 237, 0.35), rgba(5, 8, 15, 0.88) 60%);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+.lvl-done {
+  width: min(460px, 100%); text-align: center; padding: 1.6rem 1.4rem 1.4rem;
+  background: rgba(19, 27, 46, 0.92); border: 1px solid var(--glass-border); border-radius: 22px; box-shadow: var(--shadow-3), 0 0 60px rgba(139, 92, 246, 0.35);
+}
+.lvl-done-badge { display: flex; justify-content: center; margin-bottom: 0.3rem; filter: drop-shadow(0 8px 24px rgba(139, 92, 246, 0.5)); }
+.lvl-done-kicker { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lvl-done-title {
+  font-size: clamp(1.9rem, 6vw, 2.5rem); font-weight: 700; letter-spacing: 0.04em; margin: 0.15rem 0 0.2rem;
+  background: linear-gradient(90deg, #C4B5FD, #FFFFFF 45%, #67E8F9); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.lvl-done-name { margin: 0; font-weight: 600; }
+.lvl-done-xp { font-family: var(--font-display); font-size: 1.15rem; color: var(--brand-text); margin: 0.7rem 0 0.2rem; font-variant-numeric: tabular-nums; }
+.lvl-done-xp span { font-size: 2.2rem; font-weight: 700; color: var(--text); }
+.lvl-done-next { color: var(--muted); margin: 0.3rem 0 1rem; font-size: 0.92rem; }
+.lvl-done-next strong { color: var(--text); }
+.lvl-done-actions { display: flex; flex-direction: column; gap: 0.5rem; align-items: stretch; }

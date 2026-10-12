@@ -1,0 +1,1187 @@
+{
+  "about": "AI engineering + Forward Deployed Engineer (FDE) skills, from scratch to advanced to hired: math → Python → ML → deep learning → LLMs → APIs → RAG → agents → orchestration & harness engineering → evals → deployment → fine-tuning → FDE → portfolio. About 30–120 minutes per lesson; builds happen in your own Level Up app so every level ends with something real to show. Going for AI engineering fast? Levels 3–4 can be skimmed and revisited later. Links checked 2026-10-11.",
+  "levels": [
+    {
+      "n": 1,
+      "title": "Math for AI",
+      "goal": "Read ML material without fear: vectors, matrices, probability and gradients.",
+      "lessons": [
+        {
+          "title": "Vectors and matrices",
+          "minutes": 60,
+          "learn": "Vectors are lists of numbers with direction and length; matrices transform them. Embeddings, attention and neural layers are all matrix maths.",
+          "links": [
+            [
+              "3Blue1Brown: Essence of linear algebra",
+              "https://www.3blue1brown.com/?topic=linear-algebra"
+            ],
+            [
+              "Mathematics for Machine Learning (free book), ch. 2",
+              "https://mml-book.github.io/"
+            ]
+          ],
+          "build": "In plain JavaScript or Java, write dot(), matmul() and cosineSimilarity(); test cosineSimilarity on 3 small vectors.",
+          "check": "What does a dot product tell you about two vectors?",
+          "id": "L1-1"
+        },
+        {
+          "title": "Probability and statistics",
+          "minutes": 60,
+          "learn": "Distributions, mean and variance, conditional probability, and why a model outputs probabilities (softmax) rather than certainties.",
+          "links": [
+            [
+              "Khan Academy: Statistics and probability",
+              "https://www.khanacademy.org/math/statistics-probability"
+            ]
+          ],
+          "build": "Write softmax() and apply it to [2.0, 1.0, 0.1]; explain why the outputs sum to 1.",
+          "check": "Why does a language model sample from a probability distribution instead of always picking the top word?",
+          "id": "L1-2"
+        },
+        {
+          "title": "Calculus and gradients",
+          "minutes": 60,
+          "learn": "A derivative is a slope; a gradient is the slope in many directions. Gradient descent walks downhill on the loss.",
+          "links": [
+            [
+              "3Blue1Brown: Essence of calculus",
+              "https://www.3blue1brown.com/?topic=calculus"
+            ],
+            [
+              "3Blue1Brown: Neural networks (backprop chapters)",
+              "https://www.3blue1brown.com/?topic=neural-networks"
+            ]
+          ],
+          "build": "Code gradient descent that finds the minimum of y = (x − 3)² starting from x = 0; print x every 10 steps.",
+          "check": "What happens if the learning rate is too big?",
+          "id": "L1-3"
+        },
+        {
+          "id": "L1-4",
+          "title": "Neural networks, visually",
+          "minutes": 45,
+          "learn": "What a neuron, weights, a loss and gradient descent are. You don't need the maths yet, only the intuition for 'the model adjusts numbers to reduce error'.",
+          "links": [
+            [
+              "3Blue1Brown: Neural networks",
+              "https://www.3blue1brown.com/?topic=neural-networks"
+            ]
+          ],
+          "build": "Write a 5-line note in your own words: how a network learns. Save it as a lesson note here.",
+          "check": "What does 'training' change inside a model, and what does it NOT change?"
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "title": "Python for AI",
+      "goal": "Be productive in the language most AI tooling uses.",
+      "lessons": [
+        {
+          "title": "Python for a Java/JavaScript developer",
+          "minutes": 60,
+          "learn": "Syntax, lists/dicts, functions, classes, virtual environments and pip. You already know programming; this is mostly new spelling.",
+          "links": [
+            [
+              "The official Python tutorial",
+              "https://docs.python.org/3/tutorial/"
+            ]
+          ],
+          "build": "Rewrite one small Level Up helper (e.g. the LeetCode URL normaliser) in Python with a couple of asserts.",
+          "check": "Which Python idiom replaces a Java for-loop that builds a list?",
+          "id": "L2-1"
+        },
+        {
+          "title": "NumPy: fast arrays",
+          "minutes": 45,
+          "learn": "Vectorised maths on whole arrays instead of loops: the foundation of pandas, scikit-learn and PyTorch.",
+          "links": [
+            [
+              "NumPy: the absolute basics for beginners",
+              "https://numpy.org/doc/stable/user/absolute_beginners.html"
+            ]
+          ],
+          "build": "Re-implement your cosineSimilarity from level 1 with NumPy and compare speed on 10,000 random vectors.",
+          "check": "Why is a NumPy operation much faster than a Python loop?",
+          "id": "L2-2"
+        },
+        {
+          "title": "pandas: real data",
+          "minutes": 60,
+          "learn": "Load, clean, filter, group and plot tabular data: the daily work of anyone touching ML.",
+          "links": [
+            [
+              "pandas: getting started tutorials",
+              "https://pandas.pydata.org/docs/getting_started/intro_tutorials/index.html"
+            ]
+          ],
+          "build": "Export your Level Up meals or problems table to CSV and answer 3 questions with pandas (e.g. average calories per meal type).",
+          "check": "What does groupby() do, in one sentence?",
+          "id": "L2-3"
+        },
+        {
+          "title": "Typed data with Pydantic",
+          "minutes": 45,
+          "learn": "Validate and type data at your boundaries. Pydantic models are also how Python LLM apps define structured outputs and tool inputs.",
+          "links": [
+            [
+              "Pydantic: get started",
+              "https://pydantic.dev/docs/validation/latest/get-started/"
+            ]
+          ],
+          "build": "Model the meal estimate (title, items, totals, confidence) as Pydantic classes and validate a sample JSON.",
+          "check": "Why validate an LLM's JSON even when you asked for a schema?",
+          "id": "L2-4"
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "title": "ML fundamentals",
+      "goal": "Train, evaluate and reason about classic ML models.",
+      "lessons": [
+        {
+          "title": "Machine learning crash course",
+          "minutes": 90,
+          "learn": "Regression, loss, gradient descent, overfitting, train/validation/test splits: the core ideas every model shares.",
+          "links": [
+            [
+              "Google: Machine Learning Crash Course",
+              "https://developers.google.com/machine-learning/crash-course"
+            ]
+          ],
+          "build": "Finish the linear regression and loss modules; write down the 5 ideas that surprised you.",
+          "check": "What is overfitting, and how do you detect it?",
+          "id": "L3-1"
+        },
+        {
+          "title": "scikit-learn: models in a few lines",
+          "minutes": 60,
+          "learn": "Fit/predict API, pipelines, preprocessing, and comparing models fairly.",
+          "links": [
+            [
+              "scikit-learn: getting started",
+              "https://scikit-learn.org/stable/getting_started.html"
+            ]
+          ],
+          "build": "Train a linear regression that predicts calories from protein/carbs/fat using your logged meals.",
+          "check": "Why must preprocessing be fitted only on training data?",
+          "id": "L3-2"
+        },
+        {
+          "title": "Hands-on: your first real model",
+          "minutes": 60,
+          "learn": "Decision trees, random forests, validation and model improvement, with exercises in the browser.",
+          "links": [
+            [
+              "Kaggle Learn: Intro to Machine Learning",
+              "https://www.kaggle.com/learn/intro-to-machine-learning"
+            ]
+          ],
+          "build": "Complete the course exercises and submit one prediction to a Kaggle practice competition.",
+          "check": "Why does a random forest usually beat a single decision tree?",
+          "id": "L3-3"
+        },
+        {
+          "title": "Measuring models properly",
+          "minutes": 45,
+          "learn": "Accuracy can lie. Precision, recall, F1, confusion matrices, and choosing the metric that matches the cost of mistakes.",
+          "links": [
+            [
+              "Google MLCC: classification (in the crash course)",
+              "https://developers.google.com/machine-learning/crash-course"
+            ]
+          ],
+          "build": "For a spam-filter thought experiment, decide which matters more, precision or recall, and justify it.",
+          "check": "When is high accuracy a misleading number?",
+          "id": "L3-4"
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "title": "Deep learning with PyTorch",
+      "goal": "Build and train neural networks yourself.",
+      "lessons": [
+        {
+          "title": "PyTorch basics: tensors and autograd",
+          "minutes": 60,
+          "learn": "Tensors, devices, automatic differentiation, and the standard training loop.",
+          "links": [
+            [
+              "PyTorch: Learn the basics",
+              "https://docs.pytorch.org/tutorials/beginner/basics/intro.html"
+            ]
+          ],
+          "build": "Follow the tutorial up to autograd; reproduce your level-1 gradient descent with PyTorch tensors.",
+          "check": "What does loss.backward() compute?",
+          "id": "L4-1"
+        },
+        {
+          "title": "Train a neural network",
+          "minutes": 90,
+          "learn": "Datasets, data loaders, a model, an optimiser and an evaluation loop, end to end.",
+          "links": [
+            [
+              "PyTorch: Learn the basics (training loop)",
+              "https://docs.pytorch.org/tutorials/beginner/basics/intro.html"
+            ]
+          ],
+          "build": "Train the FashionMNIST classifier from the tutorial in a free notebook; record accuracy after 1 and 5 epochs.",
+          "check": "Why do we evaluate on data the model never trained on?",
+          "id": "L4-2"
+        },
+        {
+          "title": "Practical deep learning",
+          "minutes": 120,
+          "learn": "Top-down: get state-of-the-art results quickly with transfer learning, then learn what's inside.",
+          "links": [
+            [
+              "fast.ai: Practical Deep Learning for Coders",
+              "https://course.fast.ai/"
+            ]
+          ],
+          "build": "Do lesson 1: fine-tune an image classifier on your own small photo set.",
+          "check": "What is transfer learning and why does it need so little data?",
+          "id": "L4-3"
+        },
+        {
+          "title": "Backprop from scratch (micrograd)",
+          "minutes": 120,
+          "learn": "Build a tiny autograd engine to truly understand backpropagation.",
+          "links": [
+            [
+              "Andrej Karpathy: Neural Networks: Zero to Hero",
+              "https://karpathy.ai/zero-to-hero.html"
+            ]
+          ],
+          "build": "Code along with the micrograd video and train a tiny neural net with your own engine.",
+          "check": "How does the chain rule make backprop possible?",
+          "id": "L4-4"
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "title": "Transformers and how LLMs work",
+      "goal": "Explain tokens, attention, training and hallucination, and build a tiny GPT.",
+      "lessons": [
+        {
+          "id": "L5-1",
+          "title": "Large language models in one hour",
+          "minutes": 60,
+          "learn": "Pre-training vs fine-tuning vs RLHF, next-token prediction, why models are 'compressed internet', and the new security risks (prompt injection, jailbreaks).",
+          "links": [
+            [
+              "Andrej Karpathy: Intro to Large Language Models",
+              "https://www.youtube.com/watch?v=zjkBMFhNj_g"
+            ]
+          ],
+          "build": "List 3 places in Level Up where an LLM already runs (meals, mentor, LinkedIn drafts). For each: what is the input, what is the output?",
+          "check": "Why can a model state a wrong fact confidently?"
+        },
+        {
+          "id": "L5-2",
+          "title": "Tokens and context windows",
+          "minutes": 30,
+          "learn": "Text becomes tokens; price, speed and limits are all counted in tokens. Long context is not free: cost and latency grow with it.",
+          "links": [
+            [
+              "Tiktokenizer (try your own text)",
+              "https://tiktokenizer.vercel.app/"
+            ],
+            [
+              "Gemini: understand and count tokens",
+              "https://ai.google.dev/gemini-api/docs/tokens?hl=en"
+            ],
+            [
+              "Gemini: long context",
+              "https://ai.google.dev/gemini-api/docs/long-context?hl=en"
+            ]
+          ],
+          "build": "Paste one of your LinkedIn drafts into the tokenizer: how many tokens? Estimate what 1,000 such calls cost on a paid tier.",
+          "check": "Why does a longer prompt make a response slower and pricier?"
+        },
+        {
+          "id": "L5-3",
+          "title": "Transformers and attention (intuition)",
+          "minutes": 45,
+          "learn": "Attention lets every token look at every other token. That's what made today's models possible. Read the pictures, skip the equations.",
+          "links": [
+            [
+              "The Illustrated Transformer (Jay Alammar)",
+              "https://jalammar.github.io/illustrated-transformer/"
+            ],
+            [
+              "Attention Is All You Need (paper, skim the abstract)",
+              "https://arxiv.org/abs/1706.03762"
+            ]
+          ],
+          "build": "Draw (paper is fine) the flow: input text → tokens → embeddings → attention layers → next-token probabilities.",
+          "check": "In one sentence, what problem does attention solve?"
+        },
+        {
+          "id": "L5-4",
+          "title": "Build a GPT from scratch (understanding)",
+          "minutes": 120,
+          "learn": "Code a tiny transformer to really understand training, attention and sampling. Hard but transformative.",
+          "links": [
+            [
+              "Andrej Karpathy: Let's build GPT",
+              "https://www.youtube.com/watch?v=kCc8FmEb1nY"
+            ]
+          ],
+          "build": "Code along for the first hour; train the tiny model on any text you like and generate samples.",
+          "check": "What does the model learn during training, concretely?"
+        },
+        {
+          "id": "L5-5",
+          "title": "Checkpoint: explain it to a non-engineer",
+          "minutes": 30,
+          "learn": "Teaching is the test. FDEs explain AI to customers who are not engineers, every week.",
+          "links": [
+            [
+              "Google: Technical writing courses",
+              "https://developers.google.com/tech-writing"
+            ]
+          ],
+          "build": "Write a 150-word explanation of how ChatGPT-style models work for a hospital manager. No jargon. Make it a LinkedIn post draft if you like it.",
+          "check": "Could someone with no tech background repeat your explanation back to you?"
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "title": "LLM APIs and prompting",
+      "goal": "Call any major model from code and get reliable, structured answers.",
+      "lessons": [
+        {
+          "id": "L6-1",
+          "title": "Prompt engineering that works",
+          "minutes": 45,
+          "learn": "Be specific, give context and examples, ask for a format, let the model think when the task is hard, and break big tasks into steps.",
+          "links": [
+            [
+              "Claude docs: prompt engineering overview",
+              "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview"
+            ],
+            [
+              "Prompt Engineering Guide",
+              "https://www.promptingguide.ai/"
+            ]
+          ],
+          "build": "Rewrite the Level Up mentor's 'hint' prompt with one improvement (an example or a format) and compare 3 answers before/after.",
+          "check": "Which two techniques make answers more consistent?"
+        },
+        {
+          "title": "Anthropic and OpenAI APIs",
+          "minutes": 60,
+          "learn": "Messages, system prompts, temperature and max tokens on the two most-used APIs. The shapes are similar across providers.",
+          "links": [
+            [
+              "Claude API overview",
+              "https://platform.claude.com/docs/en/api/overview"
+            ],
+            [
+              "OpenAI API quickstart",
+              "https://developers.openai.com/api/docs/quickstart"
+            ],
+            [
+              "Gemini API docs",
+              "https://ai.google.dev/gemini-api/docs?hl=en"
+            ]
+          ],
+          "build": "Send the same prompt to two providers (use free tiers/credits) from a small Node or Python script and compare answers, latency and tokens.",
+          "check": "What changes, and what stays the same, between providers' APIs?",
+          "id": "L6-2"
+        },
+        {
+          "title": "Hugging Face and local models with Ollama",
+          "minutes": 60,
+          "learn": "Open models through Hugging Face inference, and on your own laptop with Ollama: private, free, offline.",
+          "links": [
+            [
+              "Hugging Face: Inference Providers",
+              "https://huggingface.co/docs/inference-providers/index"
+            ],
+            [
+              "Ollama docs",
+              "https://docs.ollama.com/"
+            ],
+            [
+              "Ollama model library",
+              "https://ollama.com/library"
+            ]
+          ],
+          "build": "Install Ollama, run a small model (e.g. a 3–8B one), and call its local API from Node with the same prompt as above.",
+          "check": "When is a local open model better than a hosted API?",
+          "id": "L6-3"
+        },
+        {
+          "id": "L6-4",
+          "title": "Structured outputs (JSON you can trust)",
+          "minutes": 45,
+          "learn": "Ask for a JSON schema instead of parsing free text. This is how real products use LLMs: as functions that return typed data.",
+          "links": [
+            [
+              "Gemini: structured output",
+              "https://ai.google.dev/gemini-api/docs/structured-output?hl=en"
+            ]
+          ],
+          "build": "Add one field to the meal estimator's schema (e.g. 'fibre_g') end to end: schema → database → Meals page.",
+          "check": "Why is a schema safer than 'please answer in JSON'?"
+        },
+        {
+          "id": "L6-5",
+          "title": "Thinking models, latency and cost",
+          "minutes": 30,
+          "learn": "Reasoning ('thinking') improves hard answers but costs time and tokens. Pick the level per task. You cut a feature from 27 s to 5.6 s this way.",
+          "links": [
+            [
+              "Gemini: thinking",
+              "https://ai.google.dev/gemini-api/docs/thinking?hl=en"
+            ],
+            [
+              "Gemini: context caching",
+              "https://ai.google.dev/gemini-api/docs/caching?hl=en"
+            ]
+          ],
+          "build": "Measure one Level Up AI call at thinking 'low' vs 'medium' (3 runs each, keep it to 6 calls for your free quota) and write down the trade-off.",
+          "check": "When would you deliberately pay for more thinking?"
+        },
+        {
+          "id": "L6-6",
+          "title": "Checkpoint: a tiny AI feature",
+          "minutes": 60,
+          "learn": "Ship something small end to end: prompt → schema → API → UI → error handling (quota, timeout).",
+          "links": [
+            [
+              "Claude cookbooks (examples)",
+              "https://github.com/anthropics/claude-cookbooks"
+            ]
+          ],
+          "build": "Add a 'Summarise my week' button to Level Up Home: one call, structured output (wins, misses, next week focus), friendly error on quota.",
+          "check": "What happens in your feature when the AI is down or out of quota?"
+        }
+      ]
+    },
+    {
+      "n": 7,
+      "title": "RAG and enormous knowledge",
+      "goal": "Make models answer from large amounts of your own data, with sources.",
+      "lessons": [
+        {
+          "id": "L7-1",
+          "title": "Embeddings: meaning as numbers",
+          "minutes": 45,
+          "learn": "An embedding turns text into a vector; similar meaning = nearby vectors. This powers semantic search, recommendations and RAG.",
+          "links": [
+            [
+              "Gemini: embeddings",
+              "https://ai.google.dev/gemini-api/docs/embeddings?hl=en"
+            ]
+          ],
+          "build": "Embed 20 of your DSA problem titles and find the 3 most similar to 'Two Sum'. Print the cosine similarities.",
+          "check": "Why does 'car' end up near 'vehicle' but far from 'carpet'?"
+        },
+        {
+          "id": "L7-2",
+          "title": "Retrieval-augmented generation (RAG)",
+          "minutes": 45,
+          "learn": "Retrieve relevant chunks, put them in the prompt, ask the model to answer only from them and cite them. Most enterprise AI is RAG.",
+          "links": [
+            [
+              "Pinecone: What is RAG?",
+              "https://www.pinecone.io/learn/retrieval-augmented-generation/"
+            ]
+          ],
+          "build": "Design (on paper) an 'Ask my notes' feature for Level Up: which data, how you chunk it, where vectors live, what the answer shows.",
+          "check": "What are the two halves of RAG, and which one usually fails first?"
+        },
+        {
+          "id": "L7-3",
+          "title": "Vector databases",
+          "minutes": 45,
+          "learn": "Store and search vectors: pgvector in Postgres, dedicated vector DBs like Chroma and Qdrant, or SQL Server 2025's vector type. Pick by scale and ops cost.",
+          "links": [
+            [
+              "pgvector (Postgres)",
+              "https://github.com/pgvector/pgvector"
+            ],
+            [
+              "Chroma docs",
+              "https://docs.trychroma.com/docs/overview/introduction"
+            ],
+            [
+              "Qdrant docs",
+              "https://qdrant.tech/documentation/"
+            ]
+          ],
+          "build": "Create a table for note chunks + their embedding (JSON or VARBINARY is fine to start) and fill it from your lesson notes.",
+          "check": "When is an in-memory index good enough, and when isn't it?"
+        },
+        {
+          "id": "L7-4",
+          "title": "Better retrieval: chunking and context",
+          "minutes": 45,
+          "learn": "Chunk size, overlap, adding context to each chunk, hybrid keyword + vector search, and re-ranking all change answer quality.",
+          "links": [
+            [
+              "Anthropic: Contextual Retrieval",
+              "https://www.anthropic.com/engineering/contextual-retrieval"
+            ]
+          ],
+          "build": "Try 2 chunk sizes on your notes and compare which retrieves the right note for 5 test questions.",
+          "check": "Why can a chunk be 'relevant' but still useless without its surrounding context?"
+        },
+        {
+          "title": "Knowledge at scale: GraphRAG and long context",
+          "minutes": 60,
+          "learn": "When plain chunk search fails on huge corpora: knowledge graphs over documents (GraphRAG), hierarchical summaries, and when long context beats retrieval.",
+          "links": [
+            [
+              "Microsoft GraphRAG",
+              "https://microsoft.github.io/graphrag/"
+            ],
+            [
+              "Gemini: long context",
+              "https://ai.google.dev/gemini-api/docs/long-context?hl=en"
+            ]
+          ],
+          "build": "Pick 3 questions about your notes that need connecting many facts; test whether plain RAG answers them, and sketch how a graph would help.",
+          "check": "What kind of question does GraphRAG answer better than chunk search?",
+          "id": "L7-5"
+        },
+        {
+          "id": "L7-6",
+          "title": "Checkpoint: Ask my notes (RAG feature)",
+          "minutes": 90,
+          "learn": "Retrieval + generation + citations in your own app, with an 'I don't know' when nothing relevant is found.",
+          "links": [
+            [
+              "Gemini: embeddings",
+              "https://ai.google.dev/gemini-api/docs/embeddings?hl=en"
+            ]
+          ],
+          "build": "Ship 'Ask my notes' in Level Up: question → top 3 chunks → answer with links to the source notes. Post about what surprised you.",
+          "check": "How does your feature avoid inventing an answer?"
+        }
+      ]
+    },
+    {
+      "n": 8,
+      "title": "Tools and agents",
+      "goal": "Let models take actions safely through well-designed tools.",
+      "lessons": [
+        {
+          "id": "L8-1",
+          "title": "Function calling",
+          "minutes": 45,
+          "learn": "You describe functions; the model chooses one and returns arguments; YOUR code runs it and sends back the result. The model never executes anything itself.",
+          "links": [
+            [
+              "Gemini: function calling",
+              "https://ai.google.dev/gemini-api/docs/function-calling?hl=en"
+            ]
+          ],
+          "build": "Give the Level Up mentor one read-only tool: getMyStats() (solved problems, streak). Let it call the tool before answering.",
+          "check": "Who actually runs the function, the model or your code? Why does that matter for safety?"
+        },
+        {
+          "id": "L8-2",
+          "title": "Building effective agents",
+          "minutes": 45,
+          "learn": "Start with simple workflows (prompt chaining, routing, parallel calls) before autonomous agents. Most problems don't need a free-running agent.",
+          "links": [
+            [
+              "Anthropic: Building effective agents",
+              "https://www.anthropic.com/engineering/building-effective-agents"
+            ]
+          ],
+          "build": "Classify each Level Up AI feature: single call, workflow or agent? Which one would benefit from becoming a workflow?",
+          "check": "When is a fixed workflow better than an autonomous agent?"
+        },
+        {
+          "title": "Writing tools for agents",
+          "minutes": 45,
+          "learn": "Tool names, descriptions, inputs and error messages are a UI for the model. Good tools make agents reliable.",
+          "links": [
+            [
+              "Anthropic: Writing effective tools for agents",
+              "https://www.anthropic.com/engineering/writing-tools-for-agents"
+            ]
+          ],
+          "build": "Review your linkedin-mcp tool descriptions and improve one so a model would use it correctly the first time.",
+          "check": "What makes a tool description easy for a model to use correctly?",
+          "id": "L8-3"
+        },
+        {
+          "id": "L8-4",
+          "title": "Model Context Protocol (MCP)",
+          "minutes": 45,
+          "learn": "MCP is a standard way to give AI apps tools and data. You already built one: the LinkedIn MCP server with a preview-then-publish lock.",
+          "links": [
+            [
+              "MCP: getting started",
+              "https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro"
+            ]
+          ],
+          "build": "Add a new read-only tool to your linkedin-mcp server (e.g. linkedin_post_stats from your own database) and call it from Claude Code.",
+          "check": "What does MCP standardise, and what does it leave to you?"
+        },
+        {
+          "id": "L8-5",
+          "title": "Checkpoint: a safe agent with approval",
+          "minutes": 90,
+          "learn": "Human-in-the-loop: agents propose, humans approve anything irreversible. This is exactly how your LinkedIn publishing works.",
+          "links": [
+            [
+              "OWASP Top 10 for LLM applications",
+              "https://genai.owasp.org/llm-top-10/"
+            ]
+          ],
+          "build": "Build a 'plan my week' agent in Level Up that proposes calendar blocks; nothing is saved until you click Accept.",
+          "check": "Which actions in your app must always need a human click?"
+        }
+      ]
+    },
+    {
+      "n": 9,
+      "title": "Orchestration, multi-agent systems and harness engineering",
+      "goal": "Coordinate many model calls and agents, and build the harness that keeps them on track.",
+      "lessons": [
+        {
+          "title": "The orchestrator–workers pattern",
+          "minutes": 60,
+          "learn": "An orchestrator model splits a task, sends parts to worker calls (often in parallel), then combines the results. The backbone of most \"AI orchestrator\" systems.",
+          "links": [
+            [
+              "Anthropic: Building effective agents (orchestrator-workers)",
+              "https://www.anthropic.com/engineering/building-effective-agents"
+            ]
+          ],
+          "build": "Build a weekly-review orchestrator in Level Up: it splits into DSA, fitness and LinkedIn workers, runs them in parallel, and merges one summary.",
+          "check": "When does splitting a task across workers beat one big prompt?",
+          "id": "L9-1"
+        },
+        {
+          "title": "Multi-agent systems",
+          "minutes": 60,
+          "learn": "Teams of specialised agents (researcher, writer, critic) with a lead agent. Powerful for open-ended work, costly in tokens, and harder to debug.",
+          "links": [
+            [
+              "Anthropic: How we built our multi-agent research system",
+              "https://www.anthropic.com/engineering/multi-agent-research-system"
+            ],
+            [
+              "LangGraph: multi-agent concepts",
+              "https://langchain-ai.github.io/langgraph/concepts/multi_agent/"
+            ]
+          ],
+          "build": "Make a 3-agent LinkedIn pipeline: researcher (picks a fact from your proof points), writer (drafts), critic (checks honesty and hook) with at most 2 revision rounds.",
+          "check": "What are two costs of multi-agent systems compared to a single agent?",
+          "id": "L9-2"
+        },
+        {
+          "title": "Agent SDKs",
+          "minutes": 60,
+          "learn": "Frameworks for tool loops, handoffs between agents, guardrails and tracing, so you don't rebuild the plumbing.",
+          "links": [
+            [
+              "Claude Agent SDK",
+              "https://code.claude.com/docs/en/agent-sdk/overview"
+            ],
+            [
+              "OpenAI Agents SDK",
+              "https://openai.github.io/openai-agents-python/"
+            ],
+            [
+              "Hugging Face Agents course",
+              "https://huggingface.co/learn/agents-course/unit0/introduction"
+            ]
+          ],
+          "build": "Rebuild your 3-agent pipeline with one SDK and compare: what got simpler, what got hidden?",
+          "check": "What does an agent SDK handle that you would otherwise write yourself?",
+          "id": "L9-3"
+        },
+        {
+          "title": "Context engineering",
+          "minutes": 45,
+          "learn": "Agents fail when their context is cluttered or missing. Curate what goes in: instructions, tools, retrieved facts, memory, and compaction of long histories.",
+          "links": [
+            [
+              "Anthropic: Effective context engineering for AI agents",
+              "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents"
+            ]
+          ],
+          "build": "Audit the Level Up mentor's context: remove one low-value block and add one high-value fact; compare 3 answers.",
+          "check": "Why can adding more context make an agent worse?",
+          "id": "L9-4"
+        },
+        {
+          "title": "Harness engineering for long-running agents",
+          "minutes": 90,
+          "learn": "The harness is everything around the model: the loop, tool registry, memory/progress files, budgets and timeouts, checkpoints, retries and human approval. Good harnesses let agents work for hours without drifting.",
+          "links": [
+            [
+              "Anthropic: Effective harnesses for long-running agents",
+              "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents"
+            ]
+          ],
+          "build": "Write a minimal harness: a loop with a tool registry, a progress.md the agent updates each step, a step/token budget, a timeout per tool, and a human-approval gate for writes.",
+          "check": "Name three things a harness controls that the model itself cannot?",
+          "id": "L9-5"
+        },
+        {
+          "title": "Checkpoint: an agent team in a harness, with evals",
+          "minutes": 120,
+          "learn": "Put it together: orchestrator + specialised agents running inside your harness, measured by a small eval set.",
+          "links": [
+            [
+              "Anthropic: Building effective agents",
+              "https://www.anthropic.com/engineering/building-effective-agents"
+            ]
+          ],
+          "build": "Ship one multi-agent feature in Level Up behind your harness, with 10 eval cases and a pass rate. Write the LinkedIn post about the design.",
+          "check": "Which failure did your harness catch that the agents alone would have missed?",
+          "id": "L9-6"
+        }
+      ]
+    },
+    {
+      "n": 10,
+      "title": "Evals and testing",
+      "goal": "Prove your AI features work and keep them working.",
+      "lessons": [
+        {
+          "id": "L10-1",
+          "title": "Why AI products need evals",
+          "minutes": 45,
+          "learn": "Unit tests for non-deterministic code: a fixed set of inputs, expected properties, and a score you track over time.",
+          "links": [
+            [
+              "Hamel Husain: Your AI product needs evals",
+              "https://hamel.dev/blog/posts/evals/"
+            ]
+          ],
+          "build": "Write 10 test meals (photo or text) with expected calorie ranges for the meal estimator.",
+          "check": "Why can't you test an LLM feature with exact string equality?"
+        },
+        {
+          "id": "L10-2",
+          "title": "Building an eval harness",
+          "minutes": 60,
+          "learn": "Assertions on structure, ranges and must-include facts; LLM-as-judge for fuzzy quality; track pass rate per prompt version.",
+          "links": [
+            [
+              "OpenAI: evals guide",
+              "https://developers.openai.com/api/docs/guides/evals"
+            ]
+          ],
+          "build": "Script: run your 10 meals through the estimator, score 'within range', print the pass rate. Run it before every prompt change.",
+          "check": "What's a good eval metric for your LinkedIn drafts?"
+        },
+        {
+          "id": "L10-3",
+          "title": "Testing AI code without spending quota",
+          "minutes": 30,
+          "learn": "Stub the model in unit tests, keep a small live eval for real quality. Level Up's tests already stub Gemini.",
+          "links": [
+            [
+              "Claude cookbooks",
+              "https://github.com/anthropics/claude-cookbooks"
+            ]
+          ],
+          "build": "Read test/gemini.test.js in Level Up and add one test for a new failure mode (e.g. empty response).",
+          "check": "What belongs in unit tests vs in evals?"
+        },
+        {
+          "id": "L10-4",
+          "title": "LLM security",
+          "minutes": 45,
+          "learn": "Prompt injection, data leakage, insecure output handling, excessive agency. Never let model output run code or SQL unchecked.",
+          "links": [
+            [
+              "OWASP Top 10 for LLM applications",
+              "https://genai.owasp.org/llm-top-10/"
+            ]
+          ],
+          "build": "Threat-model Level Up's Telegram bot: what could a malicious photo caption try to make the AI do? What stops it?",
+          "check": "What is prompt injection, in one example?"
+        },
+        {
+          "id": "L10-5",
+          "title": "Checkpoint: an eval report",
+          "minutes": 60,
+          "learn": "Evidence beats claims, in interviews and with customers.",
+          "links": [
+            [
+              "Hamel Husain: evals",
+              "https://hamel.dev/blog/posts/evals/"
+            ]
+          ],
+          "build": "Publish a short eval report for one feature (pass rate before/after a prompt change) as a LinkedIn post with the numbers.",
+          "check": "Could someone reproduce your eval from your write-up?"
+        }
+      ]
+    },
+    {
+      "n": 11,
+      "title": "Deploy and run in production",
+      "goal": "Ship AI services with FastAPI, Docker and a cloud platform, and watch them.",
+      "lessons": [
+        {
+          "title": "APIs with FastAPI",
+          "minutes": 60,
+          "learn": "The standard way to serve Python AI features: typed endpoints with Pydantic, automatic docs, async support.",
+          "links": [
+            [
+              "FastAPI tutorial",
+              "https://fastapi.tiangolo.com/tutorial/"
+            ]
+          ],
+          "build": "Wrap your \"Ask my notes\" logic as a FastAPI service with one POST /ask endpoint and test it in the auto-generated docs page.",
+          "check": "What does FastAPI generate for you from type hints?",
+          "id": "L11-1"
+        },
+        {
+          "id": "L11-2",
+          "title": "Packaging and deployment",
+          "minutes": 60,
+          "learn": "Containers make 'works on my machine' work everywhere, which matters a lot when you deploy on a customer's infrastructure.",
+          "links": [
+            [
+              "Docker: get started",
+              "https://docs.docker.com/get-started/"
+            ]
+          ],
+          "build": "Write a Dockerfile for the linkedin-mcp server and run it locally.",
+          "check": "What has to change when an app moves from your laptop to a customer's cloud?"
+        },
+        {
+          "title": "Deploy to a cloud platform",
+          "minutes": 60,
+          "learn": "Run a container in the cloud with HTTPS, scaling and secrets. Cloud Run is a simple pay-per-use option with a free tier.",
+          "links": [
+            [
+              "Google Cloud Run quickstarts",
+              "https://docs.cloud.google.com/run/docs/quickstarts?hl=en"
+            ]
+          ],
+          "build": "Deploy your FastAPI container to Cloud Run (stay in the free tier), keep the API key in Secret Manager, and call it from your phone.",
+          "check": "Where should an API key live in a deployed service, and where must it never be?",
+          "id": "L11-3"
+        },
+        {
+          "id": "L11-4",
+          "title": "Observability and tracing",
+          "minutes": 45,
+          "learn": "Log prompts, outputs, latency, tokens and errors per call so you can debug and improve. Tools like Langfuse do this.",
+          "links": [
+            [
+              "Langfuse docs",
+              "https://langfuse.com/docs"
+            ]
+          ],
+          "build": "Add a small 'AI calls' log table to Level Up (feature, model, ms, ok/error) and a weekly count on Insights.",
+          "check": "Which 3 numbers would you watch daily for an AI feature?"
+        },
+        {
+          "id": "L11-5",
+          "title": "Cost and latency engineering",
+          "minutes": 45,
+          "learn": "Smaller models for easy steps, caching, batching, streaming, timeouts and fallbacks. You already use thinking levels and model fallback.",
+          "links": [
+            [
+              "Gemini: context caching",
+              "https://ai.google.dev/gemini-api/docs/caching?hl=en"
+            ],
+            [
+              "Gemini: thinking",
+              "https://ai.google.dev/gemini-api/docs/thinking?hl=en"
+            ]
+          ],
+          "build": "Find the most expensive AI call in Level Up (by tokens) and cut it by 30% without losing quality (shorter context, smaller model, cache).",
+          "check": "What are two ways to make an AI feature cheaper?"
+        },
+        {
+          "id": "L11-6",
+          "title": "Real-time and streaming",
+          "minutes": 45,
+          "learn": "Stream tokens to the UI so users see progress; real-time voice/video APIs for live assistants.",
+          "links": [
+            [
+              "Gemini Live API",
+              "https://ai.google.dev/gemini-api/docs/live-api?hl=en"
+            ]
+          ],
+          "build": "Stream the mentor's answer token by token into the Level Up chat.",
+          "check": "Why does streaming feel faster even when total time is the same?"
+        },
+        {
+          "id": "L11-7",
+          "title": "Checkpoint: production readiness review",
+          "minutes": 60,
+          "learn": "Before launch: evals pass, errors are handled, costs are capped, logs exist, secrets are safe, a human approves risky actions.",
+          "links": [
+            [
+              "OWASP Top 10 for LLM applications",
+              "https://genai.owasp.org/llm-top-10/"
+            ]
+          ],
+          "build": "Write a one-page launch checklist for 'Ask my notes' and tick it honestly.",
+          "check": "Which item on your checklist is weakest, and what's the fix?"
+        }
+      ]
+    },
+    {
+      "n": 12,
+      "title": "Fine-tuning and open models",
+      "goal": "Customise small open models with LoRA and know when it's worth it.",
+      "lessons": [
+        {
+          "id": "L12-1",
+          "title": "Hugging Face and open models",
+          "minutes": 60,
+          "learn": "The open-model ecosystem: model hub, transformers library, tokenizers, running small models locally.",
+          "links": [
+            [
+              "Hugging Face LLM course",
+              "https://huggingface.co/learn/llm-course/chapter1/1"
+            ]
+          ],
+          "build": "Run a small open model locally (or in a free notebook) and compare its answer to Gemini's on one Level Up prompt.",
+          "check": "When would a company choose an open model over an API?"
+        },
+        {
+          "id": "L12-2",
+          "title": "Fine-tuning vs prompting vs RAG",
+          "minutes": 45,
+          "learn": "Prompting first, RAG for knowledge, fine-tuning for style/format/behaviour at scale. Fine-tuning rarely adds new facts well.",
+          "links": [
+            [
+              "Gemini: model tuning",
+              "https://ai.google.dev/gemini-api/docs/model-tuning?hl=en"
+            ]
+          ],
+          "build": "For each Level Up AI feature, decide: prompt, RAG or fine-tune? Justify one in a paragraph.",
+          "check": "Why is RAG usually better than fine-tuning for company knowledge?"
+        },
+        {
+          "id": "L12-3",
+          "title": "LoRA fine-tuning on a small open model",
+          "minutes": 60,
+          "learn": "LoRA trains a small set of extra weights on a small open model: cheap enough for a free notebook GPU.",
+          "links": [
+            [
+              "Hugging Face PEFT docs",
+              "https://huggingface.co/docs/peft/index"
+            ],
+            [
+              "Unsloth docs (fast LoRA on free GPUs)",
+              "https://unsloth.ai/docs"
+            ]
+          ],
+          "build": "Fine-tune a small open model with LoRA on 100–300 examples of your own post style; compare outputs before and after on 5 prompts.",
+          "check": "What does LoRA change, and what stays frozen?"
+        }
+      ]
+    },
+    {
+      "n": 13,
+      "title": "Forward Deployed Engineer (FDE) skills",
+      "goal": "Take a messy customer problem to a working AI solution, fast.",
+      "lessons": [
+        {
+          "id": "L13-1",
+          "title": "What an FDE does",
+          "minutes": 30,
+          "learn": "FDEs sit with customers, find the real problem, build and deploy the solution on the customer's data and systems, and feed lessons back to the product team.",
+          "links": [
+            [
+              "The Pragmatic Engineer: Forward deployed engineers",
+              "https://newsletter.pragmaticengineer.com/p/forward-deployed-engineers"
+            ]
+          ],
+          "build": "Write down 3 FDE skills you already have (e.g. full-stack, data import, explaining tech) and 3 gaps.",
+          "check": "How is an FDE different from a solutions engineer or a regular SWE?"
+        },
+        {
+          "id": "L13-2",
+          "title": "Discovery: finding the real problem",
+          "minutes": 45,
+          "learn": "Ask about the workflow, the cost of the problem today, who uses it, what data exists, and what 'done' means. Write it down and confirm it.",
+          "links": [
+            [
+              "Google: Technical writing courses",
+              "https://developers.google.com/tech-writing"
+            ]
+          ],
+          "build": "Mock brief: 'A clinic wants patients to book appointments on WhatsApp.' Write 10 discovery questions and a 1-page problem statement.",
+          "check": "What's the difference between what a customer asks for and what they need?"
+        },
+        {
+          "id": "L13-3",
+          "title": "Messy data and integration",
+          "minutes": 60,
+          "learn": "Real customer data is CSVs, spreadsheets, old databases and APIs. Map it, clean it, dedupe it, and keep an import history.",
+          "links": [
+            [
+              "pgvector (if the data feeds search)",
+              "https://github.com/pgvector/pgvector"
+            ]
+          ],
+          "build": "Re-read how Level Up imports Connections.csv (match by URL → email → name + company, fill only empty fields, detect moves). Explain it as if to a customer.",
+          "check": "Why should an import never overwrite data a user typed by hand?"
+        },
+        {
+          "id": "L13-4",
+          "title": "A proof of concept in a week",
+          "minutes": 90,
+          "learn": "Scope ruthlessly: one workflow, one user, real data, a demo that shows value. Say clearly what's out of scope.",
+          "links": [
+            [
+              "Anthropic: Building effective agents",
+              "https://www.anthropic.com/engineering/building-effective-agents"
+            ]
+          ],
+          "build": "Build the clinic POC as a small page: patient message → AI extracts date/time/doctor (structured output) → staff approves → booking saved.",
+          "check": "What did you deliberately leave out of your POC, and why?"
+        },
+        {
+          "id": "L13-5",
+          "title": "Checkpoint: demo and solution doc",
+          "minutes": 60,
+          "learn": "FDEs win with clear demos and short written docs: problem, solution, results, risks, next steps.",
+          "links": [
+            [
+              "Google: Technical writing courses",
+              "https://developers.google.com/tech-writing"
+            ]
+          ],
+          "build": "Record a 3-minute screen demo of your POC and write a 1-page solution doc. Both go in your portfolio; the demo makes a strong LinkedIn post.",
+          "check": "Could a busy manager understand your doc in 2 minutes?"
+        }
+      ]
+    },
+    {
+      "n": 14,
+      "title": "Portfolio, open source and getting hired",
+      "goal": "Show your work publicly and land an AI engineer role.",
+      "lessons": [
+        {
+          "title": "3–4 portfolio projects on GitHub",
+          "minutes": 90,
+          "learn": "Pick your strongest builds (RAG app, agent team with harness, FastAPI service, FDE POC). Each repo gets a clear README: problem, demo, architecture, evals, how to run.",
+          "links": [
+            [
+              "GitHub: managing your profile README",
+              "https://docs.github.com/en/account-and-profile/how-tos/profile-customization/managing-your-profile-readme"
+            ]
+          ],
+          "build": "Publish your first AI project repo with a README, a screenshot/GIF and an eval result; add a profile README linking all projects.",
+          "check": "Could a recruiter understand what your project does in 30 seconds from the README?",
+          "id": "L14-1"
+        },
+        {
+          "title": "Write about what you build",
+          "minutes": 45,
+          "learn": "Short, specific write-ups (LinkedIn posts, a blog, READMEs) turn projects into proof. Use real numbers from your evals and builds.",
+          "links": [
+            [
+              "Google: Technical writing courses",
+              "https://developers.google.com/tech-writing"
+            ]
+          ],
+          "build": "Turn one project into a LinkedIn post (use LinkedIn → Posts with the \"Building real products\" pillar) and a longer write-up in the repo.",
+          "check": "What one number best shows the impact of your project?",
+          "id": "L14-2"
+        },
+        {
+          "title": "Contribute to open source",
+          "minutes": 60,
+          "learn": "Start small: docs fixes, tests, small bugs in AI libraries you use. It builds skill, network and credibility.",
+          "links": [
+            [
+              "First Contributions (practice repo)",
+              "https://github.com/firstcontributions/first-contributions"
+            ],
+            [
+              "Good First Issue",
+              "https://goodfirstissue.dev/"
+            ],
+            [
+              "Open Source Guides: How to contribute",
+              "https://opensource.guide/how-to-contribute/"
+            ]
+          ],
+          "build": "Make the practice contribution, then open one real pull request (docs or test) on an AI library you used in this roadmap.",
+          "check": "What makes a first pull request likely to be accepted?",
+          "id": "L14-3"
+        },
+        {
+          "id": "L14-4",
+          "title": "Checkpoint: your AI portfolio",
+          "minutes": 60,
+          "learn": "Bring it together for interviews: 3 AI features you built, their evals, a POC with a solution doc, and posts that explain them.",
+          "links": [
+            [
+              "DeepLearning.AI courses (keep learning)",
+              "https://www.deeplearning.ai/courses"
+            ]
+          ],
+          "build": "Write your 'AI projects' resume section and a pinned LinkedIn post summarising what you built, with numbers.",
+          "check": "Can you explain each project's hardest decision in 60 seconds?"
+        },
+        {
+          "title": "Apply for AI engineer roles",
+          "minutes": 60,
+          "learn": "Target AI engineer / applied AI / FDE roles; lead with your projects and evals; ask for referrals before applying.",
+          "links": [
+            [
+              "DeepLearning.AI courses (keep learning)",
+              "https://www.deeplearning.ai/courses"
+            ]
+          ],
+          "build": "In Level Up: Referrals → Jobs, search \"AI\" / \"machine learning\" roles, add 5 to your pipeline, and ask one contact per company for a referral.",
+          "check": "Which of your projects best matches the job you most want, and why?",
+          "id": "L14-5"
+        }
+      ]
+    }
+  ],
+  "feeds": [
+    [
+      "OpenAI",
+      "https://openai.com/news/rss.xml"
+    ],
+    [
+      "Google DeepMind",
+      "https://deepmind.google/blog/rss.xml"
+    ],
+    [
+      "Google AI blog",
+      "https://blog.google/innovation-and-ai/technology/ai/rss/"
+    ],
+    [
+      "Google for Developers",
+      "https://developers.googleblog.com/feeds/posts/default/"
+    ],
+    [
+      "Hugging Face",
+      "https://huggingface.co/blog/feed.xml"
+    ],
+    [
+      "Simon Willison",
+      "https://simonwillison.net/atom/everything/"
+    ],
+    [
+      "Latent Space",
+      "https://www.latent.space/feed"
+    ],
+    [
+      "The Pragmatic Engineer",
+      "https://newsletter.pragmaticengineer.com/feed"
+    ]
+  ]
+}

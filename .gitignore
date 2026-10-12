@@ -1,0 +1,9 @@
+node_modules/
+client/dist/
+# secrets + personal data
+server/.env
+server/uploads/
+logs/
+
+# docker compose secrets (DB_PASSWORD, TS_AUTHKEY)
+.env

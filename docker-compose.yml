@@ -1,0 +1,70 @@
+# Level Up on Docker: SQL Server Express + the app + a Tailscale sidecar (private HTTPS address for your phone).
+#   Setup and commands: README → "Run it in Docker (phone access from anywhere)".
+#   Secrets come from tracker/.env (DB_PASSWORD, TS_AUTHKEY) and server/.env (Gemini, Telegram…): never baked into the image.
+#   Phone access is optional: COMPOSE_PROFILES=phone in tracker/.env starts the Tailscale sidecar. The app runs fine without it.
+name: levelup
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Express            # free edition, licensed for real use (10 GB per database: plenty here)
+      MSSQL_SA_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in tracker/.env (see .env.docker.example)}
+      MSSQL_MEMORY_LIMIT_MB: "1536"
+      TZ: ${TZ:-Asia/Kolkata}
+    volumes:
+      - mssql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q 'SELECT 1' -b -o /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    restart: unless-stopped
+
+  # Optional: joins your private Tailscale network as "levelup" and serves the app at https://levelup.<your-tailnet>.ts.net
+  tailscale:
+    image: tailscale/tailscale:latest
+    profiles: ["phone"]
+    hostname: levelup
+    environment:
+      TS_AUTHKEY: ${TS_AUTHKEY:-}
+      TS_HOSTNAME: levelup
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_USERSPACE: "true"
+      TS_SERVE_CONFIG: /config/serve.json
+    volumes:
+      - tailscale-state:/var/lib/tailscale
+      - ./docker/tailscale:/config:ro
+    depends_on:
+      - app
+    restart: unless-stopped
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${APP_PORT:-4000}:4000"   # this laptop: http://localhost:4000 (not reachable from other machines)
+      - "127.0.0.1:3999:3999"                # LinkedIn login callback (Connect LinkedIn from this laptop)
+    env_file:
+      - server/.env
+    environment:
+      DB_SERVER: db
+      DB_USER: sa
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: DSATracker
+      PORT: "4000"
+      LEVELUP_DOCKER: "1"
+      LEVELUP_NO_JOBS: ${LEVELUP_NO_JOBS:-0}
+      TZ: ${TZ:-Asia/Kolkata}         # days run local midnight to midnight (streaks, meals, the plan)
+    volumes:
+      - ./server/uploads:/app/tracker/server/uploads   # meal + progress photos stay in your folder
+      - ../linkedin-mcp:/app/linkedin-mcp              # LinkedIn MCP server + its keys/login, as today
+    restart: unless-stopped
+
+volumes:
+  mssql-data:
+  tailscale-state:

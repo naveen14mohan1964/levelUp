@@ -1,0 +1,130 @@
+// How-to for every move in WORKOUT_PLAN.md: 3 form cues + an optional demo (start/end frames from the public-domain
+// free-exercise-db, github.com/yuhonas/free-exercise-db, Unlicense; downloaded into client/public/exercises by
+// scripts/fetch-exercise-demos.js). A demo is used ONLY when the photo shows your exact move (checked by eye); otherwise
+// the move has cues + a video link. `similar: true` = same move holding a different weight (kettlebell vs backpack).
+// Rules are checked in order, so the specific ones (pike push-up, side plank, single-leg bridge) come before general ones.
+
+const GUIDE = [
+  { match: /march in place/, demo: null, q: 'march in place exercise',
+    cues: ['Stand tall and lift one knee toward hip height', 'Swing the opposite arm with each step', 'Land softly and breathe steadily'] },
+  { match: /arm circles/, demo: 'Arm_Circles', q: 'arm circles warm up',
+    cues: ['Arms straight out to the sides at shoulder height', 'Small circles first, then bigger ones', 'Shoulders down, away from your ears'] },
+  { match: /hip circles/, demo: null, q: 'standing hip circles warm up',
+    cues: ['Hands on hips, feet hip-width apart', 'Draw slow, wide circles with your hips', 'Keep your upper body still'] },
+  { match: /good-morning|hip hinge/, demo: null, q: 'bodyweight good morning hip hinge',
+    cues: ['Soft knees, hands on chest or behind head', 'Push your hips BACK with a flat back until you feel your hamstrings', 'Squeeze your glutes to stand tall'] },
+  { match: /goblet squat/, demo: 'Goblet_Squat', similar: true, q: 'backpack goblet squat',
+    note: 'The demo uses a kettlebell; hug a backpack (5–8 kg of books) against your chest instead.',
+    cues: ['Hug the weight against your chest', 'Sit down between your knees, chest tall', 'Heels stay down; drive up through your whole foot'] },
+  { match: /sit-to-stand|squat to a chair|tempo squat|bodyweight squat/, demo: 'Bodyweight_Squat', q: 'chair squat sit to stand form',
+    note: 'Start by touching a chair with your hips each rep; tempo squats take 3 s on the way down.',
+    cues: ['Feet shoulder-width, toes slightly out', 'Sit back and down, knees tracking over your toes', 'Push through your whole foot to stand; chest up'] },
+  { match: /cat.cow/, demo: 'Cat_Stretch', q: 'cat cow stretch',
+    cues: ['On hands and knees, hands under shoulders', 'Breathe in: drop your belly, lift your chest (cow)', 'Breathe out: round your back up (cat)'] },
+  { match: /quad stretch/, demo: null, q: 'standing quad stretch',
+    cues: ['Hold a wall for balance', 'Pull your heel toward your glute, knees together', 'Tuck your hips slightly; hold, no bouncing'] },
+  { match: /hamstring stretch/, demo: null, q: 'standing hamstring stretch heel on step',
+    cues: ['Heel on a low step, leg straight, toes up', 'Hinge forward from the hips with a flat back', 'Stop at a gentle stretch behind the thigh'] },
+  { match: /hip-flexor stretch|hip flexor stretch/, demo: 'Kneeling_Hip_Flexor', q: 'kneeling hip flexor stretch',
+    cues: ['Kneel on one knee (cushion under it), other foot in front', 'Tuck your hips and squeeze the back glute', 'Shift forward gently until the front of the hip stretches'] },
+  { match: /chest stretch/, demo: null, q: 'doorway chest stretch',
+    cues: ['Forearms on the door frame, elbows at shoulder height', 'Step one foot through until your chest opens', 'Ribs down; don\'t arch your lower back'] },
+  { match: /child'?s pose/, demo: 'Childs_Pose', q: 'child pose stretch',
+    cues: ['Kneel, big toes together, knees apart', 'Sit back toward your heels, arms long in front', 'Let your forehead rest down and breathe slowly'] },
+  { match: /pike push-up/, demo: null, q: 'incline pike push up chair',
+    cues: ['Hands on a chair, hips high (an upside-down V)', 'Bend your elbows to bring your head toward the chair', 'Press back up; elbows don\'t flare wide'] },
+  { match: /^wall push-up/, demo: null, anim: 'wall-push-up', q: 'wall push up form beginner',
+    note: 'Next step: hands on the kitchen counter (incline push-up).',
+    cues: ['Hands on the wall at shoulder height, a bit wider than shoulders', 'Step back so your body leans in one straight line', 'Bend your elbows to bring your chest to the wall, then push away'] },
+  { match: /(wall|incline)[^,]*push-up/, demo: 'Incline_Push-Up', q: 'incline push up form beginner',
+    note: 'Higher surface = easier: wall → kitchen counter → table → chair → floor.',
+    cues: ['Hands a bit wider than shoulders on the edge', 'One straight line from head to heels', 'Lower your chest to the edge, elbows ~45°, then push away'] },
+  { match: /push-up/, demo: 'Pushups', q: 'knee push up to push up form',
+    note: 'From the knees until you can do 8 clean reps from the toes.',
+    cues: ['Hands under shoulders, body straight (from knees or toes)', 'Lower your chest to a fist above the floor', 'Elbows ~45° from your body; push the floor away'] },
+  { match: /single-leg glute bridge/, demo: 'Single_Leg_Glute_Bridge', q: 'single leg glute bridge',
+    cues: ['On your back, one foot down, other leg up', 'Drive through the planted heel to lift your hips', 'Keep hips level; lower slowly'] },
+  { match: /glute bridge/, demo: 'Butt_Lift_Bridge', q: 'glute bridge form',
+    cues: ['On your back, knees bent, feet hip-width', 'Drive through your heels and squeeze glutes to lift', 'Ribs down; shoulders, hips and knees in a line at the top'] },
+  { match: /hip thrust/, demo: null, q: 'bodyweight hip thrust on couch',
+    cues: ['Upper back on the sofa edge, feet flat', 'Tuck your chin and drive hips up through your heels', 'Squeeze for 1 s at the top; don\'t arch your back'] },
+  { match: /bird dog/, demo: null, anim: 'bird-dog', q: 'bird dog exercise form',
+    cues: ['On hands and knees, hands under shoulders', 'Reach the opposite arm and leg out long, hips level', 'Pause 2 s, return slowly, switch sides'] },
+  { match: /calf raise/, demo: null, anim: 'calf-raise', q: 'standing calf raise bodyweight',
+    cues: ['Stand tall, fingertips on a wall', 'Rise onto the balls of your feet as high as you can', 'Lower slowly over 2 s'] },
+  { match: /dead bug/, demo: 'Dead_Bug', q: 'dead bug exercise form',
+    cues: ['On your back, arms up, knees over hips at 90°', 'Press your lower back into the floor the whole time', 'Slowly lower the opposite arm and leg, then switch'] },
+  { match: /wall sit/, demo: null, q: 'wall sit form',
+    cues: ['Back flat against the wall, slide down', 'Knees over ankles, thighs toward parallel (higher is fine)', 'Breathe and press your back into the wall'] },
+  { match: /reverse lunge/, demo: null, q: 'supported reverse lunge chair',
+    cues: ['Stand tall, one hand on a chair', 'Step one foot back and lower the back knee toward the floor', 'Push through the front heel to return'] },
+  { match: /bulgarian split squat/, demo: null, q: 'bulgarian split squat beginner',
+    cues: ['Rear foot laces-down on a chair, front foot a big step ahead', 'Lower straight down until the front thigh is near parallel', 'Front knee over toes; drive up through the front heel'] },
+  { match: /split squat/, demo: 'Split_Squats', q: 'split squat form',
+    cues: ['Staggered stance, one hand on a chair', 'Drop the back knee straight down', 'Push up through the front foot'] },
+  { match: /shoulder taps/, demo: null, q: 'plank shoulder taps',
+    cues: ['High plank, feet wider for balance', 'Tap the opposite shoulder without rocking your hips', 'Slow and controlled'] },
+  { match: /side plank/, demo: 'Side_Bridge', q: 'side plank beginner knees',
+    cues: ['Elbow under shoulder, hips stacked', 'Lift hips so your body is a straight line (knees down to start)', 'Don\'t let your hips sag; breathe'] },
+  { match: /plank/, demo: 'Plank', q: 'plank form beginner',
+    note: 'Easier: hands on a table, or knees down. Harder: forearms, from the toes.',
+    cues: ['Forearms or hands under shoulders', 'Squeeze glutes and brace your abs: one straight line', 'Hips don\'t sag or pike; keep breathing'] },
+  { match: /bear hold/, demo: null, q: 'bear hold exercise',
+    cues: ['Hands under shoulders, knees under hips, toes tucked', 'Lift your knees 2–3 cm off the floor', 'Back flat, breathe, hold'] },
+  { match: /y-raise/, demo: null, q: 'prone y raise',
+    cues: ['Face down, arms overhead in a Y, thumbs up', 'Lift your arms a few cm by squeezing between your shoulder blades', 'Neck long, eyes on the floor'] },
+  { match: /face pull/, demo: null, q: 'resistance band face pull',
+    note: 'Anchor the band in the door at face height.',
+    cues: ['Band anchored at face height, palms down', 'Pull toward your forehead, elbows high and wide', 'Squeeze your upper back, return slowly'] },
+  { match: /pull-apart/, demo: 'Band_Pull_Apart', q: 'band pull apart',
+    cues: ['Arms straight in front at shoulder height', 'Pull the band apart until it touches your chest', 'Shoulders down; return slowly'] },
+  { match: /bent-over row/, demo: null, q: 'resistance band bent over row',
+    cues: ['Stand on the band, hinge forward with a flat back', 'Pull the handles to your lower ribs, elbows close', 'Squeeze your shoulder blades; lower slowly'] },
+  { match: /band row/, demo: null, q: 'resistance band row door anchor',
+    note: 'Anchor the band in the door at chest height and stand facing it.',
+    cues: ['Band at chest height, arms straight, step back for tension', 'Pull elbows back past your ribs, chest tall', 'Squeeze shoulder blades for 1 s, return slowly'] },
+  { match: /overhead press/, demo: 'Shoulder_Press_-_With_Bands', q: 'resistance band overhead press',
+    cues: ['Stand on the band, handles at your shoulders', 'Press straight up until your arms are by your ears', 'Ribs down; don\'t lean back'] },
+  { match: /single-leg rdl/, demo: null, q: 'single leg rdl beginner wall',
+    note: 'No weight: fingertips on a wall for balance.',
+    cues: ['Fingertips on a wall, weight on one leg', 'Hinge forward as the other leg reaches back, hips square', 'Stop at a hamstring stretch; squeeze the glute to stand'] },
+  { match: /romanian deadlift/, demo: null, q: 'resistance band romanian deadlift',
+    note: 'Stand on the middle of the band and hold the handles.',
+    cues: ['Stand on the band, soft knees', 'Push your hips back with a flat back, hands slide down your thighs', 'Squeeze your glutes to stand'] },
+  { match: /step-up/, demo: null, q: 'step up exercise stairs',
+    note: 'Bodyweight on a stair or low step; hold the rail if you need to.',
+    cues: ['Whole foot on the step', 'Drive up through that heel, don\'t push off the back foot', 'Step down slowly'] },
+  { match: /lateral walk/, demo: 'Monster_Walk', q: 'band lateral walk',
+    cues: ['Band around your legs, half-squat', 'Step sideways, keeping tension on the band', 'Feet never come together; stay low'] },
+  { match: /low-impact cardio/, demo: null, q: 'low impact cardio workout at home beginner',
+    cues: ['Pick one: brisk march, step-touch, shadow boxing or stairs', 'Talk test: you can talk, but you couldn\'t sing', 'Swap moves every 2–3 minutes to keep it fresh'] },
+  { match: /core finisher/, demo: null, q: 'beginner core workout dead bug plank',
+    cues: ['Do the moves in the prescription back to back', 'Quality over speed: lower back stays down', 'Rest 30 s between rounds'] },
+  { match: /mobility flow/, demo: null, q: 'beginner full body mobility routine',
+    cues: ['Flow through cat-cow, hip-flexor and chest stretches', 'Move slowly with long breaths', 'No bouncing; stay below pain'] },
+  { match: /brisk walk/, demo: null, q: 'brisk walking form',
+    cues: ['Walk tall, eyes ahead, arms swinging', 'Talk-test pace: a little out of breath', 'Hills or stairs count as a bonus'] },
+];
+
+const clean = (name) => name.toLowerCase().replace(/^[a-z]\d\s*·\s*/, '');
+
+/** How-to for an exercise name from the plan, or null. */
+function guideFor(name) {
+  const n = clean(name || '');
+  const g = GUIDE.find((x) => x.match.test(n));
+  if (!g) return null;
+  return {
+    demo: g.demo ? [`/exercises/${g.demo}/0.jpg`, `/exercises/${g.demo}/1.jpg`] : null,
+    demoName: g.demo ? g.demo.replace(/_-_/g, ' – ').replace(/_/g, ' ') : null,
+    similar: !!g.similar,
+    anim: g.anim || null, // animated stick-figure demo (client/src/lib/moves.js) for moves without a matching photo
+    cues: g.cues,
+    note: g.note || null,
+    video: `https://www.youtube.com/results?search_query=${encodeURIComponent(`how to ${g.q} proper form`)}`,
+  };
+}
+
+/** Every demo id used (for the download script). */
+const DEMO_IDS = [...new Set(GUIDE.map((g) => g.demo).filter(Boolean))];
+
+module.exports = { guideFor, DEMO_IDS };

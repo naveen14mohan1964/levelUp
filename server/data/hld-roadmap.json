@@ -1,0 +1,813 @@
+{
+  "about": "High-level design (system design) from scratch to advanced: how the web works → load balancers, caches, CDNs → databases, replication, sharding, CAP → APIs, real-time, queues, idempotency → scaling and reliability → distributed-systems fundamentals → the interview framework → classic designs (URL shortener, feed, chat, video, Uber, payments) → production (observability, deploys, security, DR) → papers, design docs and mock interviews. Many builds apply the ideas to your own Level Up app. Links checked 2026-10-12.",
+  "levels": [
+    {
+      "n": 1,
+      "title": "How the web works",
+      "goal": "Know exactly what happens between a click and a response.",
+      "lessons": [
+        {
+          "title": "Client–server, DNS and HTTP",
+          "minutes": 45,
+          "learn": "A request goes through DNS, a TCP (and TLS) connection, an HTTP request and response. Every design sits on top of this.",
+          "links": [
+            [
+              "Wikipedia: Domain Name System",
+              "https://en.wikipedia.org/wiki/Domain_Name_System"
+            ],
+            [
+              "MDN: An overview of HTTP",
+              "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview"
+            ]
+          ],
+          "build": "Trace one request to your Level Up app in browser devtools: method, status, headers, timing breakdown; write it down step by step.",
+          "check": "What happens, step by step, when you type a URL and press Enter?",
+          "id": "HLD1-1"
+        },
+        {
+          "title": "TCP, TLS and HTTP/2 and 3",
+          "minutes": 45,
+          "learn": "Connections, handshakes, head-of-line blocking, and why HTTP/3 runs on QUIC.",
+          "links": [
+            [
+              "MDN: Transport Layer Security",
+              "https://developer.mozilla.org/en-US/docs/Web/Security/Transport_Layer_Security"
+            ],
+            [
+              "MDN: Evolution of HTTP",
+              "https://developer.mozilla.org/en-US/docs/Web/HTTP/Evolution_of_HTTP"
+            ]
+          ],
+          "build": "Make a table comparing HTTP/1.1, HTTP/2 and HTTP/3: connections, head-of-line blocking, transport.",
+          "check": "Why did HTTP/3 move to QUIC over UDP?",
+          "id": "HLD1-2"
+        },
+        {
+          "title": "Latency numbers and back-of-the-envelope estimates",
+          "minutes": 45,
+          "learn": "Rough numbers (memory vs disk vs network, QPS, storage) let you size a system in minutes.",
+          "links": [
+            [
+              "Latency numbers every programmer should know",
+              "https://gist.github.com/jboner/2841832"
+            ],
+            [
+              "The System Design Primer",
+              "https://github.com/donnemartin/system-design-primer"
+            ]
+          ],
+          "build": "Estimate storage and QPS for a 10M-user photo app (uploads per day, average size, read:write ratio) and show your maths.",
+          "check": "Roughly how much slower is a disk seek than a memory read?",
+          "id": "HLD1-3"
+        },
+        {
+          "title": "Checkpoint: draw Level Up's architecture",
+          "minutes": 45,
+          "learn": "Diagrams are how designs are communicated. The C4 model gives clear levels: context, containers, components.",
+          "links": [
+            [
+              "The C4 model",
+              "https://c4model.com/"
+            ],
+            [
+              "Excalidraw (free whiteboard)",
+              "https://excalidraw.com/"
+            ]
+          ],
+          "build": "Draw Level Up as a C4 container diagram: browser, Express API, SQL Server, PM2, Telegram, Gemini, LinkedIn, job boards.",
+          "check": "Which single component failing would hurt most, and why?",
+          "id": "HLD1-4"
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "title": "Core building blocks",
+      "goal": "Know the boxes every design is built from.",
+      "lessons": [
+        {
+          "title": "Load balancers and reverse proxies",
+          "minutes": 45,
+          "learn": "Spread traffic across servers (round robin, least connections), health checks, and layer 4 vs layer 7.",
+          "links": [
+            [
+              "Wikipedia: Load balancing",
+              "https://en.wikipedia.org/wiki/Load_balancing_(computing)"
+            ],
+            [
+              "NGINX: HTTP load balancing",
+              "https://nginx.org/en/docs/http/load_balancing.html"
+            ]
+          ],
+          "build": "Run two copies of a small Node server behind nginx in Docker with round robin, kill one, and watch traffic shift.",
+          "check": "Layer 4 vs layer 7 load balancing: what can each one see?",
+          "id": "HLD2-1"
+        },
+        {
+          "title": "Caching",
+          "minutes": 45,
+          "learn": "Cache-aside, write-through, TTLs and eviction. The hard part is invalidation.",
+          "links": [
+            [
+              "AWS: Caching best practices",
+              "https://aws.amazon.com/caching/best-practices/"
+            ],
+            [
+              "Azure Architecture Center: Cache-Aside pattern",
+              "https://learn.microsoft.com/en-us/azure/architecture/patterns/cache-aside"
+            ]
+          ],
+          "build": "Add a 30-second in-memory cache to Level Up's GET /api/game (cache-aside), clear it on writes, and measure response time before and after.",
+          "check": "What's the hardest part of caching, and how did you handle it?",
+          "id": "HLD2-2"
+        },
+        {
+          "title": "CDNs and object storage",
+          "minutes": 30,
+          "learn": "Static files and media belong in object storage behind a CDN, close to users.",
+          "links": [
+            [
+              "MDN: CDN",
+              "https://developer.mozilla.org/en-US/docs/Glossary/CDN"
+            ],
+            [
+              "AWS: What is Amazon S3?",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+            ]
+          ],
+          "build": "Sketch where Level Up's meal photos would live at scale: object storage, a CDN and signed URLs.",
+          "check": "Why serve images from a CDN instead of your API servers?",
+          "id": "HLD2-3"
+        },
+        {
+          "title": "API gateways and service discovery",
+          "minutes": 30,
+          "learn": "One entry point for routing, auth, rate limits and TLS in front of many services.",
+          "links": [
+            [
+              "microservices.io: API gateway",
+              "https://microservices.io/patterns/apigateway.html"
+            ],
+            [
+              "Azure Architecture Center: Gateway Routing pattern",
+              "https://learn.microsoft.com/en-us/azure/architecture/patterns/gateway-routing"
+            ]
+          ],
+          "build": "List what an API gateway would handle if Level Up were split into 4 services (auth, rate limits, routing, TLS).",
+          "check": "What's the risk of putting too much logic in the gateway?",
+          "id": "HLD2-4"
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "title": "Data at scale",
+      "goal": "Choose the right database and scale it.",
+      "lessons": [
+        {
+          "title": "SQL vs NoSQL and data modelling",
+          "minutes": 45,
+          "learn": "Relational models for consistency and joins; document, key-value, wide-column and graph stores for other access patterns.",
+          "links": [
+            [
+              "The System Design Primer",
+              "https://github.com/donnemartin/system-design-primer"
+            ],
+            [
+              "MongoDB: Data modelling",
+              "https://www.mongodb.com/docs/manual/data-modeling/"
+            ]
+          ],
+          "build": "Model Level Up's meals in SQL and as documents; list 3 queries and which model serves each better.",
+          "check": "When is a relational database the wrong choice?",
+          "id": "HLD3-1"
+        },
+        {
+          "title": "Indexes and query performance",
+          "minutes": 45,
+          "learn": "B-tree indexes, covering indexes and execution plans: most \"slow database\" problems are missing or wrong indexes.",
+          "links": [
+            [
+              "Use The Index, Luke!",
+              "https://use-the-index-luke.com/"
+            ]
+          ],
+          "build": "Find the slowest Level Up query with SQL Server's execution plan, add an index, and compare logical reads.",
+          "check": "Why can an index make writes slower?",
+          "id": "HLD3-2"
+        },
+        {
+          "title": "Replication and consistency",
+          "minutes": 45,
+          "learn": "Leader–follower, multi-leader and leaderless replication, replication lag, and consistency models.",
+          "links": [
+            [
+              "Jepsen: Consistency models",
+              "https://jepsen.io/consistency"
+            ],
+            [
+              "The System Design Primer",
+              "https://github.com/donnemartin/system-design-primer"
+            ]
+          ],
+          "build": "Explain leader–follower, multi-leader and leaderless replication with one real database example each.",
+          "check": "What is replication lag, and how can a user notice it?",
+          "id": "HLD3-3"
+        },
+        {
+          "title": "Sharding and consistent hashing",
+          "minutes": 60,
+          "learn": "Split data across machines by key; consistent hashing keeps reshuffling small when nodes change.",
+          "links": [
+            [
+              "Wikipedia: Consistent hashing",
+              "https://en.wikipedia.org/wiki/Consistent_hashing"
+            ],
+            [
+              "Azure Architecture Center: Sharding pattern",
+              "https://learn.microsoft.com/en-us/azure/architecture/patterns/sharding"
+            ]
+          ],
+          "build": "Implement consistent hashing with virtual nodes; add and remove a node and measure how many keys move.",
+          "check": "Why do virtual nodes improve consistent hashing?",
+          "id": "HLD3-4"
+        },
+        {
+          "title": "CAP, PACELC and transactions",
+          "minutes": 45,
+          "learn": "During a partition you choose consistency or availability; otherwise latency vs consistency. ACID vs BASE.",
+          "links": [
+            [
+              "Wikipedia: CAP theorem",
+              "https://en.wikipedia.org/wiki/CAP_theorem"
+            ],
+            [
+              "Wikipedia: PACELC theorem",
+              "https://en.wikipedia.org/wiki/PACELC_theorem"
+            ]
+          ],
+          "build": "Classify SQL Server, Cassandra, DynamoDB and MongoDB by their CAP/PACELC choices, with a one-line reason each.",
+          "check": "During a network partition, what does a CP system give up?",
+          "id": "HLD3-5"
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "title": "Communication between services",
+      "goal": "Connect services reliably.",
+      "lessons": [
+        {
+          "title": "REST, gRPC and GraphQL",
+          "minutes": 45,
+          "learn": "Three API styles with different trade-offs in payload size, typing, tooling and flexibility.",
+          "links": [
+            [
+              "gRPC: Introduction",
+              "https://grpc.io/docs/what-is-grpc/introduction/"
+            ],
+            [
+              "GraphQL: Learn",
+              "https://graphql.org/learn/"
+            ]
+          ],
+          "build": "Design the same \"get today's plan\" API as REST, gRPC (a .proto file) and GraphQL; compare payloads and versioning.",
+          "check": "When would you choose gRPC over REST?",
+          "id": "HLD4-1"
+        },
+        {
+          "title": "Real-time: polling, SSE and WebSockets",
+          "minutes": 45,
+          "learn": "Short polling, long polling, server-sent events and WebSockets: pick by direction and scale.",
+          "links": [
+            [
+              "MDN: WebSockets API",
+              "https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API"
+            ],
+            [
+              "MDN: Server-sent events",
+              "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events"
+            ]
+          ],
+          "build": "Push the focus-timer state from Level Up's server to the browser with Server-Sent Events instead of polling.",
+          "check": "Why do WebSockets complicate load balancing?",
+          "id": "HLD4-2"
+        },
+        {
+          "title": "Message queues and pub/sub",
+          "minutes": 60,
+          "learn": "Queues decouple producers from consumers and absorb spikes; pub/sub fans one event out to many subscribers.",
+          "links": [
+            [
+              "Apache Kafka: Introduction",
+              "https://kafka.apache.org/intro"
+            ],
+            [
+              "RabbitMQ tutorials",
+              "https://www.rabbitmq.com/tutorials"
+            ]
+          ],
+          "build": "Run Kafka or RabbitMQ in Docker; publish \"meal logged\" events and consume them in two services (totals, notifications).",
+          "check": "Queue vs pub/sub: who receives each message?",
+          "id": "HLD4-3"
+        },
+        {
+          "title": "Idempotency, retries and delivery guarantees",
+          "minutes": 45,
+          "learn": "Networks fail, so clients retry; idempotency keys make retries safe. At-least-once plus idempotency beats chasing exactly-once.",
+          "links": [
+            [
+              "Stripe: Designing robust APIs with idempotency",
+              "https://stripe.com/blog/idempotency"
+            ],
+            [
+              "AWS Builders' Library: Timeouts, retries and backoff with jitter",
+              "https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/"
+            ]
+          ],
+          "build": "Add an Idempotency-Key to one Level Up POST so a retried request never logs a meal twice, and test it.",
+          "check": "Why is \"exactly-once delivery\" mostly a myth?",
+          "id": "HLD4-4"
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "title": "Scalability and reliability",
+      "goal": "Stay fast and available under load and failure.",
+      "lessons": [
+        {
+          "title": "Horizontal scaling and stateless services",
+          "minutes": 30,
+          "learn": "Scale out by adding identical stateless servers; push state to databases, caches and object storage.",
+          "links": [
+            [
+              "The Twelve-Factor App",
+              "https://12factor.net/"
+            ],
+            [
+              "The System Design Primer",
+              "https://github.com/donnemartin/system-design-primer"
+            ]
+          ],
+          "build": "List what would stop Level Up running as 3 instances (in-process timers, local uploads, in-memory state) and how to fix each.",
+          "check": "Why must web servers be stateless to scale horizontally?",
+          "id": "HLD5-1"
+        },
+        {
+          "title": "Rate limiting and load shedding",
+          "minutes": 45,
+          "learn": "Protect services from overload: limit per client, and shed low-priority work before everything slows down.",
+          "links": [
+            [
+              "Stripe: Scaling your API with rate limiters",
+              "https://stripe.com/blog/rate-limiters"
+            ],
+            [
+              "AWS Builders' Library: Using load shedding to avoid overload",
+              "https://aws.amazon.com/builders-library/using-load-shedding-to-avoid-overload/"
+            ]
+          ],
+          "build": "Add a per-minute token-bucket limit to Level Up's Gemini-backed endpoints with a friendly 429 message.",
+          "check": "Where should rate limiting live: client, gateway or service?",
+          "id": "HLD5-2"
+        },
+        {
+          "title": "Circuit breakers, timeouts and bulkheads",
+          "minutes": 45,
+          "learn": "Fail fast when a dependency is down, isolate failures, and never wait forever.",
+          "links": [
+            [
+              "Azure Architecture Center: Circuit Breaker pattern",
+              "https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker"
+            ],
+            [
+              "Azure Architecture Center: Bulkhead pattern",
+              "https://learn.microsoft.com/en-us/azure/architecture/patterns/bulkhead"
+            ]
+          ],
+          "build": "Wrap Level Up's Gemini client in a circuit breaker (open after 3 failures, half-open after 60 s) and log its state changes.",
+          "check": "What does the half-open state protect against?",
+          "id": "HLD5-3"
+        },
+        {
+          "title": "SLIs, SLOs and error budgets",
+          "minutes": 45,
+          "learn": "Measure what users feel, set targets, and use the error budget to balance speed and stability.",
+          "links": [
+            [
+              "Google SRE book: Service level objectives",
+              "https://sre.google/sre-book/service-level-objectives/"
+            ]
+          ],
+          "build": "Define 2 SLIs and SLOs for Level Up (API latency, Telegram processing delay) and compute last week's values from the logs.",
+          "check": "What do you do when the error budget runs out?",
+          "id": "HLD5-4"
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "title": "Distributed systems fundamentals",
+      "goal": "Understand the hard problems under every big system.",
+      "lessons": [
+        {
+          "title": "Time, clocks and ordering",
+          "minutes": 45,
+          "learn": "Physical clocks drift; logical clocks (Lamport, vector) order events by causality.",
+          "links": [
+            [
+              "Martin Kleppmann: Distributed Systems lecture notes (Cambridge)",
+              "https://www.cl.cam.ac.uk/teaching/2122/ConcDisSys/dist-sys-notes.pdf"
+            ],
+            [
+              "Wikipedia: Lamport timestamp",
+              "https://en.wikipedia.org/wiki/Lamport_timestamp"
+            ]
+          ],
+          "build": "Implement Lamport clocks for 3 simulated nodes exchanging messages and print a causally ordered log.",
+          "check": "Why can't you trust wall-clock timestamps to order events across machines?",
+          "id": "HLD6-1"
+        },
+        {
+          "title": "Consensus and leader election",
+          "minutes": 60,
+          "learn": "Raft gets a cluster to agree on one log despite failures, using elections and majorities.",
+          "links": [
+            [
+              "Raft consensus algorithm (with visualisation)",
+              "https://raft.github.io/"
+            ]
+          ],
+          "build": "Play with the Raft visualisation, then explain leader election and log replication in 10 sentences in your notes.",
+          "check": "Why does Raft need a majority (quorum)?",
+          "id": "HLD6-2"
+        },
+        {
+          "title": "Distributed transactions: 2PC and sagas",
+          "minutes": 60,
+          "learn": "Two-phase commit blocks on failures; sagas use local transactions plus compensating actions.",
+          "links": [
+            [
+              "microservices.io: Saga",
+              "https://microservices.io/patterns/data/saga.html"
+            ]
+          ],
+          "build": "Design a booking saga (reserve seat → charge → confirm) with a compensation for each failure point.",
+          "check": "Why are sagas usually preferred over two-phase commit in microservices?",
+          "id": "HLD6-3"
+        },
+        {
+          "title": "Outbox, CDC and event sourcing",
+          "minutes": 45,
+          "learn": "Publish events reliably with the database write; store changes as an event log when history matters.",
+          "links": [
+            [
+              "microservices.io: Transactional outbox",
+              "https://microservices.io/patterns/data/transactional-outbox.html"
+            ],
+            [
+              "Azure Architecture Center: Event Sourcing pattern",
+              "https://learn.microsoft.com/en-us/azure/architecture/patterns/event-sourcing"
+            ]
+          ],
+          "build": "Add a transactional outbox table to one Level Up write, so the event is published only if the database commit succeeds.",
+          "check": "What problem does the outbox pattern solve?",
+          "id": "HLD6-4"
+        }
+      ]
+    },
+    {
+      "n": 7,
+      "title": "The system design interview",
+      "goal": "Run a 45-minute design interview with a clear structure.",
+      "lessons": [
+        {
+          "title": "The framework",
+          "minutes": 45,
+          "learn": "Requirements (functional + non-functional) → estimates → API → data model → high-level design → deep dives → bottlenecks and trade-offs.",
+          "links": [
+            [
+              "Hello Interview: System Design in a Hurry",
+              "https://www.hellointerview.com/learn/system-design/in-a-hurry/introduction"
+            ],
+            [
+              "The System Design Primer",
+              "https://github.com/donnemartin/system-design-primer"
+            ]
+          ],
+          "build": "Write your personal framework as a one-page template with time boxes, and use it for every practice.",
+          "check": "Which non-functional requirements do you always ask about?",
+          "id": "HLD7-1"
+        },
+        {
+          "title": "Design a URL shortener",
+          "minutes": 60,
+          "learn": "Short-code generation, storage, redirects at high read QPS, caching and analytics.",
+          "links": [
+            [
+              "The System Design Primer",
+              "https://github.com/donnemartin/system-design-primer"
+            ],
+            [
+              "ByteByteGo (YouTube)",
+              "https://www.youtube.com/@ByteByteGo"
+            ]
+          ],
+          "build": "Design it end to end: API, base62 ID generation, database, cache, redirects at 10K QPS and analytics; draw it in Excalidraw.",
+          "check": "How do you avoid two long URLs getting the same short code?",
+          "id": "HLD7-2"
+        },
+        {
+          "title": "Design a rate limiter and a unique ID generator",
+          "minutes": 60,
+          "learn": "Distributed rate limiting with a shared store, and Snowflake-style time-ordered IDs.",
+          "links": [
+            [
+              "Twitter Snowflake (original repo + design)",
+              "https://github.com/twitter-archive/snowflake"
+            ],
+            [
+              "Stripe: Scaling your API with rate limiters",
+              "https://stripe.com/blog/rate-limiters"
+            ]
+          ],
+          "build": "Design a distributed rate limiter (Redis + token bucket) and a Snowflake-style ID generator, and list their failure modes.",
+          "check": "What happens to Snowflake IDs if a machine's clock goes backwards?",
+          "id": "HLD7-3"
+        },
+        {
+          "title": "Design a key-value store",
+          "minutes": 60,
+          "learn": "Partitioning, replication with N/R/W quorums, conflict handling and hinted handoff: Dynamo's ideas.",
+          "links": [
+            [
+              "Amazon Dynamo paper (2007)",
+              "https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf"
+            ]
+          ],
+          "build": "Design a Dynamo-style key-value store: partitioning, replication (N, R, W), conflict handling and hinted handoff.",
+          "check": "With N = 3, which R and W values give strong consistency?",
+          "id": "HLD7-4"
+        }
+      ]
+    },
+    {
+      "n": 8,
+      "title": "Classic designs",
+      "goal": "Practise the systems interviewers ask most.",
+      "lessons": [
+        {
+          "title": "News feed",
+          "minutes": 60,
+          "learn": "Fan-out on write vs on read, the celebrity problem, ranking and caching.",
+          "links": [
+            [
+              "The System Design Primer",
+              "https://github.com/donnemartin/system-design-primer"
+            ],
+            [
+              "ByteByteGo (YouTube)",
+              "https://www.youtube.com/@ByteByteGo"
+            ]
+          ],
+          "build": "Design a feed with fan-out on write vs read, a fix for celebrities, ranking and caching.",
+          "check": "When does fan-out on write break down?",
+          "id": "HLD8-1"
+        },
+        {
+          "title": "Chat system (WhatsApp)",
+          "minutes": 60,
+          "learn": "Persistent connections, message storage, ordering, receipts and offline sync.",
+          "links": [
+            [
+              "Discord: How Discord stores trillions of messages",
+              "https://discord.com/blog/how-discord-stores-trillions-of-messages"
+            ]
+          ],
+          "build": "Design 1:1 and group chat: WebSocket gateways, message storage, delivered/read receipts and offline sync.",
+          "check": "How do you guarantee message order within a conversation?",
+          "id": "HLD8-2"
+        },
+        {
+          "title": "Video streaming (YouTube/Netflix)",
+          "minutes": 60,
+          "learn": "Upload, transcoding pipelines, adaptive bitrate streaming and CDNs.",
+          "links": [
+            [
+              "Netflix Research",
+              "https://research.netflix.com/"
+            ],
+            [
+              "ByteByteGo (YouTube)",
+              "https://www.youtube.com/@ByteByteGo"
+            ]
+          ],
+          "build": "Design upload → transcoding (queue + workers) → adaptive bitrate (HLS) → CDN, and estimate storage per hour of video.",
+          "check": "Why encode each video into multiple bitrates?",
+          "id": "HLD8-3"
+        },
+        {
+          "title": "Ride hailing and proximity (Uber)",
+          "minutes": 60,
+          "learn": "Frequent location updates, geospatial indexing and matching riders to drivers.",
+          "links": [
+            [
+              "Uber: H3, a hexagonal hierarchical spatial index",
+              "https://www.uber.com/blog/h3/"
+            ]
+          ],
+          "build": "Design driver location updates and nearby-driver search with geohash or H3 indexing, plus a matching service.",
+          "check": "How do geospatial indexes make \"find nearby\" queries fast?",
+          "id": "HLD8-4"
+        },
+        {
+          "title": "Typeahead and web crawler",
+          "minutes": 60,
+          "learn": "Prefix search with tries and top-K caching; a polite distributed crawler with a URL frontier.",
+          "links": [
+            [
+              "The System Design Primer",
+              "https://github.com/donnemartin/system-design-primer"
+            ]
+          ],
+          "build": "Design a typeahead (trie + top-K cache), then a polite distributed crawler with a URL frontier and deduplication.",
+          "check": "How does a crawler avoid hammering one website?",
+          "id": "HLD8-5"
+        },
+        {
+          "title": "Payment system",
+          "minutes": 60,
+          "learn": "Idempotent APIs, a double-entry ledger, reconciliation, and moving money exactly once in practice.",
+          "links": [
+            [
+              "AWS Builders' Library: Making retries safe with idempotent APIs",
+              "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/"
+            ],
+            [
+              "Stripe: Designing robust APIs with idempotency",
+              "https://stripe.com/blog/idempotency"
+            ]
+          ],
+          "build": "Design a payment flow with a double-entry ledger, idempotent APIs and a daily reconciliation job.",
+          "check": "Why use a double-entry ledger for payments?",
+          "id": "HLD8-6"
+        }
+      ]
+    },
+    {
+      "n": 9,
+      "title": "Production engineering",
+      "goal": "Observe, deploy, secure and pay for real systems.",
+      "lessons": [
+        {
+          "title": "Observability: logs, metrics, traces",
+          "minutes": 45,
+          "learn": "The three signals, correlation IDs, and percentiles (p95/p99) instead of averages.",
+          "links": [
+            [
+              "OpenTelemetry: Observability primer",
+              "https://opentelemetry.io/docs/concepts/observability-primer/"
+            ]
+          ],
+          "build": "Add a request ID and timing to every Level Up API log line, then chart p95 latency per route for one day.",
+          "check": "What can a trace show that logs can't?",
+          "id": "HLD9-1"
+        },
+        {
+          "title": "Deployments: blue-green and canary",
+          "minutes": 30,
+          "learn": "Release safely: switch traffic between environments or roll out to a small slice first, with fast rollback.",
+          "links": [
+            [
+              "Martin Fowler: Blue-green deployment",
+              "https://martinfowler.com/bliki/BlueGreenDeployment.html"
+            ],
+            [
+              "Martin Fowler: Canary release",
+              "https://martinfowler.com/bliki/CanaryRelease.html"
+            ]
+          ],
+          "build": "Write a deploy plan for Level Up with a canary step and an automatic rollback trigger.",
+          "check": "Which metric would trigger your rollback?",
+          "id": "HLD9-2"
+        },
+        {
+          "title": "Security: authentication, authorization, secrets",
+          "minutes": 45,
+          "learn": "OAuth 2.0 and OpenID Connect, least privilege, secret storage and the OWASP Top 10.",
+          "links": [
+            [
+              "OAuth 2.0",
+              "https://oauth.net/2/"
+            ],
+            [
+              "OWASP Top 10",
+              "https://owasp.org/www-project-top-ten/"
+            ]
+          ],
+          "build": "Threat-model Level Up's LinkedIn OAuth and API: list 5 risks from the OWASP Top 10 with a mitigation for each.",
+          "check": "What's the difference between authentication and authorization?",
+          "id": "HLD9-3"
+        },
+        {
+          "title": "Multi-region, disaster recovery and cost",
+          "minutes": 45,
+          "learn": "RPO and RTO, backups, active-passive vs active-active, and the cost of each.",
+          "links": [
+            [
+              "AWS Well-Architected: Reliability pillar",
+              "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html"
+            ]
+          ],
+          "build": "Define RPO and RTO for Level Up, pick a backup and disaster-recovery plan, and estimate its monthly cloud cost.",
+          "check": "Active-active vs active-passive: what's the trade-off?",
+          "id": "HLD9-4"
+        }
+      ]
+    },
+    {
+      "n": 10,
+      "title": "Learning from real systems",
+      "goal": "Read how the best teams build at scale, and design like a senior engineer.",
+      "lessons": [
+        {
+          "title": "Read the classic papers",
+          "minutes": 90,
+          "learn": "Dynamo, Bigtable and MapReduce shaped modern databases and data processing.",
+          "links": [
+            [
+              "Amazon Dynamo paper (2007)",
+              "https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf"
+            ],
+            [
+              "Google Research: Bigtable",
+              "https://research.google/pubs/bigtable-a-distributed-storage-system-for-structured-data/"
+            ],
+            [
+              "Google Research: MapReduce",
+              "https://research.google/pubs/mapreduce-simplified-data-processing-on-large-clusters/"
+            ]
+          ],
+          "build": "Read the Dynamo paper and write a one-page summary: the problem, design choices, trade-offs, and what you'd change today.",
+          "check": "Which Dynamo idea do modern databases still use?",
+          "id": "HLD10-1"
+        },
+        {
+          "title": "Engineering blogs and architecture write-ups",
+          "minutes": 45,
+          "learn": "Real designs, real constraints, real trade-offs: the best way to build intuition.",
+          "links": [
+            [
+              "AWS Builders' Library",
+              "https://aws.amazon.com/builders-library/"
+            ],
+            [
+              "Netflix Research",
+              "https://research.netflix.com/"
+            ],
+            [
+              "Uber engineering blog",
+              "https://www.uber.com/blog/engineering/"
+            ]
+          ],
+          "build": "Read 3 architecture posts from different companies; for each, note the problem, the solution and one trade-off.",
+          "check": "Which pattern appeared in more than one of the posts?",
+          "id": "HLD10-2"
+        },
+        {
+          "title": "Write a design doc",
+          "minutes": 60,
+          "learn": "Senior engineers communicate in design docs: context, goals, non-goals, design, alternatives, risks.",
+          "links": [
+            [
+              "Design docs at Google",
+              "https://www.industrialempathy.com/posts/design-docs-at-google/"
+            ]
+          ],
+          "build": "Write a design doc for one real Level Up feature (for example multi-device sync) with goals, non-goals, alternatives and risks.",
+          "check": "Why do design docs list non-goals?",
+          "id": "HLD10-3"
+        },
+        {
+          "title": "Mock interviews and portfolio",
+          "minutes": 60,
+          "learn": "Timed practice out loud is what turns knowledge into interview performance.",
+          "links": [
+            [
+              "Hello Interview: System Design in a Hurry",
+              "https://www.hellointerview.com/learn/system-design/in-a-hurry/introduction"
+            ],
+            [
+              "The System Design Primer",
+              "https://github.com/donnemartin/system-design-primer"
+            ]
+          ],
+          "build": "Do 3 timed mock designs (record yourself), publish the diagrams and notes in a system-design repo, and write a LinkedIn post about one.",
+          "check": "Which part of the interview do you rush, and how will you fix it?",
+          "id": "HLD10-4"
+        }
+      ]
+    }
+  ]
+}

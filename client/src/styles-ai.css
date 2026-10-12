@@ -1,0 +1,25 @@
+/* ✨ AI + FDE learning module */
+.ai-tabs { margin-bottom: 0.9rem; flex-wrap: wrap; }
+.ai-tabs .tab { background: transparent; border: 0; cursor: pointer; font: inherit; }
+.ai-badge { margin-left: 0.35rem; background: var(--ai); color: #1a1033; border-radius: 999px; font-size: 0.7rem; padding: 0 0.4rem; font-weight: 700; }
+.ai-stats { margin-top: 0; }
+.ai-lesson.done { opacity: 0.85; }
+.ai-lesson-title { font-weight: 600; font-size: 1rem; text-align: left; padding: 0; }
+.ai-lesson-body { margin-top: 0.6rem; display: grid; gap: 0.6rem; overflow-wrap: anywhere; }
+.ai-lesson-body p { margin: 0.2rem 0; }
+.ai-block { background: var(--surface-2); border-radius: 10px; padding: 0.55rem 0.75rem; }
+.ai-block ul { margin: 0.3rem 0 0; padding-left: 1.1rem; }
+.ai-level-head { display: flex; gap: 0.7rem; align-items: center; width: 100%; background: transparent; border: 0; color: inherit; text-align: left; cursor: pointer; padding: 0 0 0.5rem; font: inherit; }
+.ai-level-n { display: inline-grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; border: 2px solid var(--ai); color: var(--ai); font-weight: 700; flex-shrink: 0; }
+.ai-level-n.done { background: var(--ai); color: #1a1033; }
+.ai-level-text { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.ai-level-lessons { margin-top: 0.6rem; display: grid; gap: 0.5rem; }
+.ai-level-lessons .card { margin-bottom: 0; background: var(--bg); }
+.ai-news { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
+.ai-news-item { padding: 0.6rem 0.7rem; border: 1px solid var(--border); border-radius: 10px; overflow-wrap: anywhere; }
+.ai-news-item.unread { border-left: 3px solid var(--ai); }
+.ai-news-title { font-weight: 600; display: inline-block; margin: 0.15rem 0; }
+.ai-news-item p { margin: 0.2rem 0 0.4rem; }
+
+/* keep long text readable on wide screens (~85 characters per line) */
+.ai-lesson-body > p, .ai-block p, .ai-news-item p { max-width: 85ch; }

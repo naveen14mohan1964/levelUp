@@ -1,0 +1,78 @@
+/* =====================================================================
+   Motion + motivation building blocks (components/fx.jsx). Rules: .claude/skills/level-up-design
+   Only transform/opacity animate; every effect has a reduced-motion fallback.
+   ===================================================================== */
+
+/* ---------- 3D tilt + glare ---------- */
+.tilt { position: relative; transform-style: preserve-3d; }
+.tilt-glare {
+  position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.14), transparent 45%);
+  opacity: 0; transition: opacity 0.2s ease;
+}
+.tilt:hover .tilt-glare { opacity: 1; }
+
+/* ---------- animated conic glow border: the ONE current/active item ---------- */
+@property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+.glow-active {
+  position: relative; isolation: isolate; border-color: transparent !important;
+  box-shadow: var(--shadow-2), 0 0 28px rgba(139, 92, 246, 0.22); /* soft violet halo, static */
+}
+.glow-active::before {
+  content: ''; position: absolute; inset: -1px; border-radius: inherit; padding: 1.5px; z-index: -1; pointer-events: none;
+  background: conic-gradient(from var(--angle), var(--brand-glow), var(--focus), var(--brand-glow) 40%, transparent 60%, var(--brand-glow));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: glow-spin 4s linear infinite;
+}
+@keyframes glow-spin { to { --angle: 360deg; } }
+@media (prefers-reduced-motion: reduce) {
+  .glow-active::before { animation: none; background: linear-gradient(135deg, var(--brand-glow), var(--focus)); }
+}
+
+/* ---------- empty states (never a bare zero) ---------- */
+.empty-state { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.45rem; padding: 1.4rem 1rem; }
+.empty-state-icon { font-size: 2rem; line-height: 1; }
+.empty-state-title { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; }
+.empty-state-text { color: var(--muted); font-size: 0.9rem; max-width: 42ch; }
+.empty-state-action { margin-top: 0.4rem; }
+
+/* ---------- locked content: dimmed, still readable + focusable ---------- */
+.is-locked { opacity: 0.7; filter: saturate(0.4); } /* 0.7 keeps locked text ≥ 3:1 on glass */
+.lock-badge {
+  display: inline-flex; align-items: center; gap: 0.3rem; white-space: nowrap;
+  font-size: 0.76rem; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 0.1rem 0.55rem;
+}
+
+/* ---------- +XP ---------- */
+.xp-anchor { position: relative; display: inline-block; }
+.xp-float {
+  position: absolute; left: 50%; bottom: 100%; pointer-events: none; white-space: nowrap; z-index: 5;
+  font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; color: var(--brand-text);
+  font-variant-numeric: tabular-nums; text-shadow: 0 2px 12px rgba(139, 92, 246, 0.6);
+}
+.xp-toast {
+  position: fixed; left: 50%; bottom: 5.5rem; transform: translateX(-50%); z-index: 1000;
+  background: var(--glass-strong); border: 1px solid var(--glass-border); border-radius: 999px; padding: 0.4rem 0.95rem;
+  font-family: var(--font-display); font-weight: 700; color: var(--brand-text); box-shadow: var(--shadow-2);
+}
+
+/* ---------- design preview page (/design) ---------- */
+.ds-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.9rem; margin-bottom: 0.9rem; }
+.ds-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.6rem; }
+.ds-swatch { border-radius: var(--radius-sm); padding: 0.7rem; border: 1px solid var(--glass-border); background: var(--glass-strong); }
+.ds-swatch i { display: block; height: 34px; border-radius: 8px; margin-bottom: 0.45rem; }
+.ds-swatch strong { display: block; font-size: 0.85rem; }
+.ds-swatch span { font-size: 0.75rem; color: var(--muted); }
+.ds-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.ds-tile { min-height: 120px; display: flex; flex-direction: column; justify-content: space-between; gap: 0.5rem; margin: 0; }
+.ds-tile h3 { margin: 0; font-size: 1rem; }
+
+/* ---------- destructive actions: the one place red is used ---------- */
+.btn.danger { background: transparent; color: var(--danger); border-color: color-mix(in srgb, var(--danger) 60%, transparent); font-weight: 600; }
+.btn.danger:hover:not(:disabled) { background: color-mix(in srgb, var(--danger) 14%, transparent); border-color: var(--danger); }
+
+/* ---------- dev tools (Settings, dev server only) ---------- */
+.dev-tools { border-style: dashed; }
+.dev-snapshots { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.dev-snapshots li { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; flex-wrap: wrap; font-size: 0.85rem; }
