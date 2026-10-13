@@ -5,6 +5,9 @@
 // Rules are checked in order, so the specific ones (pike push-up, side plank, single-leg bridge) come before general ones.
 
 const GUIDE = [
+  { match: /walk-jog|jog/, demo: null, q: 'run walk intervals for beginners form',
+    note: 'Jogging pace should feel easy: if you can\'t talk in full sentences, slow down or walk. Walking breaks are part of the plan, not a failure.',
+    cues: ['Short, quick steps; land softly under your hips, not out in front', 'Stand tall, relaxed shoulders, arms swinging forward and back', 'Walk briskly in the breaks; breathe through nose and mouth'] },
   { match: /march in place/, demo: null, q: 'march in place exercise',
     cues: ['Stand tall and lift one knee toward hip height', 'Swing the opposite arm with each step', 'Land softly and breathe steadily'] },
   { match: /arm circles/, demo: 'Arm_Circles', q: 'arm circles warm up',

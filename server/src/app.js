@@ -20,6 +20,7 @@ app.use('/api', require('./routes/referrals').router);
 app.use('/api', require('./routes/ai').router);
 app.use('/api', require('./routes/learn').router);
 app.use('/api', require('./routes/game').router);
+app.use('/api', require('./routes/checkin').router); // the Mentor: daily check-ins
 app.use('/api', require('./routes/dev').router); // dev-only (npm run dev): reset/restore AI + game progress
 const workout = require('./routes/workout');
 app.use('/api', workout.router);

@@ -101,6 +101,14 @@ describe('spaced repetition (srs.js)', () => {
 describe('workout rules (workout.js)', () => {
   const START = '2026-10-05';
 
+  test('jogging: walk-jog on Tuesdays from week 1, Thursdays from week 4; intervals grow; deload weeks step back', () => {
+    const main = (d) => { const x = workout.sessionFor(d, START); return [x.session, x.items.find((i) => i.group === 'main').prescription]; };
+    assert.deepEqual(main('2026-10-06'), ['Jog + core', '5 min brisk walk, then 6 × (30 s easy jog + 2 min walk), 5 min walk']);
+    assert.equal(main('2026-10-08')[0], 'Cardio + mobility', 'week 1 Thursday stays low-impact');
+    assert.deepEqual(main('2026-10-29'), ['Jog + mobility', '5 min brisk walk, then 6 × (1 min jog + 2 min walk), 5 min walk']);
+    assert.deepEqual([workout.jogFor(8), workout.jogFor(12, true), workout.jogFor(17, true), workout.jogFor(22)].map((p) => p.match(/(\d+ (s|min)) (easy )?jog/)[1]), ['2 min', '1 min', '2 min', '8 min']);
+  });
+
   test('step target: 5,000 in weeks 1–2, +1,000 every 2 weeks, 10,000 from week 11', () => {
     assert.deepEqual([1, 2, 3, 5, 9, 11, 22].map(workout.stepTarget), [5000, 5000, 6000, 7000, 9000, 10000, 10000]);
   });

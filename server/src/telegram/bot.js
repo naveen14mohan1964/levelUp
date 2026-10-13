@@ -110,6 +110,7 @@ const HELP = [
   '📈 <b>Progress photo</b>: caption it "progress front" (or side / back).',
   'Everything counts for the day you send it. The laptop picks it up whenever it is online.',
   '/today: what you have eaten today\n/undo: remove the last meal I logged\n/progress: how to send progress photos\n/help: this message',
+  '🧭 <b>The Mentor</b>\n/mentor: today so far\n/commit 7am desk dsa: when and where you\'ll do it\n/why …: tell it what happened\n/rest tomorrow · /sick: rest or sick day\nOr reply to any mentor message.',
 ].join('\n\n');
 
 module.exports = { localDate, mealTypeFor, parseCommand, classify, mealReply, todayReply, progressPose, progressReply, HELP, PROGRESS_HELP, esc };

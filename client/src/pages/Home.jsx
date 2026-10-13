@@ -10,6 +10,7 @@ import Timeline from '../components/Timeline.jsx';
 import DailyQuote from '../components/DailyQuote.jsx';
 import TodayHero from '../components/TodayHero.jsx';
 import WeekWins from '../components/WeekWins.jsx';
+import MentorCard from '../components/MentorCard.jsx';
 
 // Which roadmap you picked for the hero today (per-viewer convenience: it's fine if storage is unavailable).
 const PICK_KEY = `levelup:hero:${todayISO()}`;
@@ -117,6 +118,7 @@ export default function Home() {
         </div>
 
         <aside className="home-aside">
+          <MentorCard />
           <WeekWins week={game.week} onStart={!game.focus ? startFive : null} />
           <DailyQuote />
           {!isToday && (

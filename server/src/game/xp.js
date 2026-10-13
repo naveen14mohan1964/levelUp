@@ -3,15 +3,16 @@
 // something takes its XP back, a LeetCode sync earns XP, and progress made before this existed counts too.
 const { localDay } = require('./days');
 
-const XP = { start: 5, lesson: 25, level: 150, problem: { E: 15, M: 25, H: 40 } };
+const XP = { start: 5, lesson: 25, level: 150, problem: { E: 15, M: 25, H: 40 }, comeback: 20 };
 
 /**
  * @param tracks    progressed tracks (see progression.js)
  * @param problems  [{ id, solvedMs, difficulty }] solved DSA problems (planned or added by you)
  * @param sessions  [{ track, lesson_ref, started_ms }] focus sessions
- * @returns [{ ms, xp, kind: start | lesson | level | problem, track, ref }]
+ * @param comebacks [{ ms, date, category }] goals completed the day after missing them (the Mentor's comeback bonus)
+ * @returns [{ ms, xp, kind: start | lesson | level | problem | comeback, track, ref }]
  */
-function xpEvents({ tracks, problems, sessions }) {
+function xpEvents({ tracks, problems, sessions, comebacks = [] }) {
   const events = [];
   for (const t of tracks) {
     for (const lv of t.levels) {
@@ -28,6 +29,7 @@ function xpEvents({ tracks, problems, sessions }) {
     started.add(key);
     events.push({ ms: s.started_ms, xp: XP.start, kind: 'start', track: s.track, ref: s.lesson_ref || null });
   }
+  for (const c of comebacks) events.push({ ms: c.ms, xp: XP.comeback, kind: 'comeback', track: c.category, ref: `comeback-${c.date}` });
   return events;
 }
 

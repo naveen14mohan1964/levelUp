@@ -8,6 +8,7 @@ const crypto = require('crypto');
 const { sql, getPool } = require('../db');
 const tg = require('./api');
 const bot = require('./bot');
+const mentorTg = require('../checkin/telegram');
 const meals = require('../meals');
 const { readSettings } = require('../routes/settings');
 const progressPhotos = require('../progress-photos');
@@ -68,7 +69,35 @@ async function targetsAndEaten(pool, date) {
 /* --------------------------------- inbox --------------------------------- */
 
 /** Handles one Telegram update. Safe to call twice for the same update (dedupe on update_id). */
+/** Send helpers for a chat: a plain notice, or a mentor message (saved for the web app too, optional buttons). */
+function chatTools(pool, chatId) {
+  const send = async (text, extra = {}) => {
+    try { return await tg.sendMessage(chatId, text, extra); } catch (e) { console.warn('Telegram reply failed:', e.message); return null; }
+  };
+  const mentorSay = async (content, level, source, replyMarkup = null) => {
+    const data = require('../checkin/data');
+    const s = await data.mentorSettings();
+    const date = require('../checkin/time').localDate(Date.now(), s.tz);
+    return require('../checkin/runner').deliver(pool, { date, kind: 'reply', level: level || 0, content, source: source || 'template' }, { ...s, telegram: true }, { replyMarkup });
+  };
+  return { send, mentorSay };
+}
+
 async function handleUpdate(pool, update) {
+  // The Mentor's buttons (level-3 blocker, plan shift)
+  if (update.callback_query) {
+    const cq = update.callback_query;
+    const chatId = cq.message?.chat?.id;
+    const owner = await getSetting(pool, 'tg_chat_id');
+    if (!chatId || !owner || String(owner) !== String(chatId)) return;
+    const { send, mentorSay } = chatTools(pool, chatId);
+    await mentorTg.handleCallback(pool, cq.data, {
+      send, mentorSay,
+      answer: (text) => tg.answerCallbackQuery(cq.id, text).catch(() => {}),
+      clear: () => tg.clearButtons(chatId, cq.message.message_id).catch(() => {}),
+    });
+    return;
+  }
   const msg = update.message;
   const c = bot.classify(msg);
   if (c.kind === 'ignore') return;
@@ -90,7 +119,24 @@ async function handleUpdate(pool, update) {
   if (!owner) return reply(chatId, `${NOT_LINKED}\n\nThen send this again.`);
   if (String(owner) !== String(chatId)) return; // only you, after pairing
 
+  // A reply to one of the Mentor's messages is your answer to the mentor, never a meal: save it as that day's reason.
+  // (Commands like /commit and the Level 3 buttons arrive with the Mentor's Phase 3.)
+  const repliedTo = msg.reply_to_message?.message_id;
+  if (repliedTo && (msg.text || msg.caption)) {
+    const m = await pool.request().input('id', sql.BigInt, repliedTo)
+      .query('SELECT TOP 1 CONVERT(char(10), msg_date, 23) AS d, kind FROM dbo.mentor_outbox WHERE tg_message_id = @id');
+    const target = m.recordset[0];
+    if (target) {
+      // an evening message is about that day; a morning message is about yesterday
+      const day = target.kind === 'morning' ? require('../game/days').addDays(target.d, -1) : target.d;
+      await pool.request().input('d', sql.Date, day).input('r', sql.NVarChar, String(msg.text || msg.caption).slice(0, 500))
+        .query('UPDATE dbo.mentor_evaluations SET reason = @r WHERE eval_date = @d');
+      return mentorTg.handleReply(pool, day, String(msg.text || msg.caption), chatTools(pool, chatId).mentorSay);
+    }
+  }
+
   if (c.kind === 'command') {
+    if (['mentor', 'commit', 'why', 'rest', 'sick'].includes(c.cmd) && await mentorTg.handleCommand(pool, c.cmd, c.arg, chatTools(pool, chatId))) return;
     if (c.cmd === 'today') {
       const today = bot.localDate(Date.now());
       const r = await pool.request().input('d', sql.Date, today)

@@ -1,4 +1,4 @@
-// Minutes learned per day + the streak (any day with 5+ minutes counts), with one streak freeze per Mon–Sun week.
+// Minutes learned per day + the streak (any day with 5+ minutes counts), protected by earned streak shields.
 const { localDay, addDays, daysBetween, weekStart } = require('./days');
 
 const MIN_MINUTES = 5;
@@ -31,16 +31,18 @@ function dayMinutes(sessions, credits) {
 
 /**
  * Walks every day from your first active day to today.
- * A missed day is covered by a freeze when the streak is running and that week's freeze is unused (freezes already
- * used are passed in as `frozen`, so they never move). Today never breaks the streak: it's still in progress.
+ * A missed day is covered by a streak shield when the streak is running and a shield is in the bank (shields are
+ * scarce: one to start, then one per perfect week, bank of 2; see checkin/rules.js). Days covered earlier are passed in
+ * as `frozen`, so they never move. Today never breaks the streak: it's still in progress.
  * @param minutes Map(day -> minutes)
- * @param frozen  Set(day) freezes used earlier
- * @returns { current, best, todayMinutes, todayActive, flame, freeze: { available, usedOn }, newFreezes, welcomeBack }
+ * @param frozen  Set(day) days a shield already covered
+ * @param shields earned days (YYYY-MM-DD) of the unused shields; a shield only covers days on or after it was earned
+ * @returns { current, best, todayMinutes, todayActive, flame, shields: { available }, freeze: { available, usedOn }, newFreezes, welcomeBack }
  */
-function computeStreak(minutes, frozen, today) {
+function computeStreak(minutes, frozen, today, shields = []) {
   const active = (d) => (minutes.get(d) || 0) >= MIN_MINUTES;
   const activeDays = [...minutes.keys()].filter(active).sort();
-  const usedWeeks = new Set([...frozen].map(weekStart));
+  const bank = [...shields].sort();
   const newFreezes = [];
   let run = 0;
   let best = 0;
@@ -57,9 +59,11 @@ function computeStreak(minutes, frozen, today) {
         lastActive = d;
       } else if (d === today) {
         // still time to learn today
-      } else if (run && (frozen.has(d) || !usedWeeks.has(weekStart(d)))) {
-        if (!frozen.has(d)) newFreezes.push(d);
-        usedWeeks.add(weekStart(d));
+      } else if (run && frozen.has(d)) {
+        // covered by a shield earlier
+      } else if (run && bank.length && bank[0] <= d) {
+        newFreezes.push(d);
+        bank.shift(); // the oldest shield goes first
       } else if (run) {
         lastBreak = { lastActive, lostRun: run };
         run = 0;
@@ -68,7 +72,7 @@ function computeStreak(minutes, frozen, today) {
     }
   }
 
-  // Welcome back (instead of "streak lost"): you had a streak, missed days the freeze couldn't cover, and now you're back.
+  // Welcome back (instead of "streak lost"): you had a streak, missed days no shield could cover, and now you're back.
   let welcomeBack = null;
   if (lastBreak && run <= 1) {
     const backOn = runStart || today;
@@ -83,7 +87,8 @@ function computeStreak(minutes, frozen, today) {
     todayMinutes: minutes.get(today) || 0,
     todayActive: active(today),
     flame: FLAME_AT.filter((n) => run >= n).length,
-    freeze: { available: !usedOn, usedOn },
+    shields: { available: bank.length },
+    freeze: { available: bank.length > 0, usedOn }, // for the UI: is a shield ready, and was one used this week
     newFreezes,
     welcomeBack,
   };

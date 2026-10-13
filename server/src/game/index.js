@@ -5,7 +5,8 @@ const { TRACKS, loadTracks } = require('./tracks');
 const { progress } = require('./progression');
 const { XP, xpEvents, playerLevel } = require('./xp');
 const { dayMinutes, computeStreak } = require('./streak');
-const { localDay, weekStart } = require('./days');
+const { localDay, weekStart, addDays } = require('./days');
+const { comebacks: comebacksFor } = require('../checkin/rules');
 
 const MAX_SESSION_MIN = 240;
 const STALE_AFTER_MIN = 60; // a timer left running this long past its plan is closed at its planned length
@@ -30,26 +31,42 @@ async function startedMs(pool, now) {
 async function computeGame(pool, now = Date.now()) {
   await closeStaleSessions(pool, now);
   const since = await startedMs(pool, now);
+  await require('../checkin/data').ensureStarterShield(pool); // everyone starts with one streak shield
   const { tracks: raw, solved, credits } = await loadTracks(pool);
   const r = await pool.request().query(`
     SELECT CAST(id AS int) AS id, track, lesson_ref, started_ms, planned_min, ended_ms, minutes FROM dbo.focus_sessions ORDER BY started_ms;
     SELECT CONVERT(char(10), day, 23) AS day FROM dbo.streak_freezes;
-    SELECT track, level FROM dbo.game_seen;`);
+    SELECT track, level FROM dbo.game_seen;
+    SELECT earned_ms FROM dbo.streak_shields WHERE used_ms IS NULL ORDER BY id;
+    SELECT CONVERT(char(10), e.eval_date, 23) AS date, e.results, (SELECT kind FROM dbo.rest_days r WHERE r.rest_date = e.eval_date) AS rest
+      FROM dbo.mentor_evaluations e ORDER BY e.eval_date;`);
   const sessions = r.recordsets[0].map((s) => ({ ...s, started_ms: Number(s.started_ms), ended_ms: s.ended_ms == null ? null : Number(s.ended_ms) }));
   const frozen = new Set(r.recordsets[1].map((x) => x.day));
   const seen = new Set(r.recordsets[2].map((x) => `${x.track}|${x.level}`));
+  const shieldDays = r.recordsets[3].map((x) => localDay(Number(x.earned_ms)));
+  // Comeback bonus: a goal completed the day after it was missed (from the Mentor's evaluations)
+  const evals = r.recordsets[4].map((x) => ({ ...x, results: JSON.parse(x.results) }));
+  const comebacks = [];
+  for (let i = 1; i < evals.length; i++) {
+    if (evals[i - 1].date !== addDays(evals[i].date, -1)) continue;
+    for (const category of comebacksFor(evals[i - 1], evals[i])) comebacks.push({ ms: new Date(`${evals[i].date}T12:00:00`).getTime(), date: evals[i].date, category });
+  }
 
   const tracks = raw.map(progress);
-  const events = xpEvents({ tracks, problems: solved, sessions });
+  const events = xpEvents({ tracks, problems: solved, sessions, comebacks });
   const total = events.reduce((s, e) => s + e.xp, 0);
   const today = localDay(now);
   const minutes = dayMinutes(sessions.map((s) => ({ ...s, minutes: sessionMinutes(s, now) })), credits);
-  const streak = computeStreak(minutes, frozen, today);
-  if (streak.newFreezes.length) {
-    for (const day of streak.newFreezes) {
-      await pool.request().input('d', sql.Date, day).input('now', sql.BigInt, now)
-        .query('IF NOT EXISTS (SELECT 1 FROM dbo.streak_freezes WHERE day = @d) INSERT INTO dbo.streak_freezes (day, used_ms) VALUES (@d, @now);');
-    }
+  const streak = computeStreak(minutes, frozen, today, shieldDays);
+  // A shield saved the streak: record the covered day and spend the oldest shield in the bank
+  for (const day of streak.newFreezes) {
+    await pool.request().input('d', sql.Date, day).input('now', sql.BigInt, now).query(`
+      IF NOT EXISTS (SELECT 1 FROM dbo.streak_freezes WHERE day = @d)
+      BEGIN
+        INSERT INTO dbo.streak_freezes (day, used_ms) VALUES (@d, @now);
+        UPDATE dbo.streak_shields SET used_ms = @now, used_for_day = @d
+        WHERE id = (SELECT TOP 1 id FROM dbo.streak_shields WHERE used_ms IS NULL ORDER BY id);
+      END`);
   }
   const { newFreezes, ...streakOut } = streak;
 

@@ -26,6 +26,17 @@ export const api = {
   focusStart: (body) => request('POST', '/focus/start', body),
   focusStop: (auto = false) => request('POST', '/focus/stop', { auto }),
   gameSeen: (track, level) => request('POST', '/game/seen', { track, level }),
+
+  // the Mentor: daily check-ins
+  checkin: () => request('GET', '/checkin'),
+  checkinCommit: (body) => request('POST', '/checkin/commitments', body),
+  checkinUncommit: (id) => request('DELETE', `/checkin/commitments/${id}`),
+  checkinRest: (body) => request('POST', '/checkin/rest', body),
+  checkinUnrest: (date) => request('DELETE', `/checkin/rest/${date}`),
+  checkinReason: (body) => request('POST', '/checkin/reason', body),
+  checkinShiftPreview: () => request('GET', '/checkin/shift'),
+  checkinShift: () => request('POST', '/checkin/shift', { confirm: true }),
+  checkinTestMessage: () => request('POST', '/checkin/test-message'),
   devStatus: () => request('GET', '/dev/status'),
   devReset: (confirm) => request('POST', '/dev/reset', { confirm }),
   devRestore: (id) => request('POST', '/dev/restore', { id }),

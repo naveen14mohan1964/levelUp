@@ -62,6 +62,39 @@ On your phone (same Wi-Fi): http://&lt;your-PC-IP&gt;:4000 (`ipconfig` shows the
 - Code: `server/src/game/` (progression, xp, streak, tracks) + `routes/game.js`; UI in `client/src/components/`
   (Sidebar, TodayHero, LevelMap, LevelComplete, fx). Design rules: `.claude/skills/level-up-design/SKILL.md`, live preview at `/design`.
 
+## 🧭 The Mentor (daily accountability)
+A strict coach who believes in you. Every evening (default **23:00**) it checks five goals and messages you in the app
+(Today card, Mentor → Check-ins) and on Telegram. It names what slipped, ties it to the days left in the 5-month plan, and
+ends with **one action at a time**. Behaviour is criticised, never the person; strictness (gentle / standard / drill)
+changes the tone only.
+
+| Goal | Met when | Minimum viable day (after 2+ misses in a row) |
+|---|---|---|
+| DSA | the day's core problems are solved | 1 easy problem |
+| Learning (AI/LLD/HLD) | 30+ minutes (setting) | 5 minutes |
+| Project (weekdays) | today's 📖 learn + 🛠 build | the learn step |
+| Workout (not Sundays) | the session (10-minute mode counts) | the 10-minute mode |
+| Nutrition | protein ≥ 80% of target | log your meals |
+
+- **Escalation** per goal (consecutive misses): 1 day → firm + "when and where tomorrow?", 2 → cost (streak, XP, days
+  behind) + minimum viable day, 3–4 → "serious talk" with **what's blocking you?** buttons (time / energy / difficulty /
+  motivation) and an offer to **shift your unfinished plan days** (with a confirm step), 5+ → a supportive reset, no more pressure.
+- **Comeback bonus**: +20 XP per goal completed the day after missing it. **Streak shields** replace the weekly freeze: you
+  start with 1, a perfect week earns another (bank of 2); one is spent automatically when it saves your streak.
+- **Plan vs actual**: ahead / on track / behind per roadmap, plus days left. **Fresh starts** on Mondays and the 1st.
+- **Morning message** (default 06:30, optional): today's goals and your commitment. **At most 2 unsolicited messages a day**;
+  quiet on rest/sick days, in vacation mode, and before the plan starts.
+- **Telegram**: reply to a mentor message to answer it (never logged as a meal), or use `/commit 7am desk dsa`,
+  `/why …`, `/rest tomorrow`, `/sick`, `/mentor`.
+- **Rest / sick days** are limited per month (default 2 / 3); rest days are planned in advance, a sick day can be today.
+- Messages are written by Gemini with the persona prompt and checked (length, a time in the action, no insults); if the AI
+  is down, out of quota or breaks a rule, a built-in template in the same voice is used.
+- **Settings → The Mentor**: on/off, strictness, evening and morning times, time zone (empty = this machine), Telegram,
+  vacation mode, rest/sick allowance, which goals count, and "Send a test message". No new environment variables:
+  it uses the existing `GEMINI_API_KEY` and `TELEGRAM_BOT_TOKEN`, and runs in the always-on app under PM2 or Docker.
+- Code: `server/src/checkin/` (rules, time, pace, data, messages, runner, actions, telegram), API `routes/checkin.js`,
+  UI `components/MentorCard.jsx`, `CheckinsTab.jsx`, `MentorSettings.jsx`.
+
 ## Run it in Docker (phone access from anywhere, free)
 Containers (`docker-compose.yml`): **SQL Server 2022 Express** (free edition), the **app**, and an optional **Tailscale** sidecar
 (`COMPOSE_PROFILES=phone`) that puts the app on your private Tailscale network. Your phone opens it from anywhere (mobile data, any Wi-Fi): no firewall

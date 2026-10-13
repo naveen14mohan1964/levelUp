@@ -3,8 +3,10 @@ import { useSearchParams } from 'react-router-dom';
 import { api } from '../api.js';
 import { todayISO } from '../dates.js';
 import MentorChat from '../components/MentorChat.jsx';
+import CheckinsTab from '../components/CheckinsTab.jsx';
 
 const TABS = [
+  { key: 'checkins', label: '🧭 Check-ins', hint: 'Every evening the mentor checks your goals, says what slipped and the one thing to do next. History, rest days and shields live here.' },
   { key: 'chat', label: '💬 Ask', hint: 'Anything: concepts, career, "why is my solution slow?", interview strategy.' },
   { key: 'plan', label: '🗓️ Plan my day', hint: 'Re-plans today around what you missed and your energy, using your real timetable.' },
   { key: 'mock', label: '🎤 Mock interview', hint: 'A 45-minute FAANG-style coding round on topics you have covered. Say "end interview" for your scorecard.' },
@@ -38,7 +40,7 @@ export default function Mentor() {
       {ctx && (
         <div className="card context-card small">
           <strong>What your mentor knows right now:</strong>{' '}
-          {ctx.week ? `Week ${ctx.week}` : 'Plan starts Mon 5 Oct'} · {ctx.focus || 'no DSA today'} · {ctx.reviewsDue} review{ctx.reviewsDue === 1 ? '' : 's'} due ·
+          {ctx.week ? `Week ${ctx.week}` : 'Plan not started yet'} · {ctx.focus || 'no DSA today'} · {ctx.reviewsDue} review{ctx.reviewsDue === 1 ? '' : 's'} due ·
           solved {ctx.solved.E}E/{ctx.solved.M}M/{ctx.solved.H}H
           {ctx.weakTopics.length > 0 && ` · weak: ${ctx.weakTopics.map((w) => w.topic).join(', ')}`}
           {(ctx.behind.tasks > 0 || ctx.behind.problems > 0) && ` · behind: ${ctx.behind.tasks} blocks, ${ctx.behind.problems} problems`}
@@ -64,6 +66,7 @@ export default function Mentor() {
           />
         )}
         {tab === 'plan' && <PlanTab today={today} />}
+        {tab === 'checkins' && <CheckinsTab />}
         {tab === 'mock' && (
           <MentorChat
             thread="mock"

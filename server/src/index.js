@@ -28,6 +28,7 @@ getPool()
     require('./telegram/runner').start(); // Telegram meal bot: photos/texts from your phone -> meals
     require('./referrals/jobs-store').start(); // Jobs feed: target companies' public job boards, daily
     require('./ai/feeds').start(); // AI news: official AI blogs' RSS feeds, daily
+    require('./checkin/runner').start(); // the Mentor: end-of-day check-in + morning message
   })
   .catch((err) => {
     console.error('Could not connect to SQL Server:', err.message);

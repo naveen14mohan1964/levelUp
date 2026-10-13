@@ -36,6 +36,33 @@ const MINI = [
   { name: 'March in place', prescription: '2 rounds × 30 s', tip: 'Or swap the whole thing for a 10-minute walk' },
 ];
 
+// Walk-jog progression: easy jogging in short intervals that grow each phase, so knees, shins and tendons can adapt
+// at 110+ kg. Tuesdays from week 1, Thursdays too from week 4. Deload weeks step back one stage.
+const JOG = [
+  { from: 1, to: 3, plan: '5 min brisk walk, then 6 × (30 s easy jog + 2 min walk), 5 min walk' },
+  { from: 4, to: 7, plan: '5 min brisk walk, then 6 × (1 min jog + 2 min walk), 5 min walk' },
+  { from: 8, to: 11, plan: '5 min brisk walk, then 5 × (2 min jog + 2 min walk), 5 min walk' },
+  { from: 13, to: 16, plan: '5 min brisk walk, then 4 × (4 min jog + 2 min walk), 5 min walk' },
+  { from: 18, to: 22, plan: '5 min brisk walk, then 3 × (8 min jog + 2 min walk), 5 min walk' },
+];
+const JOG_TIP = 'Jog slowly enough to talk in full sentences; short, quick steps. Stop on sharp knee, shin or chest pain. Good shoes, flat or soft ground.';
+const THURSDAY_JOG_FROM_WEEK = 4;
+
+/** The walk-jog intervals for a week (deload weeks step back one stage). */
+function jogFor(week, deload) {
+  const w = Math.min(Math.max(week, 1), 22);
+  let i = JOG.findIndex((s) => w >= s.from && w <= s.to);
+  if (i < 0) i = JOG.findIndex((s) => s.from > w) - 1; // deload weeks fall between stages
+  if (deload) i -= 1;
+  return JOG[Math.max(0, Math.min(i, JOG.length - 1))].plan;
+}
+
+/** Session names for a week, Monday first (shared with the daily timeline in schedule.js). */
+function sessionNames(week) {
+  return ['Strength A', 'Jog + core', 'Strength B', week >= THURSDAY_JOG_FROM_WEEK ? 'Jog + mobility' : 'Cardio + mobility',
+    week % 2 ? 'Strength A' : 'Strength B', 'Long brisk walk', 'Rest'];
+}
+
 /** The planned session for a date: { week, phase, session, deload, rest, items[], mini[] } */
 function sessionFor(date, start) {
   const week = weekOf(date, start);
@@ -43,7 +70,7 @@ function sessionFor(date, start) {
   const deload = PROGRAM.deloadWeeks.includes(week);
   const effectiveWeek = deload ? week - 1 : Math.min(Math.max(week, 1), 22);
   const phase = PROGRAM.phases.find((p) => effectiveWeek >= p.from && effectiveWeek <= p.to) || PROGRAM.phases[0];
-  const session = ['Strength A', 'Cardio + core', 'Strength B', 'Cardio + mobility', week % 2 ? 'Strength A' : 'Strength B', 'Long brisk walk', 'Rest'][dow];
+  const session = sessionNames(week)[dow];
 
   const items = [];
   const add = (group, list) => list.forEach((x, i) => items.push({ key: `${group}-${i}`, group, ...x }));
@@ -61,8 +88,10 @@ function sessionFor(date, start) {
   } else if (session === 'Long brisk walk') {
     add('main', [{ name: `Brisk walk, ${phase.satWalk}`, prescription: 'Talk-test pace', tip: 'Outdoors if you can; stairs count as a bonus' }]);
   } else {
-    add('main', [{ name: 'Low-impact cardio', prescription: phase.cardio, tip: 'Talk test: full sentences, but you could not sing' }]);
-    add('main', session === 'Cardio + core'
+    add('main', [session.startsWith('Jog')
+      ? { name: 'Walk-jog intervals', prescription: jogFor(week, deload), tip: JOG_TIP }
+      : { name: 'Low-impact cardio', prescription: phase.cardio, tip: 'Talk test: full sentences, but you could not sing' }]);
+    add('main', session.endsWith('core')
       ? [{ name: 'Core finisher', prescription: PROGRAM.coreFinisher, tip: 'Lower back pressed down on dead bugs' }]
       : [{ name: 'Mobility flow (10 min)', prescription: PROGRAM.mobility, tip: 'Slow breathing, no bouncing' }]);
   }
@@ -123,4 +152,4 @@ function weightSummary(entries, startWeight, goalWeight) {
   };
 }
 
-module.exports = { sessionFor, isDayDone, streak, weightSummary, stepTarget, addDays, weekOf };
+module.exports = { sessionFor, isDayDone, streak, weightSummary, stepTarget, addDays, weekOf, jogFor, sessionNames };

@@ -600,3 +600,72 @@ CREATE TABLE dbo.learn_progress (
   CONSTRAINT PK_learn_progress PRIMARY KEY (track, lesson_id)
 );
 GO
+
+-- ---------- The Mentor: daily check-ins and accountability (server/src/checkin/) ----------
+-- One row per evaluated day: each goal category's result, consecutive misses and the escalation level that day.
+IF OBJECT_ID('dbo.mentor_evaluations') IS NULL
+CREATE TABLE dbo.mentor_evaluations (
+  eval_date    DATE          NOT NULL PRIMARY KEY,
+  results      NVARCHAR(MAX) NOT NULL, -- JSON { dsa: { status: met|partial|missed|off, detail, mvd }, learning: …, project: …, workout: …, nutrition: … }
+  misses       NVARCHAR(MAX) NOT NULL, -- JSON { dsa: 2, … } consecutive missed days per category, counting this day
+  level        TINYINT       NOT NULL, -- 0 on track · 1 · 2 (minimum viable day) · 3 serious talk · 4 reset
+  shield_used  BIT           NOT NULL DEFAULT 0,
+  reason       NVARCHAR(500) NULL,     -- what you told the mentor about this day
+  blocker      NVARCHAR(20)  NULL,     -- time | energy | difficulty | motivation
+  final        BIT           NOT NULL DEFAULT 0, -- 1 once the day is over (later updates are silent)
+  evaluated_ms BIGINT        NOT NULL
+);
+GO
+
+-- Everything the mentor said, on which channel, and whether the AI or the template wrote it
+IF OBJECT_ID('dbo.mentor_outbox') IS NULL
+CREATE TABLE dbo.mentor_outbox (
+  id             INT IDENTITY(1,1) PRIMARY KEY,
+  msg_date       DATE           NOT NULL, -- the local day it belongs to
+  kind           NVARCHAR(20)   NOT NULL, -- morning | evening | reply
+  channel        NVARCHAR(20)   NOT NULL, -- web | telegram (a Telegram message is also shown on the web)
+  level          TINYINT        NOT NULL,
+  content        NVARCHAR(MAX)  NOT NULL,
+  source         NVARCHAR(10)   NOT NULL, -- ai | template
+  tg_message_id  BIGINT         NULL,     -- so a Telegram reply to it is read as your answer, not as a meal
+  created_ms     BIGINT         NOT NULL
+);
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_mentor_outbox_date')
+CREATE INDEX IX_mentor_outbox_date ON dbo.mentor_outbox(msg_date);
+GO
+
+-- Implementation intentions: "tomorrow, 7:00 AM, at my desk: DSA"
+IF OBJECT_ID('dbo.mentor_commitments') IS NULL
+CREATE TABLE dbo.mentor_commitments (
+  id          INT IDENTITY(1,1) PRIMARY KEY,
+  for_date    DATE          NOT NULL,
+  category    NVARCHAR(20)  NOT NULL, -- dsa | learning | project | workout | nutrition
+  planned_at  NVARCHAR(5)   NOT NULL, -- HH:MM local
+  place       NVARCHAR(100) NULL,
+  fulfilled   BIT           NULL,     -- NULL until that day is evaluated
+  created_ms  BIGINT        NOT NULL
+);
+GO
+
+-- Streak shields: scarce, earned by a perfect week (bank of 2); one saves the learning streak from a missed day
+IF OBJECT_ID('dbo.streak_shields') IS NULL
+CREATE TABLE dbo.streak_shields (
+  id           INT IDENTITY(1,1) PRIMARY KEY,
+  earned_ms    BIGINT        NOT NULL,
+  reason       NVARCHAR(40)  NOT NULL, -- starter | perfect-week:YYYY-MM-DD (the Monday)
+  used_ms      BIGINT        NULL,
+  used_for_day DATE          NULL,
+  CONSTRAINT UQ_streak_shields_reason UNIQUE (reason)
+);
+GO
+
+-- Planned rest / sick days (limited per month): the mentor stays quiet and nothing counts as missed
+IF OBJECT_ID('dbo.rest_days') IS NULL
+CREATE TABLE dbo.rest_days (
+  rest_date  DATE          NOT NULL PRIMARY KEY,
+  kind       NVARCHAR(10)  NOT NULL, -- rest | sick
+  note       NVARCHAR(200) NULL,
+  created_ms BIGINT        NOT NULL
+);
+GO

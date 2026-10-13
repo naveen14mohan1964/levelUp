@@ -1,4 +1,4 @@
-// Game layer: level progression (unlocks), XP + player level, minutes + streak with freezes, and the API.
+// Game layer: level progression (unlocks), XP + player level, minutes + streak with shields, and the API.
 const { test, describe, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 const { startServer, stopServer, api, sqlQuery } = require('./helpers');
@@ -83,22 +83,29 @@ describe('minutes + streak', () => {
     assert.equal(computeStreak(new Map(), new Set(), '2026-10-12').current, 0);
   });
 
-  test('one freeze per Mon–Sun week covers a missed day; a second miss that week → "welcome back", not "streak lost"', () => {
-    // Mon 12 – Wed 14 active, Thu 15 missed (freeze), Fri 16 active
-    let s = computeStreak(mins({ '2026-10-12': 10, '2026-10-13': 10, '2026-10-14': 10, '2026-10-16': 10 }), new Set(), '2026-10-16');
-    assert.deepEqual([s.current, s.newFreezes, s.freeze], [4, ['2026-10-15'], { available: false, usedOn: '2026-10-15' }]);
-    // ...and Sat 17 missed too: the week's freeze is used, so the streak restarts on Sun 18 with a welcome back
-    s = computeStreak(mins({ '2026-10-12': 10, '2026-10-13': 10, '2026-10-14': 10, '2026-10-16': 10, '2026-10-18': 10 }), new Set(['2026-10-15']), '2026-10-18');
+  test('a streak shield covers a missed day; with no shield left the next miss → "welcome back", not "streak lost"', () => {
+    // Mon 12 – Wed 14 active, Thu 15 missed (one shield, earned before), Fri 16 active
+    let s = computeStreak(mins({ '2026-10-12': 10, '2026-10-13': 10, '2026-10-14': 10, '2026-10-16': 10 }), new Set(), '2026-10-16', ['2026-10-01']);
+    assert.deepEqual([s.current, s.newFreezes, s.shields.available, s.freeze], [4, ['2026-10-15'], 0, { available: false, usedOn: '2026-10-15' }]);
+    // ...and Sat 17 missed too: no shield left, so the streak restarts on Sun 18 with a welcome back
+    s = computeStreak(mins({ '2026-10-12': 10, '2026-10-13': 10, '2026-10-14': 10, '2026-10-16': 10, '2026-10-18': 10 }), new Set(['2026-10-15']), '2026-10-18', []);
     assert.deepEqual([s.current, s.best, s.newFreezes, s.welcomeBack], [1, 4, [], { daysAway: 1, previousStreak: 4, backToday: true }]);
-    // a new week brings a new freeze
-    s = computeStreak(mins({ '2026-10-18': 10, '2026-10-20': 10 }), new Set(['2026-10-15']), '2026-10-20');
-    assert.deepEqual([s.current, s.newFreezes], [2, ['2026-10-19']]);
+    // two shields in the bank cover two misses (oldest first)
+    s = computeStreak(mins({ '2026-10-12': 10, '2026-10-15': 10 }), new Set(), '2026-10-15', ['2026-10-05', '2026-10-01']);
+    assert.deepEqual([s.current, s.newFreezes, s.shields.available], [2, ['2026-10-13', '2026-10-14'], 0]);
+    // no shields, no weekly freebie any more
+    assert.deepEqual(computeStreak(mins({ '2026-10-18': 10, '2026-10-20': 10 }), new Set(), '2026-10-20').newFreezes, []);
   });
 
-  test('away for days: welcome back counts the days away (freeze-covered days included) until you return', () => {
-    const s = computeStreak(mins({ '2026-10-12': 10, '2026-10-13': 10 }), new Set(), '2026-10-18');
+  test("a shield never covers days before it was earned (a new shield can't rewrite old gaps)", () => {
+    const s = computeStreak(mins({ '2026-10-05': 10, '2026-10-06': 10, '2026-10-08': 10, '2026-10-13': 10 }), new Set(), '2026-10-13', ['2026-10-13']);
+    assert.deepEqual([s.newFreezes, s.shields.available, s.current], [[], 1, 1]);
+  });
+
+  test('away for days: welcome back counts the days away (shield-covered days included) until you return', () => {
+    const s = computeStreak(mins({ '2026-10-12': 10, '2026-10-13': 10 }), new Set(), '2026-10-18', ['2026-10-01']);
     assert.deepEqual([s.current, s.best, s.welcomeBack], [0, 2, { daysAway: 4, previousStreak: 2, backToday: false }]);
-    assert.deepEqual(s.newFreezes, ['2026-10-14'], 'the freeze covered Wed; Thu broke the streak');
+    assert.deepEqual(s.newFreezes, ['2026-10-14'], 'the shield covered Wed; Thu broke the streak');
   });
 
   test('day helpers: weeks start on Monday', () => {

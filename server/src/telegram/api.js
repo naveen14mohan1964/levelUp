@@ -34,10 +34,15 @@ const getMe = () => call('getMe');
 
 /** Long poll: waits up to `timeout` seconds for new messages. */
 const getUpdates = (offset, timeout = 50) =>
-  call('getUpdates', { offset, timeout, allowed_updates: ['message'] }, { timeoutMs: (timeout + 15) * 1000 });
+  call('getUpdates', { offset, timeout, allowed_updates: ['message', 'callback_query'] }, { timeoutMs: (timeout + 15) * 1000 }); // callback_query = the Mentor's buttons
 
-const sendMessage = (chatId, text) =>
-  call('sendMessage', { chat_id: chatId, text, parse_mode: 'HTML', link_preview_options: { is_disabled: true } });
+/** extra: e.g. { reply_markup: { inline_keyboard: [[{ text, callback_data }]] } } */
+const sendMessage = (chatId, text, extra = {}) =>
+  call('sendMessage', { chat_id: chatId, text, parse_mode: 'HTML', link_preview_options: { is_disabled: true }, ...extra });
+/** Stops the button's loading spinner; the text shows as a small toast. */
+const answerCallbackQuery = (id, text) => call('answerCallbackQuery', { callback_query_id: id, ...(text ? { text } : {}) });
+/** Removes a message's buttons once one was used. */
+const clearButtons = (chatId, messageId) => call('editMessageReplyMarkup', { chat_id: chatId, message_id: messageId, reply_markup: { inline_keyboard: [] } });
 
 /** Shows "typing…" in the chat for ~5 s (or until the next message), so you can see the bot is working. */
 const sendTyping = (chatId) => call('sendChatAction', { chat_id: chatId, action: 'typing' }).catch(() => {});
@@ -55,4 +60,4 @@ async function downloadFile(fileId) {
   return { buffer: Buffer.from(await res.arrayBuffer()), path: f.file_path };
 }
 
-module.exports = { isConfigured, getMe, getUpdates, sendMessage, sendTyping, downloadFile, TelegramError };
+module.exports = { isConfigured, getMe, getUpdates, sendMessage, answerCallbackQuery, clearButtons, sendTyping, downloadFile, TelegramError };

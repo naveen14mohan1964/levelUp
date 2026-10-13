@@ -66,3 +66,48 @@
   .dialog.drawer { margin: auto; }
   .nav-link { padding: 0.3rem 0.1rem; }
 }
+
+/* ---------- The Mentor: check-ins (components/MentorCard.jsx, CheckinsTab.jsx, MentorSettings.jsx) ---------- */
+.mentor-card { display: flex; flex-direction: column; gap: 0.6rem; }
+.mentor-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.mentor-head h2 { margin: 0; }
+.mentor-level { font-size: 0.78rem; font-weight: 700; padding: 0.15rem 0.6rem; border-radius: 999px; background: var(--glass-strong); color: var(--muted); }
+.mentor-card.level-0 .mentor-level { color: var(--success); }
+.mentor-card.level-3 .mentor-level, .mentor-card.level-4 .mentor-level { color: var(--brand-text); }
+.pace-chip { font-size: 0.78rem; padding: 0.15rem 0.6rem; border-radius: 999px; border: 1px solid var(--glass-border); }
+.pace-on-track { color: var(--focus); }
+.pace-ahead { color: var(--success); }
+.pace-behind { color: var(--text); } /* behind is neutral, never red */
+.fresh-chip { color: var(--streak); font-weight: 600; }
+.mentor-msg { padding: 0.7rem 0.85rem; border-radius: var(--radius-sm); background: var(--glass-strong); border-left: 3px solid var(--brand-glow); margin-bottom: 0.5rem; }
+.mentor-msg-body { margin: 0.25rem 0 0.35rem; line-height: 1.5; }
+.mentor-msg-action { margin: 0; font-weight: 600; color: var(--brand-text); }
+.mentor-today { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.mentor-today li { font-size: 0.78rem; padding: 0.15rem 0.55rem; border-radius: 999px; background: var(--glass-strong); color: var(--muted); }
+.mentor-today li.st-met, .checkins-days td.st-met { color: var(--success); }
+.mentor-today li.st-partial { color: var(--text); }
+.mentor-blockers { display: flex; flex-direction: column; gap: 0.4rem; }
+.mentor-reason { display: flex; gap: 0.4rem; }
+.mentor-reason input, .mentor-commit-form input:not([type='time']) { flex: 1; min-width: 0; font: inherit; color: var(--text); background: var(--glass-strong); border: 1px solid var(--border); border-radius: 8px; padding: 0.4rem 0.6rem; }
+.mentor-commit summary { cursor: pointer; }
+.mentor-commit-form { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+.mentor-commit-form input[type='time'] { font: inherit; color: var(--text); background: var(--glass-strong); border: 1px solid var(--border); border-radius: 8px; padding: 0.3rem 0.4rem; }
+.mentor-commits { list-style: none; margin: 0.4rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.2rem; }
+.mentor-commits .link-btn { margin-left: 0.4rem; }
+.checkins h3 { margin: 1.2rem 0 0.5rem; font-size: 1rem; }
+.checkins-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+.pace-tracks { margin: 0.5rem 0 0; padding-left: 1.1rem; }
+.table-scroll { overflow-x: auto; }
+.checkins-days td, .checkins-days th { text-align: center; }
+.checkins-days td:first-child, .checkins-days td:last-child, .checkins-days th:last-child { text-align: left; }
+.mentor-settings-form { display: flex; flex-direction: column; gap: 0.8rem; }
+.mentor-settings-form .grid-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 0.6rem; }
+.mentor-settings-form input:not([type='checkbox']):not([type='radio']) { font: inherit; color: var(--text); background: var(--glass-strong); border: 1px solid var(--border); border-radius: 8px; padding: 0.35rem 0.5rem; }
+.mentor-settings-form fieldset { border: 0; padding: 0; margin: 0; }
+.check { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; cursor: pointer; }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 0.3rem; }
+.seg-opt { padding: 0.3rem 0.8rem; border-radius: 999px; border: 1px solid var(--border); cursor: pointer; font-size: 0.88rem; }
+.seg-opt input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.seg-opt.on { background: color-mix(in srgb, var(--brand) 26%, transparent); border-color: var(--brand-glow); color: var(--text); }
+.seg-opt:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
+.checkins form input:not([type='date']) { font: inherit; font-size: 0.85rem; color: var(--text); background: var(--glass-strong); border: 1px solid var(--border); border-radius: 8px; padding: 0.3rem 0.5rem; }

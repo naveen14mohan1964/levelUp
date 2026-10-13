@@ -63,10 +63,7 @@ const WORKOUT_PHASES = [
 
 function workoutFor(week, dow) {
   const phase = WORKOUT_PHASES.find((p) => week >= p.from && week <= p.to);
-  const session = [
-    'Strength A', 'Cardio + core', 'Strength B', 'Cardio + mobility',
-    week % 2 ? 'Strength A' : 'Strength B', 'Long brisk walk', 'Rest',
-  ][dow];
+  const session = require('./workout').sessionNames(week)[dow]; // same names as the Workout page (incl. jog days)
   return { session, phase: phase ? phase.name : null };
 }
 

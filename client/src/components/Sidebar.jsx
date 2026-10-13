@@ -78,10 +78,10 @@ function PlayerCard({ compact = false }) {
           <div className="player-level">Level {player.level}</div>
           {!compact && <div className="player-xp-text">{xpLabel}</div>}
         </div>
-        <span className="xp-anchor player-streak" title={streak.freeze.available ? 'Streak freeze ready: one missed day this week won\'t break your streak' : 'This week\'s streak freeze is used'}>
+        <span className="xp-anchor player-streak" title={streak.shields?.available ? `${streak.shields.available} streak shield${streak.shields.available === 1 ? '' : 's'}: a missed day won't break your streak. A perfect week earns another.` : 'No streak shield right now: a perfect week earns one'}>
           <Flame tier={streak.flame} />
           {streak.current > 0 && <strong className="streak-num">{streak.current}</strong>}
-          {streak.freeze.available && streak.current > 0 && <span className="freeze-dot" aria-label="Streak freeze ready">❄</span>}
+          {streak.shields?.available > 0 && streak.current > 0 && <span className="freeze-dot" aria-label={`${streak.shields.available} streak shield${streak.shields.available === 1 ? '' : 's'}`}>🛡{streak.shields.available > 1 ? streak.shields.available : ''}</span>}
         </span>
       </div>
       <div className="xp-bar" role="progressbar" aria-label="XP toward the next level" aria-valuemin={0} aria-valuemax={player.xpForNext} aria-valuenow={player.xpInLevel}>

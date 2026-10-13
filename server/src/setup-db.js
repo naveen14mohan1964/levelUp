@@ -24,6 +24,7 @@ async function wipe(pool) {
   await pool.request().batch(`
     DELETE FROM dbo.li_stages; DELETE FROM dbo.li_jobs; DELETE FROM dbo.li_posts; DELETE FROM dbo.li_audit;
     DELETE FROM dbo.focus_sessions; DELETE FROM dbo.streak_freezes; DELETE FROM dbo.game_seen; DELETE FROM dbo.dev_snapshots;
+    DELETE FROM dbo.mentor_evaluations; DELETE FROM dbo.mentor_outbox; DELETE FROM dbo.mentor_commitments; DELETE FROM dbo.streak_shields; DELETE FROM dbo.rest_days;
     DELETE FROM dbo.learn_progress; DELETE FROM dbo.ai_progress; DELETE FROM dbo.ai_news; DELETE FROM dbo.ref_jobs; DELETE FROM dbo.ref_history; DELETE FROM dbo.ref_pursuits; DELETE FROM dbo.ref_notes; DELETE FROM dbo.ref_imports; DELETE FROM dbo.ref_companies;
     DELETE FROM dbo.li_actions; DELETE FROM dbo.li_contacts; DELETE FROM dbo.li_lists;
     DELETE FROM dbo.mentor_messages; DELETE FROM dbo.tg_inbox; DELETE FROM dbo.meals; DELETE FROM dbo.body_log;
@@ -233,6 +234,19 @@ const DEFAULT_SETTINGS = {
   tg_chat_id: '', // your private chat, set when you send /start <pairing code>
   tg_pair_code: '',
   tg_offset: '0', // last Telegram update handled, so a restart never re-reads old messages
+  // The Mentor: daily check-ins (Settings → Mentor). Times are HH:MM local; an empty timezone means this machine's.
+  mentor_enabled: '1',
+  mentor_strictness: 'standard', // gentle | standard | drill (tone only: never personal insults)
+  mentor_eval_time: '23:00',
+  mentor_morning: '1',
+  mentor_morning_time: '06:30',
+  mentor_tz: '',
+  mentor_telegram: '1',
+  mentor_pause_until: '', // vacation mode: YYYY-MM-DD (inclusive)
+  mentor_rest_per_month: '2',
+  mentor_sick_per_month: '3',
+  mentor_categories: 'dsa,learning,project,workout,nutrition',
+  mentor_learning_minutes: '30',
 };
 /** Replaces old default pillars/intro with the new ones, but only if you never edited them. */
 async function upgradeLinkedInDefaults(pool) {
