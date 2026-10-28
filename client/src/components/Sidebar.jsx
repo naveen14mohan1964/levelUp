@@ -1,25 +1,39 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
+import { GearSix, List, MagnifyingGlass, Timer, X } from '@phosphor-icons/react';
 import { AREAS, areaByKey } from '../areas.js';
 import { useGame } from '../game.jsx';
 import { XpFloat } from './fx.jsx';
 import { clock, useNow } from './TodayHero.jsx';
+import { openPalette } from './CommandPalette.jsx';
 
 /**
  * Sidebar (desktop) / header + bottom tab bar (phone): player level + XP bar + streak flame on top,
  * a glowing pill on the active section, and a small progress ring per section.
  */
 const PRIMARY = ['home', 'dsa', 'ai', 'workout']; // phone tab bar; everything else lives under "More"
-const TRACK_KEYS = new Set(['ai', 'dsa', 'lld', 'hld', 'react', 'dotnet', 'node']);
-const PILL_SPRING = { type: 'spring', stiffness: 420, damping: 34 };
+const TRACK_KEYS = new Set(['ai', 'dsa', 'lld', 'hld', 'judge', 'react', 'dotnet', 'node']);
+const PILL_SPRING = { duration: 0.5, ease: [0.22, 1, 0.36, 1] }; // base curve (landing-page-design B7)
+// Desktop nav groups (AREAS keeps the canonical order for the command palette)
+const GROUPS = [
+  { label: null, keys: ['home'] },
+  { label: 'Learn', keys: ['dsa', 'ai', 'lld', 'hld', 'judge', 'react', 'dotnet', 'node', 'assignments', 'cards'] },
+  { label: 'Body', keys: ['workout', 'meals', 'progress'] },
+  { label: 'Career', keys: ['linkedin', 'mentor', 'report'] },
+];
+const SETTINGS_AREA = { key: 'settings', to: '/settings', label: 'Settings', icon: '⚙️', Icon: GearSix, color: 'var(--muted)' };
 
 /** Progress for a section's ring: { value, total, label } or null (no ring). Labels never show a bare zero. */
-function sectionProgress(key, game, today) {
+export function sectionProgress(key, game, today) {
   if (TRACK_KEYS.has(key)) {
     const t = game?.tracks.find((x) => x.key === key);
     if (!t) return null;
     return { value: t.done, total: t.total, label: t.done ? `${t.done} of ${t.total} lessons done` : 'Your first lesson is ready' };
+  }
+  if (key === 'cards' && game?.cards && (game.cards.due || game.cards.reviewedToday)) {
+    const c = game.cards;
+    return { value: c.reviewedToday, total: c.reviewedToday + c.due, label: c.due ? `${c.due} flashcard${c.due === 1 ? '' : 's'} due today` : 'Today\'s flashcards are done' };
   }
   if (key === 'workout' && today?.workout && !today.workout.rest) {
     const w = today.workout;
@@ -100,12 +114,13 @@ function FocusChip({ focus }) {
   const left = Math.max(0, focus.plannedMin * 60 - (now - focus.startedMs) / 1000);
   return (
     <Link to="/" className="focus-chip" aria-label={left ? `Focus timer: ${clock(left)} left` : 'Focus timer finished'}>
-      ⏱ <strong>{left ? clock(left) : "Time's up"}</strong> <span>{left ? 'focus' : '· open Today'}</span>
+      <Timer size={14} weight="bold" aria-hidden="true" /> <strong>{left ? clock(left) : "Time's up"}</strong> <span>{left ? 'focus' : '· open Today'}</span>
     </Link>
   );
 }
 
 function NavItem({ area, progress, pillId, onClick }) {
+  const Icon = area.Icon;
   return (
     <NavLink
       to={area.to}
@@ -118,7 +133,7 @@ function NavItem({ area, progress, pillId, onClick }) {
       {({ isActive }) => (
         <>
           {isActive && <motion.span layoutId={pillId} className="nav-pill" transition={PILL_SPRING} aria-hidden="true" />}
-          <span className="nav-icon">{area.icon}</span>
+          <span className="nav-icon" aria-hidden="true">{Icon ? <Icon size={18} weight={isActive ? 'fill' : 'regular'} /> : area.icon}</span>
           <span className="nav-label">{area.label}</span>
           {progress && <MiniRing value={progress.value} total={progress.total} />}
           {progress && <span className="sr-only">: {progress.label}</span>}
@@ -140,16 +155,28 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar">
+      <a href="#main" className="skip-link">Skip to content</a>
       <div className="brand">
         <img src="/favicon.svg" alt="" className="brand-mark" /> Level Up
-        <NavLink to="/settings" className={({ isActive }) => `settings-link${isActive ? ' active' : ''}`} aria-label="Settings" title="Settings">⚙️</NavLink>
+        <button className="icon-btn palette-btn" onClick={openPalette} aria-label="Search and commands (Ctrl+K)" title="Search and commands (Ctrl+K)"><MagnifyingGlass size={18} /></button>
+        <NavLink to="/settings" className={({ isActive }) => `icon-btn settings-link${isActive ? ' active' : ''}`} aria-label="Settings" title="Settings"><GearSix size={18} /></NavLink>
       </div>
       <div className="player-desktop"><PlayerCard /></div>
       <div className="player-phone"><PlayerCard compact /></div>
 
-      {/* desktop: every section */}
+      {/* desktop: every section, grouped; links settle in one after another on first load */}
       <nav className="nav" aria-label="Sections">
-        {AREAS.map((a) => <NavItem key={a.key} area={a} progress={prog(a.key)} pillId="nav-pill" />)}
+        {GROUPS.map((g) => (
+          <div key={g.keys[0]} className="nav-group">
+            {g.label && <div className="nav-group-label">{g.label}</div>}
+            {g.keys.map((k) => (
+              <motion.div key={k} initial={{ opacity: 0, x: -10, filter: 'blur(4px)' }} animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: Math.min(AREAS.findIndex((a) => a.key === k) * 0.03, 0.4) }}>
+                <NavItem area={areaByKey[k]} progress={prog(k)} pillId="nav-pill" />
+              </motion.div>
+            ))}
+          </div>
+        ))}
       </nav>
 
       {/* phone: 4 main sections + More */}
@@ -157,7 +184,7 @@ export default function Sidebar() {
         {PRIMARY.map((k) => <NavItem key={k} area={areaByKey[k]} progress={prog(k)} pillId="tab-pill" />)}
         <button ref={moreBtn} className={`nav-link more-btn${inMore ? ' active' : ''}`} aria-expanded={moreOpen} aria-haspopup="dialog" onClick={() => setMoreOpen(true)}>
           {inMore && <motion.span layoutId="tab-pill" className="nav-pill" transition={PILL_SPRING} aria-hidden="true" />}
-          <span className="nav-icon">☰</span>
+          <span className="nav-icon" aria-hidden="true"><List size={20} weight={inMore ? 'bold' : 'regular'} /></span>
           <span className="nav-label">More</span>
         </button>
       </nav>
@@ -168,7 +195,14 @@ export default function Sidebar() {
   );
 }
 
-/** Phone "More" sheet: the other sections + Settings. Esc or the backdrop closes it; focus stays inside. */
+// Menu links arrive one after another in reading order: 24px up + fade, staggered, whole sequence within 400 ms
+const SHEET_LIST = { show: { transition: { staggerChildren: 0.025, delayChildren: 0.08 } } };
+const SHEET_ITEM = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+};
+
+/** Phone "More": a full-height panel with the other sections + Settings. Esc or the close button closes it; focus stays inside. */
 function MoreSheet({ onClose, prog }) {
   const ref = useRef(null);
   useEffect(() => {
@@ -188,24 +222,32 @@ function MoreSheet({ onClose, prog }) {
   const rest = AREAS.filter((a) => !PRIMARY.includes(a.key));
   return (
     <>
-      <motion.div className="sheet-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} />
       <motion.div
         ref={ref}
         className="more-sheet"
         role="dialog"
         aria-modal="true"
         aria-label="More sections"
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        transition={{ type: 'spring', stiffness: 380, damping: 36 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="sheet-handle" aria-hidden="true" />
-        <div className="more-grid">
-          {rest.map((a) => <NavItem key={a.key} area={a} progress={prog(a.key)} pillId="sheet-pill" />)}
-          <NavItem area={{ key: 'settings', to: '/settings', label: 'Settings', icon: '⚙️', color: 'var(--muted)' }} pillId="sheet-pill" />
+        <div className="sheet-top">
+          <span className="sheet-title">All sections</span>
+          <button className="icon-btn" onClick={onClose} aria-label="Close menu">
+            <motion.span initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} style={{ display: 'flex' }}>
+              <X size={20} />
+            </motion.span>
+          </button>
         </div>
-        <button className="btn sheet-close" onClick={onClose}>Close</button>
+        <motion.div className="more-grid" variants={SHEET_LIST} initial="hidden" animate="show">
+          {[...rest, SETTINGS_AREA].map((a) => (
+            <motion.div key={a.key} variants={SHEET_ITEM}>
+              <NavItem area={a} progress={a.key === 'settings' ? null : prog(a.key)} pillId="sheet-pill" />
+            </motion.div>
+          ))}
+        </motion.div>
       </motion.div>
     </>
   );

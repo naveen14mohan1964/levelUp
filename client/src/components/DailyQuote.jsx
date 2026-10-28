@@ -1,3 +1,4 @@
+import { Quotes } from '@phosphor-icons/react';
 import { todayISO } from '../dates.js';
 import { quoteFor } from '../lib/quotes.js';
 
@@ -6,9 +7,9 @@ export default function DailyQuote() {
   const q = quoteFor(todayISO());
   return (
     <figure className="card daily-quote">
-      <div className="daily-quote-label">✨ Today's quote</div>
+      <div className="daily-quote-label"><Quotes size={16} weight="fill" aria-hidden="true" /> Today's quote</div>
       <blockquote>“{q.text}”</blockquote>
-      <figcaption>— {q.author}</figcaption>
+      <figcaption>{q.author}</figcaption>
     </figure>
   );
 }

@@ -67,11 +67,13 @@ export function GlowBorder({ as = 'div', active = true, className = '', children
 /** Staggered spring entrance: wrap a list in <Stagger>, give each child <StaggerItem index={i}>. */
 export function Stagger({ as = 'div', children, ...rest }) {
   const Comp = tag(as);
-  return <Comp initial="hidden" animate="show" {...rest}>{children}</Comp>;
+  // data-reveal="off": the app-wide auto reveal (motion.jsx) leaves these items to their own stagger
+  return <Comp initial="hidden" animate="show" data-reveal="off" {...rest}>{children}</Comp>;
 }
+// design-to-motion `up` kind: 10px rise + 4px blur to sharp, eased (no bounce)
 const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
-  show: (i = 0) => ({ opacity: 1, y: 0, transition: { ...ENTER_SPRING, delay: Math.min(i, STAGGER_MAX) * STAGGER_STEP } }),
+  hidden: { opacity: 0, y: 10, filter: 'blur(4px)' },
+  show: (i = 0) => ({ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: Math.min(i, STAGGER_MAX) * STAGGER_STEP } }),
 };
 export function StaggerItem({ as = 'div', index = 0, children, ...rest }) {
   const Comp = tag(as);

@@ -7,3 +7,9 @@ logs/
 
 # docker compose secrets (DB_PASSWORD, TS_AUTHKEY)
 .env
+
+# camera focus guard assets (copied/downloaded by client/scripts/focus-assets.js)
+client/public/mediapipe/
+
+# Company course material (Psiog .NET assignments): stays on this laptop, never committed
+server/data/private/

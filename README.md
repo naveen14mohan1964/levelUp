@@ -32,7 +32,7 @@ they pick up again on wake (posts more than 12 hours late are not sent).
 
 On your phone (same Wi-Fi): http://&lt;your-PC-IP&gt;:4000 (`ipconfig` shows the IP).
 
-## 🧩 LLD + 🏗️ HLD (system design, from scratch to advanced)
+## 🧩 LLD + 🏗️ HLD + ⚖️ Judgement (system design, architecture & engineering judgement)
 - **LLD** (`server/data/lld-roadmap.json`, 10 levels, 43 lessons, Java): OOP → SOLID + clean code → UML → creational,
   structural and behavioural patterns → concurrency (thread-safe LRU) → the 90-minute machine-coding method → classic
   problems (parking lot, Splitwise, BookMyShow, elevator, rate limiter, food delivery) → DDD, TDD, mock interviews.
@@ -40,6 +40,10 @@ On your phone (same Wi-Fi): http://&lt;your-PC-IP&gt;:4000 (`ipconfig` shows the
   databases, indexes, replication, sharding, CAP → REST/gRPC/GraphQL, real-time, queues, idempotency → scaling and
   reliability → clocks, Raft, sagas, outbox → the interview framework → classic designs (URL shortener, feed, chat, video,
   Uber, payments) → observability, deploys, security, DR → papers, design docs, mock interviews.
+- **Judgement** (`server/data/judge-roadmap.json`, 11 levels, 54 lessons): deciding under uncertainty, one-way vs two-way doors
+  → trade-offs & cost models → decision records (ADRs, RFCs) → estimation, risk & scope control → code review & refactoring
+  judgement → production incidents, rollouts & postmortems → AI tools & harnesses judgement → product & business sense →
+  domain expertise (glossaries, workflows, DDD ubiquitous language) → payments domain deep dive → interview readiness.
 - Same lesson format as AI + FDE (free links, checked; a build; a checkpoint) and the same game layer: level maps, unlocks,
   XP, streak, LEVEL COMPLETE, Today's "up next". Many HLD builds apply the idea to Level Up itself.
 - Code: `server/src/learn/modules.js` (add a module = a roadmap JSON + one line there + an area in `client/src/areas.js`),
@@ -94,6 +98,48 @@ changes the tone only.
   it uses the existing `GEMINI_API_KEY` and `TELEGRAM_BOT_TOKEN`, and runs in the always-on app under PM2 or Docker.
 - Code: `server/src/checkin/` (rules, time, pace, data, messages, runner, actions, telegram), API `routes/checkin.js`,
   UI `components/MentorCard.jsx`, `CheckinsTab.jsx`, `MentorSettings.jsx`.
+
+## 🎯 Focus Mode (study buddy, camera guard, sounds, flashcards, weekly report)
+
+- **Study buddy** (Today hero): an original ninja-style trainee who studies with you, cheers XP, takes breaks and
+  gets sleepy late at night. Every state is on `/design`.
+- **📷 Camera focus guard** (off by default; switch it on per session under the timer): MediaPipe runs entirely in
+  the browser (models served from `/mediapipe`, copied by `client/scripts/focus-assets.js` at build time; nothing is
+  recorded or sent). It learns how you sit in the first 2 s, ignores glances under 3 s, then counts distraction (face
+  away, head turned, phone in view, eyes closed 3 s): a chime at 15 s, an alarm at 45 s. **Office mode** = screen
+  flash, no sound; **Reading notes** = looking down is fine. The buddy watches you (eyes follow your face, a 👍 every
+  2 focused minutes). Only focused minutes count; the Mentor's evening message reports today's camera focus %.
+  The session lives at app level (`client/src/focus.jsx`): the guard, the sound and auto-stop follow you to every page,
+  with a floating dock (mini preview, status, time left; `components/FocusDock.jsx`). It keeps watching while you study
+  in another tab (YouTube, lesson links: facing the screen counts as studying; a Web Worker keeps its pace in a hidden
+  tab), sends a desktop notification instead of the flash there, and **⧉ Pop out** opens an always-on-top buddy window
+  (Document Picture-in-Picture, Edge/Chrome).
+- **Focus sounds**: rain, brown noise, ocean, lo-fi pad, generated with Web Audio (no audio files); they drop to a
+  whisper while the guard sees you away.
+- **Install + notifications** (Settings → App & notifications): installable app (`client/public/manifest.webmanifest`,
+  `sw.js`; `/api` is never cached), local notifications when a session ends, at 21:00 if the streak is at risk, and
+  in the morning when flashcards are due. No push server.
+- **🃏 Flashcards** (`/cards`): every finished AI / LLD / HLD lesson becomes a card (its checkpoint question) the day
+  after; add your own too. Space flips, 1–4 grades (SM-2 style scheduling, `server/src/cards.js`). +2 XP per review,
+  first 10 a day.
+- **📊 Weekly report** (`/report`): Mon–Sun minutes, XP, lessons, problems, reviews and workouts vs last week, the
+  Mentor's goal grid, highlights and a short verdict (`server/src/report.js`, no AI call). "Copy summary" for sharing.
+- **Ctrl+K** anywhere (or 🔍 in the sidebar): go to any page, start "Just 5 minutes" or 25 minutes, stop the timer,
+  switch the focus sound, find any lesson.
+
+## 🧭 Interview readiness (patterns, companies, design drills)
+
+- **DSA → Patterns** (`/dsa/patterns`): a heatmap of the plan's 26 patterns. Mastery (0–100) = 40% coverage (6 solves =
+  full credit) + 35% your confidence ratings + 25% attempts that succeeded, fading slowly after 2 weeks without
+  practice. Each day your weakest started pattern picks one extra problem (a new one at the right level, or one you
+  rated 1–2 to re-solve), shown on DSA → Today. Today's pick is stored when first shown; tomorrow's updates live.
+- **DSA → Companies** (`/dsa/companies`): readiness % for every target company from its type's typical interview focus
+  (`server/data/interview-profiles.json`: an estimate you can edit, not data about any one company) and your
+  progress, against a ready bar per tier (T1 75%, T2 65%, T3 55%), with the 3 gaps that would add the most points.
+- **HLD → 35-min design drills** (`/hld/drills`): 16 original prompts (`server/data/hld-drills.json`), six timed steps,
+  autosave, then tick the key points you covered. The score feeds readiness; answers become HLD flashcards; starting a
+  drill starts a 35-minute focus session. Optional interviewer feedback = 1 Gemini call.
+- Code: `server/src/mastery.js`, `server/src/drills.js`, `routes/mastery.js`; pages `Patterns.jsx`, `Companies.jsx`, `Drills.jsx`.
 
 ## Run it in Docker (phone access from anywhere, free)
 Containers (`docker-compose.yml`): **SQL Server 2022 Express** (free edition), the **app**, and an optional **Tailscale** sidecar

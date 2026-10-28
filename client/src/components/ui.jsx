@@ -1,3 +1,5 @@
+import { CountUp, SkeletonPage } from './motion.jsx';
+
 export const DIFF = { E: 'Easy', M: 'Medium', H: 'Hard' };
 
 export function DiffPill({ d }) {
@@ -6,15 +8,16 @@ export function DiffPill({ d }) {
 
 export function ProgressBar({ value, total }) {
   const pct = total ? Math.round((value / total) * 100) : 0;
+  // scaleX, not width: the fill wipes in like a progress bar and only transform animates
   return (
     <div className={`progress${total && value >= total ? ' complete' : ''}`} title={`${value}/${total} (${pct}%)`}>
-      <div className="progress-fill" style={{ width: `${pct}%` }} />
+      <div className="progress-fill scaled" style={{ '--p': pct / 100 }} />
     </div>
   );
 }
 
 export function Loading() {
-  return <div className="muted pad">Loading…</div>;
+  return <SkeletonPage />;
 }
 
 export function ErrorBox({ error, onRetry }) {
@@ -46,12 +49,12 @@ export function ProgressRing({ value, total, size = 84, stroke = 8, label, color
         <circle
           cx={size / 2} cy={size / 2} r={r} fill="none" stroke={ringColor} strokeWidth={stroke} strokeLinecap="round"
           strokeDasharray={c} strokeDashoffset={c * (1 - pct)} transform={`rotate(-90 ${size / 2} ${size / 2})`}
-          style={{ transition: 'stroke-dashoffset 0.5s ease' }}
+          className="ring-arc" style={{ '--c': c }}
         />
       </svg>
       <div className="ring-label">
         {/* never a bare "0%": an empty ring invites you to start */}
-        <strong style={size < 80 ? { fontSize: `${Math.round(size * (pct ? 0.22 : 0.2))}px` } : undefined}>{pct ? `${Math.round(pct * 100)}%` : 'Start'}</strong>
+        <strong style={size < 80 ? { fontSize: `${Math.round(size * (pct ? 0.22 : 0.2))}px` } : undefined}>{pct ? <CountUp value={Math.round(pct * 100)} format={(n) => `${n}%`} /> : 'Start'}</strong>
         {label && <span>{label}</span>}
       </div>
     </div>

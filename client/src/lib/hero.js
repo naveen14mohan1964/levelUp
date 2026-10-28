@@ -1,7 +1,7 @@
 // Which roadmap the Today hero card shows, and where each lesson lives.
 import { blockStatus, nowMinutes } from './timeline.js';
 
-const FALLBACK = ['ai', 'dsa', 'lld', 'hld', 'node', 'dotnet', 'react'];
+const FALLBACK = ['ai', 'dsa', 'lld', 'hld', 'judge', 'node', 'dotnet', 'react'];
 
 /**
  * The hero follows your timeline: an unfinished DSA or project block happening right now picks that roadmap.
@@ -21,7 +21,7 @@ export function pickHeroTrack(tracks, schedule, nowMin = nowMinutes()) {
 
 /** Where to open a lesson. */
 export function lessonLink(trackKey, lesson) {
-  if (trackKey === 'ai' || trackKey === 'lld' || trackKey === 'hld') return `/${trackKey}`;
+  if (trackKey === 'ai' || trackKey === 'lld' || trackKey === 'hld' || trackKey === 'judge') return `/${trackKey}`;
   if (trackKey === 'dsa') return lesson?.planDate ? `/dsa/day/${lesson.planDate}` : '/dsa';
   return `/${trackKey}`;
 }

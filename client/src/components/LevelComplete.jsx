@@ -7,7 +7,7 @@ import { levelUpConfetti } from '../lib/celebrate.js';
 
 /** Where each roadmap's level map lives. */
 export function roadmapPath(track) {
-  if (track === 'ai' || track === 'lld' || track === 'hld') return `/${track}?tab=roadmap`;
+  if (track === 'ai' || track === 'lld' || track === 'hld' || track === 'judge') return `/${track}?tab=roadmap`;
   if (track === 'dsa') return '/dsa/plan';
   return `/${track}/roadmap`;
 }
@@ -42,8 +42,8 @@ export function LevelBadge({ level, size = 132 }) {
       <circle cx="60" cy="56" r="52" fill="url(#badge-ring)" />
       <circle cx="60" cy="56" r="43" fill="url(#badge-core)" />
       <circle cx="60" cy="56" r="43" fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" />
-      <text x="60" y="49" textAnchor="middle" fontFamily="Space Grotesk, sans-serif" fontSize="11" fontWeight="600" fill="#C4B5FD" letterSpacing="2">LEVEL</text>
-      <text x="60" y="80" textAnchor="middle" fontFamily="Space Grotesk, sans-serif" fontSize="34" fontWeight="700" fill="#FFFFFF">{level}</text>
+      <text x="60" y="49" textAnchor="middle" fontFamily="Geist Variable, Geist, sans-serif" fontSize="11" fontWeight="600" fill="#C4B5FD" letterSpacing="2">LEVEL</text>
+      <text x="60" y="80" textAnchor="middle" fontFamily="Geist Variable, Geist, sans-serif" fontSize="34" fontWeight="700" fill="#FFFFFF">{level}</text>
     </svg>
   );
 }

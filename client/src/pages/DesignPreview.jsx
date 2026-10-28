@@ -2,6 +2,8 @@ import { useRef, useState } from 'react';
 import { EmptyState, GlowBorder, LockBadge, Stagger, StaggerItem, TiltCard, XpFloat } from '../components/fx.jsx';
 import { ProgressBar, ProgressRing } from '../components/ui.jsx';
 import { burst, levelUpConfetti } from '../lib/celebrate.js';
+import { BUDDY_STATES } from '../components/StudyBuddy.jsx';
+import Buddy from '../components/Buddy.jsx';
 
 /**
  * /design: a living preview of the design system's building blocks (not in the menu).
@@ -30,6 +32,13 @@ export default function DesignPreview() {
           <div className="muted small">Building blocks for the Level Up redesign · rules in .claude/skills/level-up-design</div>
         </div>
       </div>
+
+      <section className="card">
+        <h2>Study buddy: every state</h2>
+        <div className="buddy-grid">
+          {BUDDY_STATES.map((st) => <div key={st} className="card"><strong className="small">{st}</strong><Buddy state={st} size={220} /></div>)}
+        </div>
+      </section>
 
       <section className="card">
         <h2>Colour meanings</h2>

@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Fire, HandWaving, Plant, RocketLaunch, Robot, ArrowRight } from '@phosphor-icons/react';
 import { api } from '../api.js';
 import { formatLong, todayISO } from '../dates.js';
 import { refreshGame, useGame } from '../game.jsx';
 import { pickHeroTrack, minutesText } from '../lib/hero.js';
 import { ErrorBox, Loading, Md } from '../components/ui.jsx';
-import { EmptyState, Stagger, StaggerItem, TiltCard } from '../components/fx.jsx';
+import { EmptyState, TiltCard } from '../components/fx.jsx';
+import TodayRings from '../components/TodayRings.jsx';
 import Timeline from '../components/Timeline.jsx';
 import DailyQuote from '../components/DailyQuote.jsx';
 import TodayHero from '../components/TodayHero.jsx';
@@ -22,13 +24,13 @@ function greeting() {
   return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
 }
 
-/** The encouraging line above the hero: streak, welcome back, or a fresh start. Never a "streak lost". */
+/** The encouraging line under the greeting: streak, welcome back, or a fresh start. Never a "streak lost". */
 function streakLine(s) {
   if (!s) return null;
-  if (s.todayActive) return `🔥 Today counts. ${s.current}-day streak${s.current >= 3 ? ', keep it rolling' : ''}!`;
-  if (s.current > 0) return `🔥 ${s.current}-day streak. 5 minutes today keeps it going.`;
-  if (s.welcomeBack) return `👋 Welcome back! You had a ${s.welcomeBack.previousStreak}-day streak. 5 minutes today starts a new one.`;
-  return '🌱 Start your streak today: 5 minutes counts.';
+  if (s.todayActive) return [Fire, `Today counts. ${s.current} day streak${s.current >= 3 ? ', keep it rolling' : ''}.`];
+  if (s.current > 0) return [Fire, `${s.current} day streak. Five minutes today keeps it going.`];
+  if (s.welcomeBack) return [HandWaving, `Welcome back. You had a ${s.welcomeBack.previousStreak} day streak, and five minutes today starts a new one.`];
+  return [Plant, 'Start your streak today: five minutes counts.'];
 }
 
 // Today = "what do I do now?": the next lesson (one big card), wins this week, today's quote, then the day's schedule.
@@ -78,22 +80,26 @@ export default function Home() {
   const others = game.tracks.filter((t) => t.next && t.key !== heroKey);
   const choose = (k) => { savePick(k); setPick(k); };
   const startFive = hero ? () => api.focusStart({ track: hero.key, ref: hero.next.ref, minutes: 5 }).then(refreshGame) : null;
+  const [StreakIcon, streakText] = streakLine(game.streak);
+  const streakOn = game.streak.current > 0 || game.streak.todayActive;
 
   return (
     <>
-      <div className="page-head">
-        <div>
-          <h1>{isToday ? `${greeting()} 👋` : 'Day 1 preview'}</h1>
-          <div className="muted small">
-            {formatLong(date)}{schedule.week ? ` · Week ${schedule.week}` : ''}{schedule.focus ? ` · ${schedule.focus}` : ''}
-          </div>
+      {/* hero appear: date, greeting and streak settle in one after another (components/motion.jsx) */}
+      <header className="today-head">
+        <div className="today-date">
+          {formatLong(date)}{schedule.week ? ` · Week ${schedule.week}` : ''}{schedule.focus ? ` · ${schedule.focus}` : ''}
         </div>
-      </div>
+        <h1 className="today-title"><span className="text-gradient">{isToday ? greeting() : 'Day 1 preview'}</span></h1>
+        <div className={`today-streak${streakOn ? ' on' : ''}`} role="status">
+          <StreakIcon size={16} weight={streakOn ? 'fill' : 'regular'} aria-hidden="true" /> {streakText}
+        </div>
+      </header>
 
       {/* wide: hero + schedule on the left, wins + quote + mentor in a sticky right column; narrow: hero, then the column, then the schedule */}
       <div className="home-grid today-grid">
         <div className="home-hero">
-          <div className={`today-streak${game.streak.current > 0 || game.streak.todayActive ? ' on' : ''}`} role="status">{streakLine(game.streak)}</div>
+          <TodayRings />
           {hero ? (
             <TodayHero key={hero.key} track={hero} reason={reason} focus={game.focus} />
           ) : (
@@ -102,17 +108,15 @@ export default function Home() {
           {others.length > 0 && (
             <>
               <h2 className="section-label">Up next on your other roadmaps</h2>
-              <Stagger className="upnext">
-                {others.map((t, i) => (
-                  <StaggerItem key={t.key} index={i}>
-                    <TiltCard as="button" className="card upnext-card" onClick={() => choose(t.key)} aria-label={`Focus on ${t.label} today: ${t.next.title.replace(/`/g, '')}`}>
-                      <span className="upnext-track">{t.label} · L{t.next.level}</span>
-                      <span className="upnext-title"><Md text={t.next.title} /></span>
-                      <span className="upnext-meta">~{minutesText(t.next.minutes)} · make this today's focus</span>
-                    </TiltCard>
-                  </StaggerItem>
+              <div className="upnext">
+                {others.map((t) => (
+                  <TiltCard key={t.key} as="button" className="card upnext-card" onClick={() => choose(t.key)} aria-label={`Focus on ${t.label} today: ${t.next.title.replace(/`/g, '')}`}>
+                    <span className="upnext-track">{t.label} · Level {t.next.level}</span>
+                    <span className="upnext-title"><Md text={t.next.title} /></span>
+                    <span className="upnext-meta">~{minutesText(t.next.minutes)} <span className="upnext-go">Make this today's focus <ArrowRight size={14} aria-hidden="true" /></span></span>
+                  </TiltCard>
                 ))}
-              </Stagger>
+              </div>
             </>
           )}
         </div>
@@ -123,7 +127,8 @@ export default function Home() {
           <DailyQuote />
           {!isToday && (
             <div className="card notice">
-              <span>🚀 Your plan starts <strong>{formatLong(meta.startDate)}</strong>. Tonight: lay out workout clothes and sleep by 10:30.</span>
+              <RocketLaunch size={20} aria-hidden="true" />
+              <span>Your plan starts <strong>{formatLong(meta.startDate)}</strong>. Tonight: lay out workout clothes and sleep by 10:30.</span>
             </div>
           )}
           {saveError && (
@@ -133,8 +138,9 @@ export default function Home() {
             </div>
           )}
           <Link to="/mentor?tab=plan" className="card mentor-cta">
-            <span>🤖</span>
-            <span><strong>Plan my day with your mentor</strong><span className="muted small"> · behind, tired, or short on time? It re-plans today around your real timetable.</span></span>
+            <span className="mentor-cta-icon" aria-hidden="true"><Robot size={20} /></span>
+            <span><strong>Plan my day with your mentor</strong><span className="muted small"> Behind, tired, or short on time? It plans today again around your real timetable.</span></span>
+            <ArrowRight size={16} className="mentor-cta-go" aria-hidden="true" />
           </Link>
         </aside>
 

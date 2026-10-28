@@ -70,8 +70,6 @@ a.btn:hover { text-decoration: none; }
 
 /* ---------- settings ---------- */
 .brand { position: relative; }
-.settings-link { margin-left: auto; padding: 0.2rem 0.35rem; border-radius: 8px; font-size: 1rem; }
-.settings-link:hover, .settings-link.active { background: var(--surface-2); text-decoration: none; }
 .goal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 0.75rem; }
 
 /* ---------- workout page ---------- */
@@ -168,7 +166,7 @@ a.btn:hover { text-decoration: none; }
   .confidence { gap: 0.25rem; }
   .conf-btn span { font-size: 0.62rem; }
   .field-row { grid-template-columns: 1fr; }
-  .settings-link { position: absolute; right: 1rem; }
+  .settings-link { position: absolute; right: var(--s-200); }
 }
 
 /* ---------- documentation links ---------- */

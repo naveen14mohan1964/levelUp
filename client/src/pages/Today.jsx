@@ -6,6 +6,7 @@ import { DiffPill, DocLinks, ErrorBox, Loading, Md, ProgressBar } from '../compo
 import LogSolveDialog from '../components/LogSolveDialog.jsx';
 import MentorDrawer from '../components/MentorDrawer.jsx';
 import { refreshGame } from '../game.jsx';
+import PatternPickCard from '../components/PatternPick.jsx';
 
 const KIND_LABEL = {
   concept: 'Concept', practice: 'Practice', review: 'Review', selftest: 'Self-test', mock: 'Mock', contest: 'Contest',
@@ -88,6 +89,7 @@ export default function Today() {
     return (
       <>
         {header}
+        {isToday && <PatternPickCard />}
         <div className="card center">
           {beforeStart ? (
             <>
@@ -118,6 +120,7 @@ export default function Today() {
   return (
     <>
       {header}
+      {isToday && <PatternPickCard />}
 
       <section className="card day-head">
         <div className="row wrap gap">

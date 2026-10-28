@@ -54,9 +54,11 @@
   border: 1px solid color-mix(in srgb, var(--mentor) 40%, transparent); border-radius: 999px; padding: 0.1rem 0.6rem;
 }
 .mentor-chip:hover { background: color-mix(in srgb, var(--mentor) 22%, transparent); }
-.mentor-cta { display: flex; gap: 0.75rem; align-items: center; color: var(--text); border-color: color-mix(in srgb, var(--mentor) 35%, var(--border)); }
-.mentor-cta:hover { text-decoration: none; border-color: var(--mentor); }
-.mentor-cta > span:first-child { font-size: 1.5rem; }
+.mentor-cta { display: flex; gap: var(--s-100); align-items: center; color: var(--text); }
+.mentor-cta:hover { text-decoration: none; }
+.mentor-cta-icon { width: 40px; height: 40px; flex: none; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-xs); color: var(--mentor); background: color-mix(in srgb, var(--mentor) 12%, transparent); }
+.mentor-cta-go { flex: none; color: var(--muted); transition: transform 0.5s var(--ease-out), color 0.3s var(--ease-out); }
+.mentor-cta:hover .mentor-cta-go { transform: translateX(3px); color: var(--text); }
 
 .dialog.drawer { width: min(760px, calc(100vw - 16px)); margin-right: 8px; height: calc(100vh - 16px); max-height: none; }
 .dialog.drawer .dialog-body { overflow-y: auto; max-height: calc(100vh - 110px); }

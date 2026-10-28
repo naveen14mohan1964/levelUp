@@ -4,6 +4,7 @@ import { ErrorBox, Loading } from '../components/ui.jsx';
 import TelegramCard from '../components/TelegramCard.jsx';
 import DevTools from '../components/DevTools.jsx';
 import MentorSettings from '../components/MentorSettings.jsx';
+import AppCard from '../components/AppCard.jsx';
 
 const GOAL_FIELDS = [
   { k: 'height_cm', label: 'Height (cm)' },
@@ -118,6 +119,7 @@ export default function Settings() {
         <p className="muted small">Used for meal photo → calorie estimates. The key stays on your machine's server and is never sent to the browser.</p>
       </section>
 
+      <AppCard />
       <TelegramCard />
       <MentorSettings />
       {/* dev server only (npm run dev): never shown on the always-on app */}
