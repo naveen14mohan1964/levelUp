@@ -1,7 +1,32 @@
 ---
 name: level-up-design
-description: The Level Up design system (dark navy + glassmorphism, Space Grotesk/Inter, strict colour meanings, 3D tilt / glow / spring motion, motivation and accessibility rules). Use this skill whenever building or changing any UI in this project: new pages, components, styles, empty states, animations or copy in client/.
+description: The Level Up design system (flat near-black surfaces, Geist, Phosphor icons, strict colour meanings, rise-with-blur motion, motivation and accessibility rules). A hybrid of the landing-page-design and design-to-motion skills in this folder. Use this skill whenever building or changing any UI in this project: new pages, components, styles, empty states, animations or copy in client/.
 ---
+
+> **Hybrid revamp (2026-10-27).** This file adapts `landing-page-design` (visual system) and `design-to-motion`
+> ("Website" context) to an app. Where they disagree with an older rule below, these win:
+> - **Surfaces are flat**, no navy, no glass blur, no background gradients: `--bg #000`, cards `--surface #181818`,
+>   nested `--surface-2 #1F1F1F`, hover `--surface-3 #272727`, `--border #313131`. The old `--glass*` names still
+>   exist and now resolve to these. Blur only on floating bars and sheets over content.
+> - **One typeface: Geist** (`@fontsource-variable/geist`), weights 400–700, never italic. Sizes on the Tailwind
+>   scale (12/16, 14/20, 16/24, 18/28, 20/28, 24/32, 30/36, 36/40, 48/1). Body is 14/20.
+> - **Spacing tokens** `--s-25 … --s-800` (2, 4, 8, 12, 16, 24, 32, 40, 48, 64, 80). **Radius** 16 / 12 / 8 (`--radius`,
+>   `--radius-sm`, `--radius-xs`), nested radius = outer minus gap.
+> - **Icons: Phosphor** (`@phosphor-icons/react`, named imports). Nav icons come from `Icon` in `areas.js`.
+> - **No one-sided borders on cards**: draw an inner rail (`::before`) or an inset shadow instead.
+> - **Gradient only on the page hero heading text**: `.text-gradient` (#FFF to #9B9B9B).
+> - **Easing tokens**: `--ease-out` (base, hover and layout), `--ease-enter`, `--ease-fade`, `--ease-io` (wipes, fills).
+>   Never `ease`, `linear` (except constant shimmer) or bouncy springs for entrances.
+> - **Entrances are automatic**: `useAutoReveal` in `components/motion.jsx` (mounted once in `App.jsx`) makes every
+>   `.card`, `.reveal`, `.section-label`, `.tabs` rise 24px with a 6px blur when it scrolls into view, staggered
+>   80 ms, and page heads (`.page-head > *`, `.today-head > *`) do the small 6px hero appear. Don't add per-page
+>   entrance code; opt out with `data-reveal="off"`. `Stagger` lists opt out automatically.
+> - **Data visuals act out their story**: `ProgressBar` wipes in via `scaleX`, `ProgressRing` sweeps, numbers use
+>   `<CountUp>`, the current timeline block has a pulse ring, the one primary hero button has the `.sheen` accent.
+> - **Loading = skeleton** (`<Loading/>` renders `SkeletonPage`), never "Loading…" text or spinners.
+> - **Copy**: no hyphens inside sentences ("5 day streak"), sentence case, `text-wrap: balance/pretty`.
+> - The sections below are kept for colour meanings, motivation and accessibility, which are unchanged.
+>   Their navy/glass/Inter/Space Grotesk snippets are historical.
 
 # Level Up design system
 

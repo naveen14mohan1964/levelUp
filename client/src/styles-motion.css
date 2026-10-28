@@ -1,0 +1,53 @@
+/* =====================================================================
+   App-wide motion (components/motion.jsx). Rules: .claude/skills/design-to-motion + landing-page-design B7.
+   Only transform, opacity, filter, clip-path and SVG stroke offsets animate. Reduced motion = final state.
+   ===================================================================== */
+
+/* waiting to scroll into view: useAutoReveal removes it as the entrance starts */
+.rv-pending { opacity: 0; }
+
+/* ---------- skeleton loaders (shaped like the page, never a spinner) ---------- */
+.sk-page { display: flex; flex-direction: column; gap: var(--s-100); padding-top: var(--s-75); }
+.sk { position: relative; overflow: hidden; border-radius: var(--radius-xs); background: var(--surface-2); }
+.sk::after {
+  content: ''; position: absolute; inset: 0; transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  animation: sk-glimmer 2.4s linear infinite;
+}
+@keyframes sk-glimmer { to { transform: translateX(100%); } }
+.sk-title { width: min(320px, 70%); height: 36px; }
+.sk-sub { width: min(220px, 50%); height: 16px; margin-bottom: var(--s-300); }
+.sk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--s-200); }
+.sk-card { display: flex; flex-direction: column; gap: var(--s-100); padding: var(--s-300); border-radius: var(--radius); background: var(--surface); border: 1px solid var(--glass-border); min-height: 136px; }
+.sk-card .sk { background: var(--surface-3); }
+.sk-line { height: 12px; }
+.w40 { width: 40%; } .w60 { width: 60%; } .w90 { width: 90%; }
+
+/* ---------- data visuals: bars wipe, rings sweep, both from their start edge ---------- */
+.progress-fill.scaled { animation: bar-wipe 1.1s var(--ease-io) 0.2s backwards; }
+@keyframes bar-wipe { from { transform: scaleX(0); } }
+.ring-arc { transition: stroke-dashoffset 0.9s var(--ease-io); animation: ring-sweep 1.2s var(--ease-io) 0.2s backwards; }
+@keyframes ring-sweep { from { stroke-dashoffset: var(--c); } }
+.count-up { font-variant-numeric: tabular-nums; }
+
+/* ---------- hero heading: the one place a gradient is used, and only on text (skill B5) ---------- */
+.text-gradient {
+  background: linear-gradient(90deg, #FFFFFF, #9B9B9B);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* ---------- sheen sweep accent on the one primary action (band 38% wide, 1.5 s pass every 3.4 s) ---------- */
+.sheen { position: relative; overflow: hidden; isolation: isolate; }
+.sheen::after {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(100deg, transparent 31%, rgba(255, 255, 255, 0.28) 50%, transparent 69%);
+  transform: translateX(-100%);
+  animation: sheen 3.4s var(--ease-io) 2.4s infinite;
+}
+@keyframes sheen { 0% { transform: translateX(-100%); } 44%, 100% { transform: translateX(100%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rv-pending { opacity: 1; }
+  .sk::after, .sheen::after { animation: none; }
+  .progress-fill.scaled, .ring-arc { animation: none; }
+}
