@@ -5,13 +5,14 @@ import { areaByKey } from '../areas.js';
 import { formatLong, formatShort, todayISO } from '../dates.js';
 import { DocLinks, ErrorBox, Loading, Md, ProgressBar, ProgressRing } from '../components/ui.jsx';
 import MentorDrawer from '../components/MentorDrawer.jsx';
+import AssignmentBrief from '../components/AssignmentBrief.jsx';
 import LevelMap, { LessonRow } from '../components/LevelMap.jsx';
 import { refreshGame } from '../game.jsx';
 
 const ROADMAP_INTRO = {
-  node: 'runtime → Express → REST → data → auth → testing → real-time → shipping',
-  dotnet: 'SDK + C# → DI + middleware → EF Core → validation → Identity/JWT → background work → testing → shipping',
-  react: 'components + TypeScript → routing → server state → forms → patterns → styling + a11y → testing → shipping',
+  node: 'runtime + Express → MongoDB → auth + security → real API features → testing + real-time → production',
+  dotnet: 'C# → ASP.NET Core → EF Core → API quality → auth → testing → performance → caching → resilience → observability → messaging → security → deployment → capstone',
+  react: 'components + TypeScript → server state → forms → patterns + UX → testing → performance + a11y → production',
 };
 
 function daysBetween(a, b) {
@@ -71,7 +72,7 @@ export default function ProjectPage({ area }) {
       <div className="page-head">
         <div>
           <h1>{meta.icon} {meta.label}</h1>
-          <div className="muted small">From-scratch roadmap · {ROADMAP_INTRO[area]}</div>
+          <div className="muted small">From-scratch course · {ROADMAP_INTRO[area]}</div>
         </div>
         <nav className="tabs">
           <Link to={base} className={`tab${onRoadmap ? '' : ' active'}`}>Today</Link>
@@ -122,6 +123,8 @@ function Lesson({ area, projects, onUpdate }) {
   const { done, total } = stepCounts(tasks);
   const project = tasks[0]?.project;
   const weekTasks = all.filter((t) => t.week_no === build?.week_no && t.kind === 'build');
+  // assignment weeks (.NET track): objective, level and deliverable for the week
+  const week = project?.weeks.find((w) => w.week_no === (build?.week_no ?? checkpoint?.week_no));
 
   return (
     <>
@@ -148,7 +151,14 @@ function Lesson({ area, projects, onUpdate }) {
           <span className="pill phase-1">Week {build?.week_no ?? checkpoint?.week_no}</span>
           <span className="pill">{build?.week_title}</span>
           <span className="pill">{project?.name}</span>
+          {week?.level && <span className={`pill level-${week.level.toLowerCase().replace(/[^a-z]/g, '')}`}>{week.level}</span>}
         </div>
+        {week?.objective && (
+          <div className="assignment-banner">
+            <div><span className="assignment-label">🎯 This week's goal</span> {week.objective}</div>
+            {week.deliverable && <div className="small"><span className="assignment-label">📦 Practice outcome</span> {week.deliverable}</div>}
+          </div>
+        )}
         <div className="row gap center-v top-gap">
           <ProgressBar value={done} total={total} />
           <span className="small nowrap">{done ? `${done}/${total} steps` : `${total} steps today`}</span>
@@ -172,7 +182,7 @@ function Lesson({ area, projects, onUpdate }) {
           )}
           {build && (
             <Step
-              n={build.learn ? '2' : '1'} icon="🛠" label="Build" minutes={build.learn ? '~40 min' : '1h'} done={build.done}
+              n={build.learn ? '2' : '1'} icon="🛠" label="Practice" minutes={build.learn ? '~40 min' : '1h'} done={build.done}
               onToggle={() => onUpdate(build, { done: !build.done })}
               extra={
                 <>
@@ -182,6 +192,7 @@ function Lesson({ area, projects, onUpdate }) {
               }
             >
               <Md text={build.title} />
+              {build.done_when && <span className="done-when"><strong>✓ Done when:</strong> <Md text={build.done_when} /></span>}
             </Step>
           )}
           {checkpoint && (
@@ -195,6 +206,10 @@ function Lesson({ area, projects, onUpdate }) {
             </Step>
           )}
         </ol>
+
+        {/* the day written out in full: today's build open, the weekly drill below it */}
+        <AssignmentBrief md={build?.brief} title="Today's lesson, in full" open />
+        <AssignmentBrief md={checkpoint?.brief} title="Weekly checkpoint drill" open={!build?.brief} />
 
         {project?.resources?.length > 0 && (
           <div className="resources top-gap">
@@ -360,6 +375,7 @@ function TaskRow({ area, task: t, status, onUpdate }) {
         <input type="checkbox" checked={t.done} onChange={() => onUpdate(t, { done: !t.done })} />
         <span>{t.kind === 'checkpoint' ? '' : '🛠 '}<Md text={t.title} />{t.built_from_scratch && <span className="scratch-badge"> · from scratch</span>}</span>
       </label>
+      <AssignmentBrief md={t.brief} title={t.kind === 'checkpoint' ? 'Read the drill' : 'Read the full lesson'} />
     </div>
   );
 }

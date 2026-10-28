@@ -1,6 +1,6 @@
 {
   "startDate": "2026-10-05",
-  "generatedAt": "2026-10-04T18:14:28.330Z",
+  "generatedAt": "2026-10-26T13:05:26.332Z",
   "weeks": [
     {
       "week": 1,
@@ -11092,657 +11092,9 @@
   ],
   "projects": [
     {
-      "code": "snippetvault",
-      "area": "node",
-      "heading": "Project 1",
-      "stack": [
-        "Node.js",
-        "Express",
-        "MongoDB",
-        "JWT",
-        "Jest",
-        "Socket.IO",
-        "Docker"
-      ],
-      "resources": [
-        {
-          "label": "Node.js docs",
-          "url": "https://nodejs.org/docs/latest/api/"
-        },
-        {
-          "label": "Express guide",
-          "url": "https://expressjs.com/en/guide/routing/"
-        },
-        {
-          "label": "Mongoose docs",
-          "url": "https://mongoosejs.com/docs/guide.html"
-        },
-        {
-          "label": "Zod",
-          "url": "https://zod.dev/"
-        },
-        {
-          "label": "Jest",
-          "url": "https://jestjs.io/docs/getting-started"
-        },
-        {
-          "label": "Socket.IO",
-          "url": "https://socket.io/docs/v4/"
-        },
-        {
-          "label": "roadmap.sh/nodejs",
-          "url": "https://roadmap.sh/nodejs"
-        }
-      ],
-      "name": "SnippetVault API",
-      "description": "Save, tag, search and share code snippets. Teaches REST, data modelling, auth, testing, and real-time features.",
-      "tasks": [
-        {
-          "week": 1,
-          "dow": 0,
-          "date": "2026-10-05",
-          "weekTitle": "Setup",
-          "kind": "build",
-          "learn": "Node runtime, CommonJS vs ES modules, npm + package.json scripts",
-          "title": "Init repo, npm, folder structure (routes/controllers/models/middleware), ESLint + Prettier, .env",
-          "learnLinks": [
-            {
-              "label": "Node.js: Introduction",
-              "url": "https://nodejs.org/learn/getting-started/introduction-to-nodejs"
-            },
-            {
-              "label": "Node.js: ECMAScript modules",
-              "url": "https://nodejs.org/api/esm.html"
-            },
-            {
-              "label": "npm: scripts",
-              "url": "https://docs.npmjs.com/cli/v10/using-npm/scripts"
-            }
-          ]
-        },
-        {
-          "week": 1,
-          "dow": 1,
-          "date": "2026-10-06",
-          "weekTitle": "Setup",
-          "kind": "build",
-          "learn": "The `http` module, request/response cycle, event loop basics",
-          "title": "Raw `http` server with no Express (understand req/res), then switch to Express",
-          "learnLinks": [
-            {
-              "label": "Node.js: http module",
-              "url": "https://nodejs.org/api/http.html"
-            },
-            {
-              "label": "Node.js: The event loop",
-              "url": "https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick"
-            }
-          ]
-        },
-        {
-          "week": 1,
-          "dow": 2,
-          "date": "2026-10-07",
-          "weekTitle": "Setup",
-          "kind": "build",
-          "learn": "Express routing and the middleware chain (`next()`, order matters)",
-          "title": "Health route, JSON body parsing, 404 + error-handling middleware",
-          "learnLinks": [
-            {
-              "label": "Express: Routing",
-              "url": "https://expressjs.com/en/guide/routing/"
-            },
-            {
-              "label": "Express: Using middleware",
-              "url": "https://expressjs.com/en/guide/using-middleware/"
-            }
-          ]
-        },
-        {
-          "week": 1,
-          "dow": 3,
-          "date": "2026-10-08",
-          "weekTitle": "Setup",
-          "kind": "build",
-          "learn": "REST design: resources, HTTP verbs, status codes (200/201/204/400/404)",
-          "title": "In-memory CRUD for snippets with correct status codes",
-          "learnLinks": [
-            {
-              "label": "MDN: HTTP request methods",
-              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods"
-            },
-            {
-              "label": "MDN: HTTP status codes",
-              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"
-            }
-          ]
-        },
-        {
-          "week": 1,
-          "dow": 4,
-          "date": "2026-10-09",
-          "weekTitle": "Setup",
-          "kind": "build",
-          "learn": "async/await errors in Express; Postman collections and environments",
-          "title": "Test every route in Postman/Thunder Client; commit the collection + a README skeleton",
-          "learnLinks": [
-            {
-              "label": "Express: Error handling",
-              "url": "https://expressjs.com/en/guide/error-handling/"
-            },
-            {
-              "label": "Postman: Environments",
-              "url": "https://learning.postman.com/docs/use/send-requests/variables/managing-environments/"
-            }
-          ]
-        },
-        {
-          "week": 1,
-          "dow": 4,
-          "date": "2026-10-09",
-          "weekTitle": "Setup",
-          "kind": "checkpoint",
-          "learn": null,
-          "title": "From a blank folder: an Express server with GET/POST `/notes` (in memory) + 404 + error middleware in 20 minutes"
-        },
-        {
-          "week": 2,
-          "dow": 0,
-          "date": "2026-10-12",
-          "weekTitle": "Database",
-          "kind": "build",
-          "learn": "Documents vs tables: when MongoDB fits; connection strings and config",
-          "title": "Connect Mongoose (local MongoDB or Atlas free tier); config module",
-          "learnLinks": [
-            {
-              "label": "MongoDB: Data modeling",
-              "url": "https://www.mongodb.com/docs/manual/data-modeling/"
-            },
-            {
-              "label": "MongoDB: Connection strings",
-              "url": "https://www.mongodb.com/docs/manual/reference/connection-string/"
-            }
-          ]
-        },
-        {
-          "week": 2,
-          "dow": 1,
-          "date": "2026-10-13",
-          "weekTitle": "Database",
-          "kind": "build",
-          "learn": "Mongoose schemas, models, built-in validation, timestamps",
-          "title": "Snippet schema (title, code, language, tags, timestamps) with validation; replace the in-memory store",
-          "learnLinks": [
-            {
-              "label": "Mongoose: Schemas",
-              "url": "https://mongoosejs.com/docs/guide.html"
-            },
-            {
-              "label": "Mongoose: Validation",
-              "url": "https://mongoosejs.com/docs/validation.html"
-            }
-          ]
-        },
-        {
-          "week": 2,
-          "dow": 2,
-          "date": "2026-10-14",
-          "weekTitle": "Database",
-          "kind": "build",
-          "learn": "Querying: filters, text indexes, pagination with skip/limit + sort",
-          "title": "Filter by language/tag, text search, pagination, sorting",
-          "learnLinks": [
-            {
-              "label": "Mongoose: Queries",
-              "url": "https://mongoosejs.com/docs/queries.html"
-            },
-            {
-              "label": "MongoDB: Text indexes",
-              "url": "https://www.mongodb.com/docs/manual/core/indexes/index-types/index-text/"
-            }
-          ]
-        },
-        {
-          "week": 2,
-          "dow": 3,
-          "date": "2026-10-15",
-          "weekTitle": "Database",
-          "kind": "build",
-          "learn": "Validating input at the boundary with Zod; a consistent error shape",
-          "title": "Request validation middleware (Zod); a consistent error response shape",
-          "learnLinks": [
-            {
-              "label": "Zod: Basic usage",
-              "url": "https://zod.dev/basics"
-            }
-          ]
-        },
-        {
-          "week": 2,
-          "dow": 4,
-          "date": "2026-10-16",
-          "weekTitle": "Database",
-          "kind": "build",
-          "learn": "Layered architecture: route → controller → service → model",
-          "title": "Refactor into a service layer + async error wrapper",
-          "learnLinks": [
-            {
-              "label": "Express: express.Router",
-              "url": "https://expressjs.com/en/guide/routing/#expressrouter"
-            },
-            {
-              "label": "Node best practices: Project structure",
-              "url": "https://github.com/goldbergyoni/nodebestpractices#1-project-architecture-practices"
-            }
-          ]
-        },
-        {
-          "week": 2,
-          "dow": 4,
-          "date": "2026-10-16",
-          "weekTitle": "Database",
-          "kind": "checkpoint",
-          "learn": null,
-          "title": "Explain out loud: schema vs model, and why pagination needs a sort. Then add a `?limit=` cap (max 50) without looking anything up"
-        },
-        {
-          "week": 3,
-          "dow": 0,
-          "date": "2026-10-19",
-          "weekTitle": "Auth",
-          "kind": "build",
-          "learn": "Password hashing: bcrypt, salts, cost factor (never store plain text)",
-          "title": "User model, bcrypt hashing, register endpoint",
-          "learnLinks": [
-            {
-              "label": "OWASP: Password storage",
-              "url": "https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html"
-            },
-            {
-              "label": "npm: bcrypt",
-              "url": "https://www.npmjs.com/package/bcrypt"
-            }
-          ]
-        },
-        {
-          "week": 3,
-          "dow": 1,
-          "date": "2026-10-20",
-          "weekTitle": "Auth",
-          "kind": "build",
-          "learn": "JWT anatomy (header.payload.signature), stateless auth, expiry",
-          "title": "Login → JWT; auth middleware",
-          "learnLinks": [
-            {
-              "label": "JWT: Introduction",
-              "url": "https://www.jwt.io/introduction"
-            },
-            {
-              "label": "RFC 7519 (JWT)",
-              "url": "https://datatracker.ietf.org/doc/html/rfc7519"
-            }
-          ]
-        },
-        {
-          "week": 3,
-          "dow": 2,
-          "date": "2026-10-21",
-          "weekTitle": "Auth",
-          "kind": "build",
-          "learn": "Authentication vs authorization; 401 vs 403",
-          "title": "Ownership: only the owner can edit/delete (403)",
-          "learnLinks": [
-            {
-              "label": "MDN: 401 Unauthorized",
-              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/401"
-            },
-            {
-              "label": "MDN: 403 Forbidden",
-              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/403"
-            }
-          ]
-        },
-        {
-          "week": 3,
-          "dow": 3,
-          "date": "2026-10-22",
-          "weekTitle": "Auth",
-          "kind": "build",
-          "learn": "Cookies: httpOnly, Secure, SameSite; refresh-token flow",
-          "title": "Refresh token in an httpOnly cookie + logout",
-          "learnLinks": [
-            {
-              "label": "MDN: Using HTTP cookies",
-              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies"
-            },
-            {
-              "label": "Auth0: Refresh tokens",
-              "url": "https://auth0.com/docs/secure/tokens/refresh-tokens"
-            }
-          ]
-        },
-        {
-          "week": 3,
-          "dow": 4,
-          "date": "2026-10-23",
-          "weekTitle": "Auth",
-          "kind": "build",
-          "learn": "OWASP basics: helmet headers, CORS, rate limiting, brute-force protection",
-          "title": "Security: helmet, CORS config, rate limiting on auth routes",
-          "learnLinks": [
-            {
-              "label": "Express: Security best practices",
-              "url": "https://expressjs.com/en/advanced/best-practice-security/"
-            },
-            {
-              "label": "Helmet",
-              "url": "https://helmet.js.org/"
-            },
-            {
-              "label": "npm: express-rate-limit",
-              "url": "https://www.npmjs.com/package/express-rate-limit"
-            }
-          ]
-        },
-        {
-          "week": 3,
-          "dow": 4,
-          "date": "2026-10-23",
-          "weekTitle": "Auth",
-          "kind": "checkpoint",
-          "learn": null,
-          "title": "Draw the login → JWT → protected-route flow from memory; explain 401 vs 403 and where the refresh token lives"
-        },
-        {
-          "week": 4,
-          "dow": 0,
-          "date": "2026-10-26",
-          "weekTitle": "Features",
-          "kind": "build",
-          "learn": "Slugs and unique indexes",
-          "title": "Public/private snippets; share via slug",
-          "learnLinks": [
-            {
-              "label": "MongoDB: Unique indexes",
-              "url": "https://www.mongodb.com/docs/manual/core/index-unique/"
-            }
-          ]
-        },
-        {
-          "week": 4,
-          "dow": 1,
-          "date": "2026-10-27",
-          "weekTitle": "Features",
-          "kind": "build",
-          "learn": "Embedding vs referencing; `populate` and its cost",
-          "title": "Collections (folders): refs + populate",
-          "learnLinks": [
-            {
-              "label": "MongoDB: Embed vs link related data",
-              "url": "https://www.mongodb.com/docs/manual/data-modeling/best-practices/#link-related-data"
-            },
-            {
-              "label": "Mongoose: Populate",
-              "url": "https://mongoosejs.com/docs/populate.html"
-            }
-          ]
-        },
-        {
-          "week": 4,
-          "dow": 2,
-          "date": "2026-10-28",
-          "weekTitle": "Features",
-          "kind": "build",
-          "learn": "The aggregation pipeline: $match, $group, $sort, $limit",
-          "title": "Aggregation pipeline: top tags, snippets per language",
-          "learnLinks": [
-            {
-              "label": "MongoDB: Aggregation pipeline",
-              "url": "https://www.mongodb.com/docs/manual/core/aggregation-pipeline/"
-            }
-          ]
-        },
-        {
-          "week": 4,
-          "dow": 3,
-          "date": "2026-10-29",
-          "weekTitle": "Features",
-          "kind": "build",
-          "learn": "Structured logging, log levels, request IDs for tracing",
-          "title": "Structured logging (pino) + request IDs",
-          "learnLinks": [
-            {
-              "label": "Pino",
-              "url": "https://getpino.io/"
-            },
-            {
-              "label": "pino-http",
-              "url": "https://github.com/pinojs/pino-http"
-            }
-          ]
-        },
-        {
-          "week": 4,
-          "dow": 4,
-          "date": "2026-10-30",
-          "weekTitle": "Features",
-          "kind": "build",
-          "learn": "OpenAPI: describing an API so others can use it",
-          "title": "OpenAPI/Swagger docs",
-          "learnLinks": [
-            {
-              "label": "Swagger: OpenAPI 3.0 guide",
-              "url": "https://swagger.io/docs/specification/v3_0/about/"
-            },
-            {
-              "label": "OpenAPI: Getting started",
-              "url": "https://learn.openapis.org/"
-            }
-          ]
-        },
-        {
-          "week": 4,
-          "dow": 4,
-          "date": "2026-10-30",
-          "weekTitle": "Features",
-          "kind": "checkpoint",
-          "learn": null,
-          "title": "Write an aggregation pipeline from memory: snippet count per tag, top 5"
-        },
-        {
-          "week": 5,
-          "dow": 0,
-          "date": "2026-11-02",
-          "weekTitle": "Testing + real-time",
-          "kind": "build",
-          "learn": "The testing pyramid; Jest basics (describe/it/expect, setup/teardown)",
-          "title": "Jest + Supertest + mongodb-memory-server setup",
-          "learnLinks": [
-            {
-              "label": "Jest: Getting started",
-              "url": "https://jestjs.io/docs/getting-started"
-            },
-            {
-              "label": "Jest: Setup and teardown",
-              "url": "https://jestjs.io/docs/setup-teardown"
-            }
-          ]
-        },
-        {
-          "week": 5,
-          "dow": 1,
-          "date": "2026-11-03",
-          "weekTitle": "Testing + real-time",
-          "kind": "build",
-          "learn": "Integration tests over HTTP with Supertest",
-          "title": "Tests for the auth flows",
-          "learnLinks": [
-            {
-              "label": "Supertest",
-              "url": "https://github.com/forwardemail/supertest"
-            }
-          ]
-        },
-        {
-          "week": 5,
-          "dow": 2,
-          "date": "2026-11-04",
-          "weekTitle": "Testing + real-time",
-          "kind": "build",
-          "learn": "Test isolation: fresh data per test, mocks vs real dependencies",
-          "title": "Tests for CRUD + permissions",
-          "learnLinks": [
-            {
-              "label": "Jest: Mock functions",
-              "url": "https://jestjs.io/docs/mock-functions"
-            },
-            {
-              "label": "mongodb-memory-server",
-              "url": "https://github.com/typegoose/mongodb-memory-server"
-            }
-          ]
-        },
-        {
-          "week": 5,
-          "dow": 3,
-          "date": "2026-11-05",
-          "weekTitle": "Testing + real-time",
-          "kind": "build",
-          "learn": "WebSockets vs HTTP; Socket.IO events and rooms",
-          "title": "Socket.IO: live notification when someone favourites your snippet",
-          "learnLinks": [
-            {
-              "label": "MDN: WebSockets API",
-              "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API"
-            },
-            {
-              "label": "Socket.IO: Rooms",
-              "url": "https://socket.io/docs/v4/rooms/"
-            }
-          ]
-        },
-        {
-          "week": 5,
-          "dow": 4,
-          "date": "2026-11-06",
-          "weekTitle": "Testing + real-time",
-          "kind": "build",
-          "learn": "Caching: LRU, TTL, cache invalidation, measuring before optimising",
-          "title": "In-memory LRU cache for a hot query; measure before and after",
-          "learnLinks": [
-            {
-              "label": "npm: lru-cache",
-              "url": "https://www.npmjs.com/package/lru-cache"
-            }
-          ]
-        },
-        {
-          "week": 5,
-          "dow": 4,
-          "date": "2026-11-06",
-          "weekTitle": "Testing + real-time",
-          "kind": "checkpoint",
-          "learn": null,
-          "title": "Write a new Supertest test for a 403 case without copying an existing test"
-        },
-        {
-          "week": 6,
-          "dow": 0,
-          "date": "2026-11-09",
-          "weekTitle": "Ship",
-          "kind": "build",
-          "learn": "Docker: images vs containers, Dockerfile layers, docker-compose",
-          "title": "Dockerfile + docker-compose (API + Mongo)",
-          "learnLinks": [
-            {
-              "label": "Docker: What is an image?",
-              "url": "https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-an-image/"
-            },
-            {
-              "label": "Docker Compose",
-              "url": "https://docs.docker.com/compose/"
-            }
-          ]
-        },
-        {
-          "week": 6,
-          "dow": 1,
-          "date": "2026-11-10",
-          "weekTitle": "Ship",
-          "kind": "build",
-          "learn": "CI: what a pipeline runs and why (lint → test → build)",
-          "title": "GitHub Actions CI: lint + tests",
-          "learnLinks": [
-            {
-              "label": "GitHub Actions: Building Node.js",
-              "url": "https://docs.github.com/en/actions/tutorials/build-and-test-code/nodejs"
-            }
-          ]
-        },
-        {
-          "week": 6,
-          "dow": 2,
-          "date": "2026-11-11",
-          "weekTitle": "Ship",
-          "kind": "build",
-          "learn": "12-factor config: env vars per environment, no secrets in git",
-          "title": "Deploy to a free tier, or record a demo",
-          "learnLinks": [
-            {
-              "label": "The Twelve-Factor App: Config",
-              "url": "https://12factor.net/config"
-            }
-          ]
-        },
-        {
-          "week": 6,
-          "dow": 3,
-          "date": "2026-11-12",
-          "weekTitle": "Ship",
-          "kind": "build",
-          "learn": "Documenting a project: README structure, architecture diagrams",
-          "title": "README: features, architecture diagram, API table",
-          "learnLinks": [
-            {
-              "label": "Make a README",
-              "url": "https://www.makeareadme.com/"
-            },
-            {
-              "label": "C4 model (diagrams)",
-              "url": "https://c4model.com/"
-            }
-          ]
-        },
-        {
-          "week": 6,
-          "dow": 4,
-          "date": "2026-11-13",
-          "weekTitle": "Ship",
-          "kind": "build",
-          "learn": "Telling your project story in interviews (problem → design → trade-offs → result)",
-          "title": "Retro + 3 resume bullets with numbers",
-          "learnLinks": [
-            {
-              "label": "Tech Interview Handbook: Behavioral",
-              "url": "https://www.techinterviewhandbook.org/behavioral-interview/"
-            }
-          ]
-        },
-        {
-          "week": 6,
-          "dow": 4,
-          "date": "2026-11-13",
-          "weekTitle": "Ship",
-          "kind": "checkpoint",
-          "learn": null,
-          "title": "Record a 2-minute explanation of SnippetVault's architecture on your phone"
-        }
-      ]
-    },
-    {
       "code": "jobhunt-api",
       "area": "dotnet",
-      "heading": "Project 2",
+      "heading": "Project 1",
       "stack": [
         ".NET 10",
         "ASP.NET Core",
@@ -11779,17 +11131,22 @@
         }
       ],
       "name": "JobHunt API",
-      "description": "Track job applications, interview rounds and follow-ups. It's useful for your own job switch, and it's the \"production-grade backend\" for your resume.",
+      "description": "Track job applications, interview rounds and follow-ups. Each assignment adds one production skill to the same app, built alongside your company's .NET course. Every assignment ends with a merged PR and tests.",
       "tasks": [
         {
-          "week": 7,
+          "week": 1,
           "dow": 0,
-          "date": "2026-11-16",
-          "weekTitle": "Foundations",
+          "date": "2026-10-05",
+          "weekTitle": "Assignment 1: C# & .NET foundations",
           "kind": "build",
-          "learn": ".NET SDK, solutions vs projects, project references, layered architecture",
-          "title": "`dotnet new webapi`; solution layers: Api / Application / Domain / Infrastructure",
+          "learn": "The .NET SDK and CLI; solutions vs projects; project references; layered architecture",
+          "title": "`dotnet new sln` with Api / Application / Domain / Infrastructure projects and the right references",
+          "doneWhen": "`dotnet build` passes; Api → Application → Domain, Infrastructure → Application",
           "learnLinks": [
+            {
+              "label": ".NET CLI overview",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/tools/"
+            },
             {
               "label": "dotnet sln",
               "url": "https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-sln"
@@ -11801,25 +11158,664 @@
           ]
         },
         {
-          "week": 7,
+          "week": 1,
           "dow": 1,
-          "date": "2026-11-17",
-          "weekTitle": "Foundations",
+          "date": "2026-10-06",
+          "weekTitle": "Assignment 1: C# & .NET foundations",
           "kind": "build",
-          "learn": "Program.cs: the DI container, middleware pipeline, configuration + environments",
-          "title": "Program.cs: DI, middleware pipeline, configuration, environments",
+          "learn": "Classes vs records vs structs; value vs reference equality; nullable reference types",
+          "title": "Domain: Company, JobApplication, Interview, Note + ApplicationStatus enum",
+          "doneWhen": "Nullable enabled with zero warnings; value objects are records",
           "learnLinks": [
             {
-              "label": "ASP.NET Core: Dependency injection",
+              "label": "Records",
+              "url": "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record"
+            },
+            {
+              "label": "Nullable reference types",
+              "url": "https://learn.microsoft.com/en-us/dotnet/csharp/nullable-references"
+            }
+          ]
+        },
+        {
+          "week": 1,
+          "dow": 2,
+          "date": "2026-10-07",
+          "weekTitle": "Assignment 1: C# & .NET foundations",
+          "kind": "build",
+          "learn": "Collections and LINQ: Where, Select, GroupBy, OrderBy; deferred execution",
+          "title": "LINQ over an in-memory list: applications by status, by company, response rate",
+          "doneWhen": "A test checks each query's result on sample data",
+          "learnLinks": [
+            {
+              "label": "LINQ overview",
+              "url": "https://learn.microsoft.com/en-us/dotnet/csharp/linq/"
+            },
+            {
+              "label": "Standard query operators",
+              "url": "https://learn.microsoft.com/en-us/dotnet/csharp/linq/standard-query-operators/"
+            }
+          ]
+        },
+        {
+          "week": 1,
+          "dow": 3,
+          "date": "2026-10-08",
+          "weekTitle": "Assignment 1: C# & .NET foundations",
+          "kind": "build",
+          "learn": "Exceptions and guard clauses; keeping business rules inside entities",
+          "title": "Status transitions (Applied → Interviewing → Offer/Rejected) with InvalidStatusTransitionException",
+          "doneWhen": "Illegal transitions throw; every rule has a test",
+          "learnLinks": [
+            {
+              "label": "Exceptions and exception handling",
+              "url": "https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/exceptions/"
+            },
+            {
+              "label": "Best practices for exceptions",
+              "url": "https://learn.microsoft.com/en-us/dotnet/standard/exceptions/best-practices-for-exceptions"
+            }
+          ]
+        },
+        {
+          "week": 1,
+          "dow": 4,
+          "date": "2026-10-09",
+          "weekTitle": "Assignment 1: C# & .NET foundations",
+          "kind": "build",
+          "learn": "Unit testing with xUnit: Fact vs Theory, Arrange-Act-Assert, coverage",
+          "title": "Domain.Tests project for the rules and the LINQ stats",
+          "doneWhen": "`dotnet test` is green with ≥ 80% coverage on Domain",
+          "learnLinks": [
+            {
+              "label": "Unit testing C# with xUnit",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-csharp-with-xunit"
+            },
+            {
+              "label": "Code coverage for unit testing",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-code-coverage"
+            }
+          ]
+        },
+        {
+          "week": 1,
+          "dow": 4,
+          "date": "2026-10-09",
+          "weekTitle": "Assignment 1: C# & .NET foundations",
+          "kind": "checkpoint",
+          "learn": null,
+          "title": "From a blank file: a record, an enum, one guarded state transition and a Theory test in 20 minutes"
+        },
+        {
+          "week": 2,
+          "dow": 0,
+          "date": "2026-10-12",
+          "weekTitle": "Assignment 2: ASP.NET Core essentials",
+          "kind": "build",
+          "learn": "How ASP.NET Core starts: WebApplication builder, Kestrel, Program.cs",
+          "title": "The Api project with a health endpoint",
+          "doneWhen": "GET /health returns 200",
+          "learnLinks": [
+            {
+              "label": "WebApplication and WebApplicationBuilder",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/webapplication"
+            },
+            {
+              "label": "ASP.NET Core fundamentals",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/"
+            }
+          ]
+        },
+        {
+          "week": 2,
+          "dow": 1,
+          "date": "2026-10-13",
+          "weekTitle": "Assignment 2: ASP.NET Core essentials",
+          "kind": "build",
+          "learn": "Dependency injection: registering services, constructor injection, singleton vs scoped vs transient",
+          "title": "Application service interfaces + in-memory implementations registered in DI",
+          "doneWhen": "You can swap an implementation in Program.cs without touching the endpoint",
+          "learnLinks": [
+            {
+              "label": "Dependency injection in ASP.NET Core",
               "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection"
             },
             {
-              "label": "ASP.NET Core: Middleware",
+              "label": "Service lifetimes",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection#service-lifetimes"
+            }
+          ]
+        },
+        {
+          "week": 2,
+          "dow": 2,
+          "date": "2026-10-14",
+          "weekTitle": "Assignment 2: ASP.NET Core essentials",
+          "kind": "build",
+          "learn": "The middleware pipeline: order, Use vs Run, writing custom middleware",
+          "title": "Request-timing and correlation-id middleware",
+          "doneWhen": "Every response has X-Correlation-Id and the log shows the duration",
+          "learnLinks": [
+            {
+              "label": "Middleware",
               "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/"
             },
             {
-              "label": "ASP.NET Core: Configuration",
+              "label": "Write custom middleware",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/write"
+            }
+          ]
+        },
+        {
+          "week": 2,
+          "dow": 3,
+          "date": "2026-10-15",
+          "weekTitle": "Assignment 2: ASP.NET Core essentials",
+          "kind": "build",
+          "learn": "Configuration and the Options pattern: appsettings, environments, user-secrets, validation",
+          "title": "JobHuntOptions bound and validated at startup",
+          "doneWhen": "The app refuses to start with invalid config; Development and Production values differ",
+          "learnLinks": [
+            {
+              "label": "Configuration",
               "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/"
+            },
+            {
+              "label": "Options pattern",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options"
+            },
+            {
+              "label": "Safe storage of app secrets",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets"
+            }
+          ]
+        },
+        {
+          "week": 2,
+          "dow": 4,
+          "date": "2026-10-16",
+          "weekTitle": "Assignment 2: ASP.NET Core essentials",
+          "kind": "build",
+          "learn": "Controllers vs minimal APIs; routing; DTOs; HTTP status codes",
+          "title": "Companies endpoints: list, get, create, update, delete, with DTOs",
+          "doneWhen": "Correct 200/201/204/404 codes; entities never leave the API",
+          "learnLinks": [
+            {
+              "label": "Choose between controller-based and minimal APIs",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/apis"
+            },
+            {
+              "label": "Create web APIs",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/web-api/"
+            }
+          ]
+        },
+        {
+          "week": 2,
+          "dow": 4,
+          "date": "2026-10-16",
+          "weekTitle": "Assignment 2: ASP.NET Core essentials",
+          "kind": "checkpoint",
+          "learn": null,
+          "title": "Draw the middleware pipeline and explain the three DI lifetimes from memory"
+        },
+        {
+          "week": 3,
+          "dow": 0,
+          "date": "2026-10-19",
+          "weekTitle": "Assignment 3: Data with EF Core",
+          "kind": "build",
+          "learn": "EF Core: DbContext, DbSet, conventions, connection strings",
+          "title": "JobHuntDbContext with the SQL Server provider in Infrastructure",
+          "doneWhen": "The app connects and `dotnet ef dbcontext info` works",
+          "learnLinks": [
+            {
+              "label": "EF Core overview",
+              "url": "https://learn.microsoft.com/en-us/ef/core/"
+            },
+            {
+              "label": "DbContext lifetime and configuration",
+              "url": "https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/"
+            }
+          ]
+        },
+        {
+          "week": 3,
+          "dow": 1,
+          "date": "2026-10-20",
+          "weekTitle": "Assignment 3: Data with EF Core",
+          "kind": "build",
+          "learn": "Code-first migrations; Fluent API configuration (keys, lengths, required)",
+          "title": "Entity configurations + the first migration",
+          "doneWhen": "Tables in SSMS have the right types and lengths",
+          "learnLinks": [
+            {
+              "label": "Migrations overview",
+              "url": "https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/"
+            },
+            {
+              "label": "Creating and configuring a model",
+              "url": "https://learn.microsoft.com/en-us/ef/core/modeling/"
+            }
+          ]
+        },
+        {
+          "week": 3,
+          "dow": 2,
+          "date": "2026-10-21",
+          "weekTitle": "Assignment 3: Data with EF Core",
+          "kind": "build",
+          "learn": "Relationships: one-to-many, required vs optional, cascade delete",
+          "title": "Company → JobApplications → Interviews and Notes",
+          "doneWhen": "Cascade rules are chosen on purpose and written in the PR",
+          "learnLinks": [
+            {
+              "label": "Relationships",
+              "url": "https://learn.microsoft.com/en-us/ef/core/modeling/relationships"
+            },
+            {
+              "label": "Cascade delete",
+              "url": "https://learn.microsoft.com/en-us/ef/core/saving/cascade-delete"
+            }
+          ]
+        },
+        {
+          "week": 3,
+          "dow": 3,
+          "date": "2026-10-22",
+          "weekTitle": "Assignment 3: Data with EF Core",
+          "kind": "build",
+          "learn": "Repository + Unit of Work on top of EF Core (DbContext as the unit of work)",
+          "title": "IJobApplicationRepository + IUnitOfWork implemented with EF",
+          "doneWhen": "Services depend only on interfaces; Save commits once per request",
+          "learnLinks": [
+            {
+              "label": "Design the infrastructure persistence layer",
+              "url": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design"
+            }
+          ]
+        },
+        {
+          "week": 3,
+          "dow": 4,
+          "date": "2026-10-23",
+          "weekTitle": "Assignment 3: Data with EF Core",
+          "kind": "build",
+          "learn": "Seeding data; async EF APIs (ToListAsync, SaveChangesAsync) and CancellationToken",
+          "title": "Seed sample data; every endpoint uses the database asynchronously",
+          "doneWhen": "CRUD works end to end against SQL Server",
+          "learnLinks": [
+            {
+              "label": "Data seeding",
+              "url": "https://learn.microsoft.com/en-us/ef/core/modeling/data-seeding"
+            },
+            {
+              "label": "Asynchronous programming in EF Core",
+              "url": "https://learn.microsoft.com/en-us/ef/core/miscellaneous/async"
+            }
+          ]
+        },
+        {
+          "week": 3,
+          "dow": 4,
+          "date": "2026-10-23",
+          "weekTitle": "Assignment 3: Data with EF Core",
+          "kind": "checkpoint",
+          "learn": null,
+          "title": "Blank project → entity + DbContext + migration + GET endpoint in 25 minutes"
+        },
+        {
+          "week": 4,
+          "dow": 0,
+          "date": "2026-10-26",
+          "weekTitle": "Assignment 4: API quality",
+          "kind": "build",
+          "learn": "Validation: DataAnnotations vs FluentValidation",
+          "title": "Validators for the create and update DTOs",
+          "doneWhen": "Invalid input returns 400 with errors per field",
+          "learnLinks": [
+            {
+              "label": "Model validation",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/mvc/models/validation"
+            },
+            {
+              "label": "FluentValidation",
+              "url": "https://docs.fluentvalidation.net/en/latest/"
+            }
+          ]
+        },
+        {
+          "week": 4,
+          "dow": 1,
+          "date": "2026-10-27",
+          "weekTitle": "Assignment 4: API quality",
+          "kind": "build",
+          "learn": "ProblemDetails and global exception handling with IExceptionHandler",
+          "title": "Map NotFound, Conflict and Validation exceptions to ProblemDetails",
+          "doneWhen": "Every error has the same JSON shape and production shows no stack traces",
+          "learnLinks": [
+            {
+              "label": "Handle errors in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling"
+            },
+            {
+              "label": "Handle errors in web APIs",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/web-api/handle-errors"
+            }
+          ]
+        },
+        {
+          "week": 4,
+          "dow": 2,
+          "date": "2026-10-28",
+          "weekTitle": "Assignment 4: API quality",
+          "kind": "build",
+          "learn": "IQueryable vs IEnumerable; filtering, sorting and paging in SQL",
+          "title": "GET /applications?status=&company=&sort=&page= returning PagedResult<T>",
+          "doneWhen": "The logged SQL uses OFFSET/FETCH and the page metadata is correct",
+          "learnLinks": [
+            {
+              "label": "Client vs server evaluation",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/client-eval"
+            },
+            {
+              "label": "Pagination",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/pagination"
+            }
+          ]
+        },
+        {
+          "week": 4,
+          "dow": 3,
+          "date": "2026-10-29",
+          "weekTitle": "Assignment 4: API quality",
+          "kind": "build",
+          "learn": "OpenAPI: response types, XML comments, examples",
+          "title": "OpenAPI document + UI with [ProducesResponseType] on every endpoint",
+          "doneWhen": "The docs list every status code each endpoint can return",
+          "learnLinks": [
+            {
+              "label": "OpenAPI support in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/overview"
+            }
+          ]
+        },
+        {
+          "week": 4,
+          "dow": 4,
+          "date": "2026-10-30",
+          "weekTitle": "Assignment 4: API quality",
+          "kind": "build",
+          "learn": "HTTP semantics: PUT vs PATCH, idempotency; API versioning",
+          "title": "A PATCH status endpoint and a v1 route group",
+          "doneWhen": "PATCH changes only the status; a test proves PUT is idempotent",
+          "learnLinks": [
+            {
+              "label": "JsonPatch in ASP.NET Core web API",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/web-api/jsonpatch"
+            },
+            {
+              "label": "MDN: idempotent methods",
+              "url": "https://developer.mozilla.org/en-US/docs/Glossary/Idempotent"
+            }
+          ]
+        },
+        {
+          "week": 4,
+          "dow": 4,
+          "date": "2026-10-30",
+          "weekTitle": "Assignment 4: API quality",
+          "kind": "checkpoint",
+          "learn": null,
+          "title": "Explain when SQL actually runs for an IQueryable, then add a sort parameter without docs"
+        },
+        {
+          "week": 5,
+          "dow": 0,
+          "date": "2026-11-02",
+          "weekTitle": "Assignment 5: Authentication & authorization",
+          "kind": "build",
+          "learn": "Authentication vs authorization; claims and ClaimsPrincipal; ASP.NET Core Identity",
+          "title": "Identity with register and login endpoints and password rules",
+          "doneWhen": "Passwords are hashed; a duplicate email returns 409",
+          "learnLinks": [
+            {
+              "label": "Introduction to Identity",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity"
+            },
+            {
+              "label": "Authentication overview",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/"
+            }
+          ]
+        },
+        {
+          "week": 5,
+          "dow": 1,
+          "date": "2026-11-03",
+          "weekTitle": "Assignment 5: Authentication & authorization",
+          "kind": "build",
+          "learn": "JWT bearer tokens: structure, signing, validation parameters",
+          "title": "Issue access tokens and protect the API with [Authorize]",
+          "doneWhen": "No token → 401; a tampered token is rejected",
+          "learnLinks": [
+            {
+              "label": "Configure JWT bearer authentication",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/configure-jwt-bearer-authentication"
+            },
+            {
+              "label": "jwt.io introduction",
+              "url": "https://jwt.io/introduction"
+            }
+          ]
+        },
+        {
+          "week": 5,
+          "dow": 2,
+          "date": "2026-11-04",
+          "weekTitle": "Assignment 5: Authentication & authorization",
+          "kind": "build",
+          "learn": "Refresh tokens: rotation and revocation",
+          "title": "Refresh-token table, rotate on every use, revoke on logout",
+          "doneWhen": "Reusing an old refresh token fails",
+          "learnLinks": [
+            {
+              "label": "Refresh token rotation (Auth0 docs)",
+              "url": "https://auth0.com/docs/secure/tokens/refresh-tokens/refresh-token-rotation"
+            }
+          ]
+        },
+        {
+          "week": 5,
+          "dow": 3,
+          "date": "2026-11-05",
+          "weekTitle": "Assignment 5: Authentication & authorization",
+          "kind": "build",
+          "learn": "Role- and policy-based authorization; resource-based checks; EF global query filters",
+          "title": "An Admin policy; users only see their own applications",
+          "doneWhen": "A test proves user A can't read user B's data",
+          "learnLinks": [
+            {
+              "label": "Policy-based authorization",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies"
+            },
+            {
+              "label": "Resource-based authorization",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/resourcebased"
+            },
+            {
+              "label": "Global query filters",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/filters"
+            }
+          ]
+        },
+        {
+          "week": 5,
+          "dow": 4,
+          "date": "2026-11-06",
+          "weekTitle": "Assignment 5: Authentication & authorization",
+          "kind": "build",
+          "learn": "OAuth 2.0 and OpenID Connect; Microsoft Entra ID app registrations and scopes",
+          "title": "\"Sign in with Microsoft\" via Entra ID, mapped to a local user",
+          "doneWhen": "A Microsoft login ends with a JobHunt JWT",
+          "learnLinks": [
+            {
+              "label": "OpenID Connect on the Microsoft identity platform",
+              "url": "https://learn.microsoft.com/en-us/entra/identity-platform/v2-protocols-oidc"
+            },
+            {
+              "label": "Register an application",
+              "url": "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app"
+            }
+          ]
+        },
+        {
+          "week": 5,
+          "dow": 4,
+          "date": "2026-11-06",
+          "weekTitle": "Assignment 5: Authentication & authorization",
+          "kind": "checkpoint",
+          "learn": null,
+          "title": "Draw how a JWT becomes a ClaimsPrincipal and how [Authorize] decides, from memory"
+        },
+        {
+          "week": 6,
+          "dow": 0,
+          "date": "2026-11-09",
+          "weekTitle": "Assignment 6: Testing",
+          "kind": "build",
+          "learn": "The test pyramid; unit tests with fakes and mocks (NSubstitute or Moq)",
+          "title": "Service-layer unit tests with mocked repositories",
+          "doneWhen": "Every service rule has a test",
+          "learnLinks": [
+            {
+              "label": "Unit testing best practices",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices"
+            },
+            {
+              "label": "NSubstitute",
+              "url": "https://nsubstitute.github.io/help/getting-started/"
+            }
+          ]
+        },
+        {
+          "week": 6,
+          "dow": 1,
+          "date": "2026-11-10",
+          "weekTitle": "Assignment 6: Testing",
+          "kind": "build",
+          "learn": "Integration tests with WebApplicationFactory",
+          "title": "HTTP tests for the API in memory: status codes and JSON",
+          "doneWhen": "400, 401, 403 and 404 paths are all covered",
+          "learnLinks": [
+            {
+              "label": "Integration tests in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests"
+            }
+          ]
+        },
+        {
+          "week": 6,
+          "dow": 2,
+          "date": "2026-11-11",
+          "weekTitle": "Assignment 6: Testing",
+          "kind": "build",
+          "learn": "Testing against a real database: Testcontainers for SQL Server, test data builders",
+          "title": "Integration tests on a SQL Server container",
+          "doneWhen": "Migrations run in the test; tests don't depend on each other",
+          "learnLinks": [
+            {
+              "label": "Testcontainers for .NET",
+              "url": "https://dotnet.testcontainers.org/"
+            },
+            {
+              "label": "Testing against your production database (EF Core)",
+              "url": "https://learn.microsoft.com/en-us/ef/core/testing/testing-with-the-database"
+            }
+          ]
+        },
+        {
+          "week": 6,
+          "dow": 3,
+          "date": "2026-11-12",
+          "weekTitle": "Assignment 6: Testing",
+          "kind": "build",
+          "learn": "Testing authenticated endpoints with a test auth handler or test tokens",
+          "title": "An authenticated test client helper",
+          "doneWhen": "Tests run as different users and roles",
+          "learnLinks": [
+            {
+              "label": "Integration tests: mock authentication",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests#mock-authentication"
+            }
+          ]
+        },
+        {
+          "week": 6,
+          "dow": 4,
+          "date": "2026-11-13",
+          "weekTitle": "Assignment 6: Testing",
+          "kind": "build",
+          "learn": "Coverage with coverlet + ReportGenerator; a coverage gate",
+          "title": "Coverage report and an 80% threshold",
+          "doneWhen": "`dotnet test` fails when coverage drops below 80%",
+          "learnLinks": [
+            {
+              "label": "Code coverage for unit testing",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-code-coverage"
+            },
+            {
+              "label": "ReportGenerator",
+              "url": "https://github.com/danielpalme/ReportGenerator"
+            }
+          ]
+        },
+        {
+          "week": 6,
+          "dow": 4,
+          "date": "2026-11-13",
+          "weekTitle": "Assignment 6: Testing",
+          "kind": "checkpoint",
+          "learn": null,
+          "title": "Write an integration test for a 404 case from scratch"
+        },
+        {
+          "week": 7,
+          "dow": 0,
+          "date": "2026-11-16",
+          "weekTitle": "Assignment 7: Database performance",
+          "kind": "build",
+          "learn": "How EF Core builds SQL: logging the generated SQL; the N+1 problem",
+          "title": "Find and fix an N+1 in the applications list (Include vs projection)",
+          "doneWhen": "The logged query count drops",
+          "learnLinks": [
+            {
+              "label": "Simple logging (see the SQL)",
+              "url": "https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/simple-logging"
+            },
+            {
+              "label": "Efficient querying",
+              "url": "https://learn.microsoft.com/en-us/ef/core/performance/efficient-querying"
+            }
+          ]
+        },
+        {
+          "week": 7,
+          "dow": 1,
+          "date": "2026-11-17",
+          "weekTitle": "Assignment 7: Database performance",
+          "kind": "build",
+          "learn": "Tracking vs AsNoTracking; projections to DTOs; split queries",
+          "title": "Read endpoints use AsNoTracking + Select projections",
+          "doneWhen": "The SQL fetches only the needed columns",
+          "learnLinks": [
+            {
+              "label": "Tracking vs no-tracking queries",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/tracking"
+            },
+            {
+              "label": "Single vs split queries",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries"
             }
           ]
         },
@@ -11827,18 +11823,19 @@
           "week": 7,
           "dow": 2,
           "date": "2026-11-18",
-          "weekTitle": "Foundations",
+          "weekTitle": "Assignment 7: Database performance",
           "kind": "build",
-          "learn": "C# for domain models: classes vs records, enums, nullable reference types",
-          "title": "Domain: Company, JobApplication (status enum), Interview, Note",
+          "learn": "Indexes: clustered vs non-clustered, covering indexes, execution plans",
+          "title": "Indexes for the status, company and user filters",
+          "doneWhen": "The execution plan shows an index seek",
           "learnLinks": [
             {
-              "label": "C#: Records",
-              "url": "https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/types/records"
+              "label": "Indexes in EF Core",
+              "url": "https://learn.microsoft.com/en-us/ef/core/modeling/indexes"
             },
             {
-              "label": "C#: Nullable reference types",
-              "url": "https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/null-safety/nullable-reference-types"
+              "label": "SQL Server index design guide",
+              "url": "https://learn.microsoft.com/en-us/sql/relational-databases/sql-server-index-design-guide"
             }
           ]
         },
@@ -11846,18 +11843,15 @@
           "week": 7,
           "dow": 3,
           "date": "2026-11-19",
-          "weekTitle": "Foundations",
+          "weekTitle": "Assignment 7: Database performance",
           "kind": "build",
-          "learn": "EF Core: DbContext, code-first migrations, connection strings",
-          "title": "DbContext + SQL Server + first migration (inspect the tables in SSMS)",
+          "learn": "Transactions: SaveChanges as a transaction, explicit transactions, isolation levels",
+          "title": "Change status + write history in one transaction",
+          "doneWhen": "A failure in step 2 rolls back step 1 (test)",
           "learnLinks": [
             {
-              "label": "EF Core: DbContext configuration",
-              "url": "https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/"
-            },
-            {
-              "label": "EF Core: Migrations",
-              "url": "https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/"
+              "label": "Using transactions",
+              "url": "https://learn.microsoft.com/en-us/ef/core/saving/transactions"
             }
           ]
         },
@@ -11865,18 +11859,15 @@
           "week": 7,
           "dow": 4,
           "date": "2026-11-20",
-          "weekTitle": "Foundations",
+          "weekTitle": "Assignment 7: Database performance",
           "kind": "build",
-          "learn": "Controllers vs minimal APIs; why DTOs instead of exposing entities",
-          "title": "Seed data; Companies CRUD using DTOs (entities never leave the API)",
+          "learn": "Concurrency: optimistic (rowversion) vs pessimistic; DbUpdateConcurrencyException",
+          "title": "A RowVersion on JobApplication; conflicting updates return 409",
+          "doneWhen": "Two simultaneous edits: the second one gets 409",
           "learnLinks": [
             {
-              "label": "ASP.NET Core: APIs overview",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/apis"
-            },
-            {
-              "label": "Tutorial: Prevent over-posting (DTOs)",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/tutorials/first-web-api#prevent-over-posting"
+              "label": "Handling concurrency conflicts",
+              "url": "https://learn.microsoft.com/en-us/ef/core/saving/concurrency"
             }
           ]
         },
@@ -11884,23 +11875,28 @@
           "week": 7,
           "dow": 4,
           "date": "2026-11-20",
-          "weekTitle": "Foundations",
+          "weekTitle": "Assignment 7: Database performance",
           "kind": "checkpoint",
           "learn": null,
-          "title": "Blank `dotnet new webapi`: add an entity + DbContext + migration + GET endpoint in 25 minutes, no docs"
+          "title": "Explain the N+1 problem and fix one live"
         },
         {
           "week": 8,
           "dow": 0,
           "date": "2026-11-23",
-          "weekTitle": "CRUD",
+          "weekTitle": "Assignment 8: Caching & rate limiting",
           "kind": "build",
-          "learn": "Mapping entities ↔ DTOs (manual vs Mapster/AutoMapper)",
-          "title": "JobApplications CRUD + mapping",
+          "learn": "Caching basics: what, where, how long; IMemoryCache and expirations",
+          "title": "Cache company lookups in memory",
+          "doneWhen": "The second call is served from the cache (logged)",
           "learnLinks": [
             {
-              "label": "Mapster",
-              "url": "https://github.com/MapsterMapper/Mapster"
+              "label": "Caching overview",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/caching/overview"
+            },
+            {
+              "label": "In-memory caching",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/caching/memory"
             }
           ]
         },
@@ -11908,18 +11904,19 @@
           "week": 8,
           "dow": 1,
           "date": "2026-11-24",
-          "weekTitle": "CRUD",
+          "weekTitle": "Assignment 8: Caching & rate limiting",
           "kind": "build",
-          "learn": "async/await in .NET: Task, CancellationToken, avoiding sync-over-async",
-          "title": "Async + CancellationToken everywhere",
+          "learn": "Distributed caching with Redis in Docker; IDistributedCache; serialization",
+          "title": "Redis cache for the stats endpoint",
+          "doneWhen": "The cache is shared by two running API instances",
           "learnLinks": [
             {
-              "label": "C#: Asynchronous programming",
-              "url": "https://learn.microsoft.com/en-us/dotnet/csharp/asynchronous-programming/"
+              "label": "Distributed caching",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/caching/distributed"
             },
             {
-              "label": "Cancellation in managed threads",
-              "url": "https://learn.microsoft.com/en-us/dotnet/standard/threading/cancellation-in-managed-threads"
+              "label": "Redis docs",
+              "url": "https://redis.io/docs/latest/"
             }
           ]
         },
@@ -11927,18 +11924,15 @@
           "week": 8,
           "dow": 2,
           "date": "2026-11-25",
-          "weekTitle": "CRUD",
+          "weekTitle": "Assignment 8: Caching & rate limiting",
           "kind": "build",
-          "learn": "IQueryable vs IEnumerable: when the SQL actually runs; paging",
-          "title": "Filtering, sorting, paging → `PagedResult<T>`",
+          "learn": "Output caching; invalidation (tags, eviction on writes); when caching is wrong",
+          "title": "Output cache for public endpoints, evicted on updates",
+          "doneWhen": "Updates show immediately and no user sees another user's data",
           "learnLinks": [
             {
-              "label": "EF Core: Client vs server evaluation",
-              "url": "https://learn.microsoft.com/en-us/ef/core/querying/client-eval"
-            },
-            {
-              "label": "EF Core: Pagination",
-              "url": "https://learn.microsoft.com/en-us/ef/core/querying/pagination"
+              "label": "Output caching middleware",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/caching/output"
             }
           ]
         },
@@ -11946,18 +11940,15 @@
           "week": 8,
           "dow": 3,
           "date": "2026-11-26",
-          "weekTitle": "CRUD",
+          "weekTitle": "Assignment 8: Caching & rate limiting",
           "kind": "build",
-          "learn": "Validation with FluentValidation; ProblemDetails (RFC 7807)",
-          "title": "FluentValidation → 400 ProblemDetails",
+          "learn": "The rate limiting middleware: fixed window, sliding window, token bucket, concurrency",
+          "title": "A global limiter plus per-endpoint policies",
+          "doneWhen": "A burst beyond the limit gets 429",
           "learnLinks": [
             {
-              "label": "FluentValidation: ASP.NET Core",
-              "url": "https://docs.fluentvalidation.net/en/latest/aspnet.html"
-            },
-            {
-              "label": "ASP.NET Core: Handle errors (ProblemDetails)",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling-api"
+              "label": "Rate limiting middleware",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/rate-limit"
             }
           ]
         },
@@ -11965,18 +11956,19 @@
           "week": 8,
           "dow": 4,
           "date": "2026-11-27",
-          "weekTitle": "CRUD",
+          "weekTitle": "Assignment 8: Caching & rate limiting",
           "kind": "build",
-          "learn": "Custom middleware and global exception handling",
-          "title": "Global exception middleware + NotFoundException",
+          "learn": "Partitioned limits per user and per IP; Retry-After; custom rejection responses",
+          "title": "Per-user limits when signed in, per-IP when anonymous",
+          "doneWhen": "429 includes Retry-After and other users are unaffected",
           "learnLinks": [
             {
-              "label": "ASP.NET Core: Write custom middleware",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/write"
+              "label": "Rate limiting: partitioned limiters",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/rate-limit#limiter-algorithms"
             },
             {
-              "label": "ASP.NET Core: Error handling",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling"
+              "label": "MDN: Retry-After",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Retry-After"
             }
           ]
         },
@@ -11984,23 +11976,24 @@
           "week": 8,
           "dow": 4,
           "date": "2026-11-27",
-          "weekTitle": "CRUD",
+          "weekTitle": "Assignment 8: Caching & rate limiting",
           "kind": "checkpoint",
           "learn": null,
-          "title": "Explain IQueryable vs IEnumerable and when SQL runs; then add a sort parameter without docs"
+          "title": "Explain one case where output caching would leak another user's data"
         },
         {
           "week": 9,
           "dow": 0,
           "date": "2026-11-30",
-          "weekTitle": "Auth",
+          "weekTitle": "Assignment 9: Resilience & background jobs",
           "kind": "build",
-          "learn": "ASP.NET Core Identity: users, password hashing, stores",
-          "title": "ASP.NET Core Identity + register endpoint",
+          "learn": "IHttpClientFactory and typed clients; why `new HttpClient()` is a trap",
+          "title": "A typed client for an external API (e.g. a public holidays or company-info API)",
+          "doneWhen": "The client comes from the factory with a timeout set",
           "learnLinks": [
             {
-              "label": "ASP.NET Core Identity",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity"
+              "label": "IHttpClientFactory",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/httpclient-factory"
             }
           ]
         },
@@ -12008,14 +12001,19 @@
           "week": 9,
           "dow": 1,
           "date": "2026-12-01",
-          "weekTitle": "Auth",
+          "weekTitle": "Assignment 9: Resilience & background jobs",
           "kind": "build",
-          "learn": "JWT bearer authentication, claims, token validation parameters",
-          "title": "Issue and validate JWT bearer tokens; `[Authorize]`",
+          "learn": "Transient faults: retries with backoff and jitter, timeouts (Microsoft.Extensions.Http.Resilience / Polly)",
+          "title": "The standard resilience handler on the typed client",
+          "doneWhen": "Simulated 503s are retried and then succeed",
           "learnLinks": [
             {
-              "label": "Configure JWT bearer authentication",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/configure-jwt-bearer-authentication"
+              "label": "Build resilient HTTP apps",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/resilience/http-resilience"
+            },
+            {
+              "label": "Retry pattern",
+              "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/retry"
             }
           ]
         },
@@ -12023,14 +12021,19 @@
           "week": 9,
           "dow": 2,
           "date": "2026-12-02",
-          "weekTitle": "Auth",
+          "weekTitle": "Assignment 9: Resilience & background jobs",
           "kind": "build",
-          "learn": "EF Core global query filters for per-user data",
-          "title": "Per-user data isolation (current-user service + EF global query filters)",
+          "learn": "Circuit breakers and fallbacks",
+          "title": "A breaker that opens after repeated failures, with a fallback answer",
+          "doneWhen": "The breaker opens and closes (logged) and the API stays responsive",
           "learnLinks": [
             {
-              "label": "EF Core: Global query filters",
-              "url": "https://learn.microsoft.com/en-us/ef/core/querying/filters"
+              "label": "Circuit Breaker pattern",
+              "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker"
+            },
+            {
+              "label": "Polly docs",
+              "url": "https://www.pollydocs.org/"
             }
           ]
         },
@@ -12038,18 +12041,19 @@
           "week": 9,
           "dow": 3,
           "date": "2026-12-03",
-          "weekTitle": "Auth",
+          "weekTitle": "Assignment 9: Resilience & background jobs",
           "kind": "build",
-          "learn": "Policy- and role-based authorization",
-          "title": "Roles and policies (Admin stats)",
+          "learn": "Background work: BackgroundService and Channels as an in-process queue",
+          "title": "Queue \"send follow-up reminder\" jobs for a worker",
+          "doneWhen": "The request returns at once and the worker processes the job",
           "learnLinks": [
             {
-              "label": "Policy-based authorization",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies"
+              "label": "Background tasks with hosted services",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services"
             },
             {
-              "label": "Role-based authorization",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/roles"
+              "label": "System.Threading.Channels",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/channels"
             }
           ]
         },
@@ -12057,14 +12061,19 @@
           "week": 9,
           "dow": 4,
           "date": "2026-12-04",
-          "weekTitle": "Auth",
+          "weekTitle": "Assignment 9: Resilience & background jobs",
           "kind": "build",
-          "learn": "Refresh-token rotation and revocation",
-          "title": "Refresh-token table + rotation",
+          "learn": "Scheduled, persistent jobs with Hangfire (or Quartz): recurring jobs, retries, dashboard",
+          "title": "A daily job that flags applications with no reply after 7 days",
+          "doneWhen": "It runs on schedule and shows in the dashboard",
           "learnLinks": [
             {
-              "label": "Auth0: Refresh token rotation",
-              "url": "https://auth0.com/docs/secure/tokens/refresh-tokens/refresh-token-rotation"
+              "label": "Hangfire docs",
+              "url": "https://docs.hangfire.io/en/latest/"
+            },
+            {
+              "label": "Quartz.NET docs",
+              "url": "https://www.quartz-scheduler.net/documentation/"
             }
           ]
         },
@@ -12072,31 +12081,28 @@
           "week": 9,
           "dow": 4,
           "date": "2026-12-04",
-          "weekTitle": "Auth",
+          "weekTitle": "Assignment 9: Resilience & background jobs",
           "kind": "checkpoint",
           "learn": null,
-          "title": "Draw how a JWT becomes a ClaimsPrincipal and how `[Authorize]` decides, from memory"
+          "title": "Explain retry vs circuit breaker, and why retries need idempotent operations"
         },
         {
           "week": 10,
           "dow": 0,
           "date": "2026-12-07",
-          "weekTitle": "Business logic",
+          "weekTitle": "Assignment 10: Logging & monitoring",
           "kind": "build",
-          "learn": "EF relationships; eager/explicit loading; the N+1 problem; AsNoTracking",
-          "title": "Interviews (one-to-many); projections, AsNoTracking, avoiding N+1 queries",
+          "learn": "Structured logging: ILogger, levels, message templates, scopes; Serilog",
+          "title": "Serilog with console and file sinks + request logging",
+          "doneWhen": "Logs are JSON with properties, not plain strings",
           "learnLinks": [
             {
-              "label": "EF Core: Relationships",
-              "url": "https://learn.microsoft.com/en-us/ef/core/modeling/relationships"
+              "label": "Logging in .NET",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/logging"
             },
             {
-              "label": "EF Core: Loading related data",
-              "url": "https://learn.microsoft.com/en-us/ef/core/querying/related-data/"
-            },
-            {
-              "label": "EF Core: Tracking vs no-tracking",
-              "url": "https://learn.microsoft.com/en-us/ef/core/querying/tracking"
+              "label": "Serilog for ASP.NET Core",
+              "url": "https://github.com/serilog/serilog-aspnetcore"
             }
           ]
         },
@@ -12104,14 +12110,15 @@
           "week": 10,
           "dow": 1,
           "date": "2026-12-08",
-          "weekTitle": "Business logic",
+          "weekTitle": "Assignment 10: Logging & monitoring",
           "kind": "build",
-          "learn": "Auditing with SaveChanges interceptors",
-          "title": "Status-change history (audit table)",
+          "learn": "Correlation ids and enrichers; what never to log (secrets, personal data)",
+          "title": "A correlation id that flows through logs and outgoing calls",
+          "doneWhen": "One request's logs can be filtered by its id",
           "learnLinks": [
             {
-              "label": "EF Core: Interceptors",
-              "url": "https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/interceptors"
+              "label": "Logging in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging/"
             }
           ]
         },
@@ -12119,14 +12126,19 @@
           "week": 10,
           "dow": 2,
           "date": "2026-12-09",
-          "weekTitle": "Business logic",
+          "weekTitle": "Assignment 10: Logging & monitoring",
           "kind": "build",
-          "learn": "LINQ projections and GroupBy that translate to SQL",
-          "title": "Stats endpoint: per-status counts, response rate, average days to a response (LINQ GroupBy)",
+          "learn": "OpenTelemetry: traces, spans and metrics",
+          "title": "OTel for ASP.NET Core, EF Core and HttpClient into the Aspire dashboard (or Jaeger)",
+          "doneWhen": "One request shows spans for API → database → external call",
           "learnLinks": [
             {
-              "label": "EF Core: Complex query operators",
-              "url": "https://learn.microsoft.com/en-us/ef/core/querying/complex-query-operators"
+              "label": ".NET observability with OpenTelemetry",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/observability-with-otel"
+            },
+            {
+              "label": "Standalone Aspire dashboard",
+              "url": "https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/dashboard/standalone"
             }
           ]
         },
@@ -12134,14 +12146,15 @@
           "week": 10,
           "dow": 3,
           "date": "2026-12-10",
-          "weekTitle": "Business logic",
+          "weekTitle": "Assignment 10: Logging & monitoring",
           "kind": "build",
-          "learn": "Hosted services and BackgroundService",
-          "title": "BackgroundService: flag follow-ups due after 7 days with no reply",
+          "learn": "Health checks: liveness vs readiness; checking the database and Redis",
+          "title": "/health/live and /health/ready with dependency checks",
+          "doneWhen": "Ready fails when the database is down; live doesn't",
           "learnLinks": [
             {
-              "label": "ASP.NET Core: Hosted services",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services"
+              "label": "Health checks in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks"
             }
           ]
         },
@@ -12149,18 +12162,15 @@
           "week": 10,
           "dow": 4,
           "date": "2026-12-11",
-          "weekTitle": "Business logic",
+          "weekTitle": "Assignment 10: Logging & monitoring",
           "kind": "build",
-          "learn": "DI lifetimes: singleton vs scoped vs transient; captive dependencies",
-          "title": "Notification interface + 2 implementations; DI lifetimes explained",
+          "learn": "Application Insights / Azure Monitor: requests, dependencies, alerts",
+          "title": "App Insights wired through configuration",
+          "doneWhen": "Telemetry is visible (or exported locally without Azure)",
           "learnLinks": [
             {
-              "label": ".NET DI: Service lifetimes",
-              "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection/service-lifetimes"
-            },
-            {
-              "label": ".NET DI guidelines (captive dependency)",
-              "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection/guidelines"
+              "label": "Application Insights for ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/azure/azure-monitor/app/asp-net-core"
             }
           ]
         },
@@ -12168,23 +12178,24 @@
           "week": 10,
           "dow": 4,
           "date": "2026-12-11",
-          "weekTitle": "Business logic",
+          "weekTitle": "Assignment 10: Logging & monitoring",
           "kind": "checkpoint",
           "learn": null,
-          "title": "Explain the three DI lifetimes with an example of a captive-dependency bug"
+          "title": "From one trace, explain where the time went"
         },
         {
           "week": 11,
           "dow": 0,
           "date": "2026-12-14",
-          "weekTitle": "Quality",
+          "weekTitle": "Assignment 11: Messaging",
           "kind": "build",
-          "learn": "Structured logging with Serilog: enrichers, sinks, log levels",
-          "title": "Serilog structured + request logging",
+          "learn": "Why messaging: sync vs async, queues vs topics, at-least-once delivery",
+          "title": "Event contracts: ApplicationStatusChanged, InterviewScheduled",
+          "doneWhen": "Contracts live in a shared project",
           "learnLinks": [
             {
-              "label": "Serilog.AspNetCore",
-              "url": "https://github.com/serilog/serilog-aspnetcore"
+              "label": "Asynchronous messaging options",
+              "url": "https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/messaging"
             }
           ]
         },
@@ -12192,18 +12203,19 @@
           "week": 11,
           "dow": 1,
           "date": "2026-12-15",
-          "weekTitle": "Quality",
+          "weekTitle": "Assignment 11: Messaging",
           "kind": "build",
-          "learn": "Unit testing with xUnit; fakes/mocks with NSubstitute or Moq",
-          "title": "xUnit unit tests for services",
+          "learn": "RabbitMQ basics in Docker: exchanges, queues, bindings (or Azure Service Bus)",
+          "title": "The API publishes ApplicationStatusChanged",
+          "doneWhen": "The message shows in the RabbitMQ management UI",
           "learnLinks": [
             {
-              "label": "Unit testing with xUnit",
-              "url": "https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-csharp-with-xunit"
+              "label": "RabbitMQ tutorial (.NET)",
+              "url": "https://www.rabbitmq.com/tutorials/tutorial-one-dotnet"
             },
             {
-              "label": "NSubstitute: Getting started",
-              "url": "https://nsubstitute.github.io/help/getting-started/"
+              "label": "Azure Service Bus overview",
+              "url": "https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-overview"
             }
           ]
         },
@@ -12211,14 +12223,19 @@
           "week": 11,
           "dow": 2,
           "date": "2026-12-16",
-          "weekTitle": "Quality",
+          "weekTitle": "Assignment 11: Messaging",
           "kind": "build",
-          "learn": "Integration testing with WebApplicationFactory + a test database",
-          "title": "Integration tests with WebApplicationFactory",
+          "learn": "Consumers as worker services: acknowledgements, retries, dead-letter queues",
+          "title": "A notifications worker that consumes the events",
+          "doneWhen": "A poison message ends in the dead-letter queue",
           "learnLinks": [
             {
-              "label": "ASP.NET Core: Integration tests",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests"
+              "label": "Worker services in .NET",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/workers"
+            },
+            {
+              "label": "Dead-letter queues",
+              "url": "https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dead-letter-queues"
             }
           ]
         },
@@ -12226,14 +12243,15 @@
           "week": 11,
           "dow": 3,
           "date": "2026-12-17",
-          "weekTitle": "Quality",
+          "weekTitle": "Assignment 11: Messaging",
           "kind": "build",
-          "learn": "OpenAPI/Swagger in .NET; XML comments; auth in Swagger UI",
-          "title": "Swagger with a JWT auth button + XML comments",
+          "learn": "The outbox pattern: publishing reliably with the database",
+          "title": "An outbox table + a background publisher",
+          "doneWhen": "No event is lost when the broker is down during a save",
           "learnLinks": [
             {
-              "label": "ASP.NET Core: OpenAPI overview",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/overview"
+              "label": "Transactional outbox pattern",
+              "url": "https://microservices.io/patterns/data/transactional-outbox.html"
             }
           ]
         },
@@ -12241,14 +12259,19 @@
           "week": 11,
           "dow": 4,
           "date": "2026-12-18",
-          "weekTitle": "Quality",
+          "weekTitle": "Assignment 11: Messaging",
           "kind": "build",
-          "learn": "The built-in rate limiter: fixed window, sliding window, token bucket",
-          "title": "Built-in rate-limiter middleware",
+          "learn": "Idempotent consumers; MassTransit as a higher-level option",
+          "title": "An idempotency table in the worker",
+          "doneWhen": "A duplicate message is processed only once",
           "learnLinks": [
             {
-              "label": "ASP.NET Core: Rate limiting",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/rate-limit"
+              "label": "Idempotent consumer",
+              "url": "https://microservices.io/patterns/communication-style/idempotent-consumer.html"
+            },
+            {
+              "label": "MassTransit concepts",
+              "url": "https://masstransit.io/documentation/concepts"
             }
           ]
         },
@@ -12256,27 +12279,24 @@
           "week": 11,
           "dow": 4,
           "date": "2026-12-18",
-          "weekTitle": "Quality",
+          "weekTitle": "Assignment 11: Messaging",
           "kind": "checkpoint",
           "learn": null,
-          "title": "Write an integration test for a 404 case from scratch"
+          "title": "Explain the outbox pattern and an idempotent consumer with a diagram"
         },
         {
           "week": 12,
           "dow": 0,
           "date": "2026-12-21",
-          "weekTitle": "Perf (holiday week)",
+          "weekTitle": "Assignment 12: Security hardening",
           "kind": "build",
-          "learn": "Caching in ASP.NET Core: IMemoryCache, output caching, when caching is wrong",
-          "title": "Output caching / IMemoryCache for stats",
+          "learn": "OWASP API Security Top 10: broken object-level authorization, broken authentication, and the rest",
+          "title": "A security review of JobHunt against the list",
+          "doneWhen": "A findings list with a fix for each",
           "learnLinks": [
             {
-              "label": "ASP.NET Core: In-memory cache",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/caching/memory"
-            },
-            {
-              "label": "ASP.NET Core: Output caching",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/caching/output"
+              "label": "OWASP API Security Top 10 (2023)",
+              "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
             }
           ]
         },
@@ -12284,18 +12304,19 @@
           "week": 12,
           "dow": 1,
           "date": "2026-12-22",
-          "weekTitle": "Perf (holiday week)",
+          "weekTitle": "Assignment 12: Security hardening",
           "kind": "build",
-          "learn": "Indexes and reading the SQL EF generates",
-          "title": "Indexes via EF config; read the generated SQL",
+          "learn": "Input validation, SQL injection with raw SQL (FromSql parameters), mass assignment",
+          "title": "Fix risky raw queries; DTO allow-lists for updates",
+          "doneWhen": "Tests prove injection payloads and extra fields fail",
           "learnLinks": [
             {
-              "label": "EF Core: Indexes",
-              "url": "https://learn.microsoft.com/en-us/ef/core/modeling/indexes"
+              "label": "SQL queries in EF Core (parameterised)",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/sql-queries"
             },
             {
-              "label": "EF Core: Simple logging (see the SQL)",
-              "url": "https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/simple-logging"
+              "label": "OWASP SQL injection prevention",
+              "url": "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
             }
           ]
         },
@@ -12303,14 +12324,19 @@
           "week": 12,
           "dow": 2,
           "date": "2026-12-23",
-          "weekTitle": "Perf (holiday week)",
+          "weekTitle": "Assignment 12: Security hardening",
           "kind": "build",
-          "learn": "Health checks: liveness vs readiness",
-          "title": "Health checks (incl. the DB)",
+          "learn": "CORS done right; HTTPS, HSTS and security headers",
+          "title": "A CORS policy for the React app's origin + a headers middleware",
+          "doneWhen": "Other origins are blocked and the headers are present",
           "learnLinks": [
             {
-              "label": "ASP.NET Core: Health checks",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks"
+              "label": "Enable CORS",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/cors"
+            },
+            {
+              "label": "Enforce HTTPS and HSTS",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl"
             }
           ]
         },
@@ -12318,57 +12344,64 @@
           "week": 12,
           "dow": 3,
           "date": "2026-12-24",
-          "weekTitle": "Perf (holiday week)",
+          "weekTitle": "Assignment 12: Security hardening",
           "kind": "build",
-          "learn": "Containerising .NET apps; SQL Server in Docker",
-          "title": "Docker: API + SQL Server container",
+          "learn": "Secrets: user-secrets, environment variables, Azure Key Vault",
+          "title": "Move the JWT key and connection strings out of appsettings",
+          "doneWhen": "`git grep` finds no secret in the repo",
+          "learnLinks": [
+            {
+              "label": "Safe storage of app secrets",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets"
+            },
+            {
+              "label": "Azure Key Vault configuration provider",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/key-vault-configuration"
+            }
+          ]
+        },
+        {
+          "week": 12,
+          "dow": 4,
+          "date": "2026-12-25",
+          "weekTitle": "Assignment 12: Security hardening",
+          "kind": "build",
+          "learn": "Dependency auditing (NuGet audit); least-privilege database users",
+          "title": "Audit packages; run with a minimal-rights database login",
+          "doneWhen": "No known vulnerable packages and the app works with the restricted login",
+          "learnLinks": [
+            {
+              "label": "Auditing package dependencies (NuGet)",
+              "url": "https://learn.microsoft.com/en-us/nuget/concepts/auditing-packages"
+            }
+          ]
+        },
+        {
+          "week": 12,
+          "dow": 4,
+          "date": "2026-12-25",
+          "weekTitle": "Assignment 12: Security hardening",
+          "kind": "checkpoint",
+          "learn": null,
+          "title": "Name five OWASP API risks and where JobHunt guards against each"
+        },
+        {
+          "week": 13,
+          "dow": 0,
+          "date": "2026-12-28",
+          "weekTitle": "Assignment 13: Deployment & scaling",
+          "kind": "build",
+          "learn": "Docker for .NET: multi-stage builds, small images, running as non-root",
+          "title": "Dockerfiles for the API and the worker",
+          "doneWhen": "The image is under 250 MB and runs as non-root",
           "learnLinks": [
             {
               "label": "Containerize a .NET app",
               "url": "https://learn.microsoft.com/en-us/dotnet/core/docker/build-container"
             },
             {
-              "label": "SQL Server in Docker",
-              "url": "https://learn.microsoft.com/en-us/sql/linux/install-upgrade/quickstart-install-docker"
-            }
-          ]
-        },
-        {
-          "week": 12,
-          "dow": 4,
-          "date": "2026-12-25",
-          "weekTitle": "Perf (holiday week)",
-          "kind": "build",
-          "learn": "Holiday buffer: review your weakest topic so far",
-          "title": "Buffer",
-          "learnLinks": [
-            {
-              "label": "roadmap.sh: ASP.NET Core",
-              "url": "https://roadmap.sh/aspnet-core"
-            }
-          ]
-        },
-        {
-          "week": 12,
-          "dow": 4,
-          "date": "2026-12-25",
-          "weekTitle": "Perf (holiday week)",
-          "kind": "checkpoint",
-          "learn": null,
-          "title": "Explain one case where output caching would leak another user's data"
-        },
-        {
-          "week": 13,
-          "dow": 0,
-          "date": "2026-12-28",
-          "weekTitle": "Extras",
-          "kind": "build",
-          "learn": "File uploads: IFormFile, size limits, streaming",
-          "title": "CSV import (IFormFile) + export",
-          "learnLinks": [
-            {
-              "label": "ASP.NET Core: File uploads",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads"
+              "label": "Docker multi-stage builds",
+              "url": "https://docs.docker.com/build/building/multi-stage/"
             }
           ]
         },
@@ -12376,14 +12409,15 @@
           "week": 13,
           "dow": 1,
           "date": "2026-12-29",
-          "weekTitle": "Extras",
+          "weekTitle": "Assignment 13: Deployment & scaling",
           "kind": "build",
-          "learn": "Storage abstractions: interface + local implementation",
-          "title": "Resume attachments stored on disk + metadata",
+          "learn": "docker compose for the whole local environment",
+          "title": "compose up runs API, worker, SQL Server, Redis and RabbitMQ",
+          "doneWhen": "One command starts everything",
           "learnLinks": [
             {
-              "label": ".NET: File providers",
-              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/file-providers"
+              "label": "Docker Compose",
+              "url": "https://docs.docker.com/compose/"
             }
           ]
         },
@@ -12391,14 +12425,15 @@
           "week": 13,
           "dow": 2,
           "date": "2026-12-30",
-          "weekTitle": "Extras",
+          "weekTitle": "Assignment 13: Deployment & scaling",
           "kind": "build",
-          "learn": "Search: LIKE vs full-text search trade-offs",
-          "title": "Search endpoint",
+          "learn": "CI with GitHub Actions: restore, build, test, coverage",
+          "title": "A CI pipeline on every pull request",
+          "doneWhen": "PRs show green checks with coverage",
           "learnLinks": [
             {
-              "label": "SQL Server: Full-text search",
-              "url": "https://learn.microsoft.com/en-us/sql/relational-databases/search/full-text-search"
+              "label": "Building and testing .NET (GitHub Actions)",
+              "url": "https://docs.github.com/en/actions/use-cases-and-examples/building-and-testing/building-and-testing-net"
             }
           ]
         },
@@ -12406,14 +12441,19 @@
           "week": 13,
           "dow": 3,
           "date": "2026-12-31",
-          "weekTitle": "Extras",
+          "weekTitle": "Assignment 13: Deployment & scaling",
           "kind": "build",
-          "learn": "SOLID principles applied to your own services",
-          "title": "Refactor pass: SOLID, remove duplication",
+          "learn": "CD to Azure App Service (or Container Apps): deployment slots, configuration",
+          "title": "A deploy pipeline on merges to main",
+          "doneWhen": "A merge deploys (or the dry run is documented step by step)",
           "learnLinks": [
             {
-              "label": "Architectural principles (SOLID)",
-              "url": "https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/architectural-principles"
+              "label": "Deploy to App Service with GitHub Actions",
+              "url": "https://learn.microsoft.com/en-us/azure/app-service/deploy-github-actions"
+            },
+            {
+              "label": "Deployment slots",
+              "url": "https://learn.microsoft.com/en-us/azure/app-service/deploy-staging-slots"
             }
           ]
         },
@@ -12421,14 +12461,19 @@
           "week": 13,
           "dow": 4,
           "date": "2027-01-01",
-          "weekTitle": "Extras",
+          "weekTitle": "Assignment 13: Deployment & scaling",
           "kind": "build",
-          "learn": "Buffer: refactor whatever felt hardest this phase",
-          "title": "Buffer",
+          "learn": "Scaling: stateless APIs, scale out vs up, what Redis and the outbox make possible",
+          "title": "Run two instances; check caching, rate limits and jobs still behave",
+          "doneWhen": "A load test shows both instances serving correctly",
           "learnLinks": [
             {
-              "label": "Refactoring catalog",
-              "url": "https://refactoring.guru/refactoring/catalog"
+              "label": "Design to scale out",
+              "url": "https://learn.microsoft.com/en-us/azure/architecture/guide/design-principles/scale-out"
+            },
+            {
+              "label": "Scale up an App Service app",
+              "url": "https://learn.microsoft.com/en-us/azure/app-service/manage-scale-up"
             }
           ]
         },
@@ -12436,23 +12481,28 @@
           "week": 13,
           "dow": 4,
           "date": "2027-01-01",
-          "weekTitle": "Extras",
+          "weekTitle": "Assignment 13: Deployment & scaling",
           "kind": "checkpoint",
           "learn": null,
-          "title": "Refactor one service method for single responsibility and explain the change"
+          "title": "Explain why the API must be stateless to scale out, with JobHunt examples"
         },
         {
           "week": 14,
           "dow": 0,
           "date": "2027-01-04",
-          "weekTitle": "Ship",
+          "weekTitle": "Assignment 14: Capstone & interview story",
           "kind": "build",
-          "learn": "CI for .NET: restore → build → test in GitHub Actions",
-          "title": "GitHub Actions build + test",
+          "learn": "Clean Architecture: the dependency rule and where each concern lives",
+          "title": "A refactor pass on the weakest layer + architecture tests (NetArchTest)",
+          "doneWhen": "The architecture tests pass",
           "learnLinks": [
             {
-              "label": "GitHub Actions: Building .NET",
-              "url": "https://docs.github.com/en/actions/tutorials/build-and-test-code/net"
+              "label": "Common web application architectures",
+              "url": "https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/common-web-application-architectures"
+            },
+            {
+              "label": "NetArchTest",
+              "url": "https://github.com/BenMorris/NetArchTest"
             }
           ]
         },
@@ -12460,18 +12510,15 @@
           "week": 14,
           "dow": 1,
           "date": "2027-01-05",
-          "weekTitle": "Ship",
+          "weekTitle": "Assignment 14: Capstone & interview story",
           "kind": "build",
-          "learn": "Deploying to Azure App Service + Azure SQL (free tiers)",
-          "title": "Deploy (Azure free tier) or record a demo",
+          "learn": "Documenting a backend: README, architecture and ER diagrams, decision records (ADRs)",
+          "title": "README with diagrams + 3 ADRs",
+          "doneWhen": "A newcomer can run it in 10 minutes",
           "learnLinks": [
             {
-              "label": "Azure App Service: .NET quickstart",
-              "url": "https://learn.microsoft.com/en-us/azure/app-service/quickstart-dotnetcore"
-            },
-            {
-              "label": "Azure SQL Database free offer",
-              "url": "https://learn.microsoft.com/en-us/azure/azure-sql/database/free-offer"
+              "label": "Architecture decision records",
+              "url": "https://adr.github.io/"
             }
           ]
         },
@@ -12479,18 +12526,15 @@
           "week": 14,
           "dow": 2,
           "date": "2027-01-06",
-          "weekTitle": "Ship",
+          "weekTitle": "Assignment 14: Capstone & interview story",
           "kind": "build",
-          "learn": "ER diagrams and layer diagrams that explain a backend",
-          "title": "README: layer diagram, ER diagram, endpoints table",
+          "learn": "Load testing with k6 (or Bombardier); reading p95 latency",
+          "title": "A load test + one performance fix",
+          "doneWhen": "p95 recorded before and after the fix",
           "learnLinks": [
             {
-              "label": "Mermaid: ER diagrams",
-              "url": "https://mermaid.js.org/syntax/entityRelationshipDiagram.html"
-            },
-            {
-              "label": "C4 model",
-              "url": "https://c4model.com/"
+              "label": "k6 documentation",
+              "url": "https://grafana.com/docs/k6/latest/"
             }
           ]
         },
@@ -12498,13 +12542,14 @@
           "week": 14,
           "dow": 3,
           "date": "2027-01-07",
-          "weekTitle": "Ship",
+          "weekTitle": "Assignment 14: Capstone & interview story",
           "kind": "build",
-          "learn": "`.http` files and Postman collections as living API docs",
-          "title": "`.http` file / Postman collection + demo user",
+          "learn": "`.http` files and Postman collections as living API docs; demo data",
+          "title": "A demo script and collection",
+          "doneWhen": "A 5-minute demo runs end to end",
           "learnLinks": [
             {
-              "label": "Visual Studio: .http files",
+              "label": ".http files in Visual Studio",
               "url": "https://learn.microsoft.com/en-us/aspnet/core/test/http-files"
             }
           ]
@@ -12513,14 +12558,15 @@
           "week": 14,
           "dow": 4,
           "date": "2027-01-08",
-          "weekTitle": "Ship",
+          "weekTitle": "Assignment 14: Capstone & interview story",
           "kind": "build",
-          "learn": "Telling the JobHunt API story in interviews",
-          "title": "Retro + 3 resume bullets",
+          "learn": "Telling the story: trade-offs, failures, what you'd change",
+          "title": "3 resume bullets + a 2-minute architecture pitch",
+          "doneWhen": "The pitch is recorded",
           "learnLinks": [
             {
-              "label": "Tech Interview Handbook: Behavioral",
-              "url": "https://www.techinterviewhandbook.org/behavioral-interview/"
+              "label": "The STAR method (MIT CAPD)",
+              "url": "https://capd.mit.edu/resources/the-star-method-for-behavioral-interviews/"
             }
           ]
         },
@@ -12528,17 +12574,117 @@
           "week": 14,
           "dow": 4,
           "date": "2027-01-08",
-          "weekTitle": "Ship",
+          "weekTitle": "Assignment 14: Capstone & interview story",
           "kind": "checkpoint",
           "learn": null,
-          "title": "Record a 2-minute explanation of the JobHunt API architecture"
+          "title": "Whiteboard the full JobHunt architecture in 10 minutes"
+        }
+      ],
+      "weeks": [
+        {
+          "week": 1,
+          "title": "Assignment 1: C# & .NET foundations",
+          "objective": "Set up the JobHunt solution and model the job-search domain in modern C#, with tests from day one.",
+          "level": "Basic",
+          "deliverable": "PR \"Domain model\" merged: solution with 4 layers, domain entities + rules, xUnit tests ≥ 80% on Domain."
+        },
+        {
+          "week": 2,
+          "title": "Assignment 2: ASP.NET Core essentials",
+          "objective": "Turn the domain into a running Web API and understand exactly what happens on every request.",
+          "level": "Basic",
+          "deliverable": "PR \"API skeleton\" merged: Program.cs with DI, middleware, options and Companies endpoints using DTOs."
+        },
+        {
+          "week": 3,
+          "title": "Assignment 3: Data with EF Core",
+          "objective": "Persist JobHunt in SQL Server with EF Core, behind the Repository + Unit of Work seam from your Patterns Lab.",
+          "level": "Basic",
+          "deliverable": "PR \"Persistence\" merged: DbContext, migrations, relationships, repositories + unit of work, CRUD on a real database."
+        },
+        {
+          "week": 4,
+          "title": "Assignment 4: API quality",
+          "objective": "Make the API predictable for its clients: validation, one error format, paging and living documentation.",
+          "level": "Intermediate",
+          "deliverable": "PR \"API quality\" merged: validation, ProblemDetails, filtering + paging, OpenAPI docs, a PATCH endpoint."
+        },
+        {
+          "week": 5,
+          "title": "Assignment 5: Authentication & authorization",
+          "objective": "Know who is calling and what they may do: Identity, JWTs, refresh tokens, policies and sign-in with Microsoft Entra ID.",
+          "level": "Intermediate",
+          "deliverable": "PR \"Auth\" merged: register/login, JWT + refresh tokens, per-user data, an admin policy, Microsoft sign-in."
+        },
+        {
+          "week": 6,
+          "title": "Assignment 6: Testing",
+          "objective": "Trust every change: unit tests with fakes, integration tests over HTTP, and tests against a real database.",
+          "level": "Intermediate",
+          "deliverable": "PR \"Tests\" merged: unit + integration + real-database tests, an auth test helper, coverage ≥ 80% enforced."
+        },
+        {
+          "week": 7,
+          "title": "Assignment 7: Database performance",
+          "objective": "Make the data layer fast and correct under load: no N+1 queries, the right indexes, transactions and concurrency control.",
+          "level": "Intermediate",
+          "deliverable": "PR \"DB performance\" merged, with before/after SQL and query counts in the description."
+        },
+        {
+          "week": 8,
+          "title": "Assignment 8: Caching & rate limiting",
+          "objective": "Serve repeated reads fast without serving stale or someone else's data, and protect the API from overload.",
+          "level": "Advanced",
+          "deliverable": "PR \"Caching + rate limiting\" merged: memory + Redis + output caching with invalidation, partitioned rate limits."
+        },
+        {
+          "week": 9,
+          "title": "Assignment 9: Resilience & background jobs",
+          "objective": "Survive failing dependencies and move slow work out of the request: retries, timeouts, circuit breakers, queues and scheduled jobs.",
+          "level": "Advanced",
+          "deliverable": "PR \"Resilience + jobs\" merged: a resilient typed HttpClient, an in-process queue worker, a recurring job."
+        },
+        {
+          "week": 10,
+          "title": "Assignment 10: Logging & monitoring",
+          "objective": "See what the system is doing in production: structured logs, distributed traces, metrics and health checks.",
+          "level": "Advanced",
+          "deliverable": "PR \"Observability\" merged: Serilog, correlation ids, OpenTelemetry traces, health checks, Application Insights wiring."
+        },
+        {
+          "week": 11,
+          "title": "Assignment 11: Messaging",
+          "objective": "Let services talk without waiting on each other: events through a broker, a worker that consumes them, and delivery you can rely on.",
+          "level": "Advanced",
+          "deliverable": "PR \"Messaging\" merged: event contracts, RabbitMQ (or Azure Service Bus) publishing, a notifications worker, outbox + idempotency."
+        },
+        {
+          "week": 12,
+          "title": "Assignment 12: Security hardening",
+          "objective": "Close the common holes before shipping: the OWASP API risks, injection, CORS, security headers and secrets.",
+          "level": "Advanced",
+          "deliverable": "PR \"Security\" merged: an OWASP checklist with fixes, CORS + headers, secrets out of the repo, no vulnerable packages."
+        },
+        {
+          "week": 13,
+          "title": "Assignment 13: Deployment & scaling",
+          "objective": "Ship it like a team would: containers, one-command local environment, CI/CD and a stateless API that scales out.",
+          "level": "Advanced",
+          "deliverable": "PR \"Ship it\" merged: Dockerfiles, docker compose, GitHub Actions CI/CD, a deployed (or documented) environment, a scale-out test."
+        },
+        {
+          "week": 14,
+          "title": "Assignment 14: Capstone & interview story",
+          "objective": "Turn JobHunt into a portfolio piece you can defend in a 20 LPA interview.",
+          "level": "Wrap-up",
+          "deliverable": "Release v1.0: architecture tests, README with diagrams and decision records, a load-test result, a demo script and your pitch."
         }
       ]
     },
     {
       "code": "jobhunt-web",
       "area": "react",
-      "heading": "Project 3",
+      "heading": "Project 2",
       "description": "React + TypeScript front end for the JobHunt API: auth, Kanban board, dashboard, tests.",
       "stack": [
         "React",
@@ -12590,6 +12736,7 @@
           "kind": "build",
           "learn": "React's mental model: components, JSX, props, rendering; Vite project layout",
           "title": "Vite React TS; feature-based folders",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "React: Describing the UI",
@@ -12609,6 +12756,7 @@
           "kind": "build",
           "learn": "State and events; typing props/state/events in TypeScript",
           "title": "TypeScript in React: props, state, events; layout + nav",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "React: Adding interactivity",
@@ -12628,6 +12776,7 @@
           "kind": "build",
           "learn": "React Router: routes, nested layouts, params, 404s",
           "title": "React Router: Login, Dashboard, Applications, Detail, 404",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "React Router: Routing",
@@ -12643,6 +12792,7 @@
           "kind": "build",
           "learn": "Data fetching basics; why useEffect fetching gets messy; typed API client",
           "title": "Typed API client with a base URL",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "React: You might not need an effect",
@@ -12662,6 +12812,7 @@
           "kind": "build",
           "learn": "Controlled forms; auth flow and protected routes",
           "title": "Login/Register forms; token storage; ProtectedRoute",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "React: Controlled inputs",
@@ -12690,6 +12841,7 @@
           "kind": "build",
           "learn": "Server state vs client state; TanStack Query (queries, keys, caching)",
           "title": "TanStack Query list with loading and error states",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "TanStack Query: Overview",
@@ -12709,6 +12861,7 @@
           "kind": "build",
           "learn": "The URL as state: search params for filters and paging",
           "title": "Filters + paging synced to URL search params",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "React Router: useSearchParams",
@@ -12724,6 +12877,7 @@
           "kind": "build",
           "learn": "React Hook Form + Zod schemas for validation",
           "title": "Create/Edit form: React Hook Form + Zod",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "React Hook Form: Schema validation",
@@ -12743,6 +12897,7 @@
           "kind": "build",
           "learn": "Mutations, optimistic updates, cache invalidation",
           "title": "Mutations: optimistic updates + cache invalidation",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "TanStack Query: Optimistic updates",
@@ -12762,6 +12917,7 @@
           "kind": "build",
           "learn": "Error boundaries, toasts, loading states",
           "title": "Toasts + an error boundary",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "React: Error boundaries",
@@ -12786,6 +12942,7 @@
           "kind": "build",
           "learn": "Lists and keys; composing a board from columns and cards",
           "title": "Kanban board by status",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "React: Rendering lists",
@@ -12801,6 +12958,7 @@
           "kind": "build",
           "learn": "Drag and drop with dnd-kit, including keyboard accessibility",
           "title": "Drag-and-drop (dnd-kit) → PATCH status",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "dnd-kit: Docs",
@@ -12820,6 +12978,7 @@
           "kind": "build",
           "learn": "Component composition: children, render props, compound components",
           "title": "Detail page: interview timeline + notes",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "React: Passing JSX as children",
@@ -12835,6 +12994,7 @@
           "kind": "build",
           "learn": "Fetch/axios interceptors; refreshing tokens on 401",
           "title": "Token refresh on 401",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "Axios: Interceptors",
@@ -12850,6 +13010,7 @@
           "kind": "build",
           "learn": "Context API: when it's right and when it causes re-renders",
           "title": "Auth context + logout",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "React: Passing data with context",
@@ -12878,6 +13039,7 @@
           "kind": "build",
           "learn": "Derived state: compute, don't store; dashboard stats",
           "title": "Stats cards",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "React: Avoid redundant state",
@@ -12893,6 +13055,7 @@
           "kind": "build",
           "learn": "Charts with Recharts: choosing the right chart",
           "title": "Charts (Recharts): weekly applications, status funnel",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "Recharts: Getting started",
@@ -12908,6 +13071,7 @@
           "kind": "build",
           "learn": "Responsive CSS: flexbox, grid, media queries, mobile-first",
           "title": "Responsive layout + mobile nav",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "MDN: Responsive design",
@@ -12927,6 +13091,7 @@
           "kind": "build",
           "learn": "Theming with CSS custom properties; dark mode",
           "title": "Dark mode with CSS variables",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "MDN: Using CSS custom properties",
@@ -12946,6 +13111,7 @@
           "kind": "build",
           "learn": "Accessibility basics: semantic HTML, labels, focus, contrast",
           "title": "Accessibility pass: labels, keyboard, focus",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "MDN: Accessibility",
@@ -12974,6 +13140,7 @@
           "kind": "build",
           "learn": "Testing philosophy: test behaviour, not implementation (React Testing Library)",
           "title": "Vitest + React Testing Library setup",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "Testing Library: Guiding principles",
@@ -12993,6 +13160,7 @@
           "kind": "build",
           "learn": "user-event: simulating real typing and clicks; form tests",
           "title": "Test form validation and submit",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "user-event",
@@ -13008,6 +13176,7 @@
           "kind": "build",
           "learn": "Mock Service Worker (MSW) for API mocking",
           "title": "MSW mocks; test list loading/error/empty states",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "Mock Service Worker",
@@ -13023,6 +13192,7 @@
           "kind": "build",
           "learn": "Performance: why components re-render; memo, useMemo, lazy routes",
           "title": "Profiler, lazy routes, justified memoisation",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "React: memo",
@@ -13042,6 +13212,7 @@
           "kind": "build",
           "learn": "Custom hooks: extracting reusable logic",
           "title": "Custom hooks: useDebounce, useAuth",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "React: Custom hooks",
@@ -13066,6 +13237,7 @@
           "kind": "build",
           "learn": "Debouncing and throttling user input",
           "title": "Debounced search",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "MDN: Debounce",
@@ -13081,6 +13253,7 @@
           "kind": "build",
           "learn": "File uploads from the browser (FormData, progress)",
           "title": "Resume upload UI",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "MDN: FormData",
@@ -13100,6 +13273,7 @@
           "kind": "build",
           "learn": "CSV parsing and generation in the browser",
           "title": "CSV import/export UI",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "Papa Parse docs",
@@ -13115,6 +13289,7 @@
           "kind": "build",
           "learn": "Loading UX: skeletons, empty states, error states",
           "title": "Empty states + skeleton loaders",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "React: Suspense",
@@ -13134,6 +13309,7 @@
           "kind": "build",
           "learn": "Buffer: revisit your weakest React topic",
           "title": "Buffer",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "React: Learn",
@@ -13158,6 +13334,7 @@
           "kind": "build",
           "learn": "Environment variables and production builds in Vite",
           "title": "Production env config + build",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "Vite: Env variables and modes",
@@ -13177,6 +13354,7 @@
           "kind": "build",
           "learn": "Deploying an SPA (Vercel/Netlify), routing fallbacks, CORS",
           "title": "Deploy (Vercel/Netlify free) + CORS to the API",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "Vercel: Vite",
@@ -13196,6 +13374,7 @@
           "kind": "build",
           "learn": "End-to-end testing with Playwright",
           "title": "Playwright smoke test: login → create → move on the board",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "Playwright: Installation",
@@ -13211,6 +13390,7 @@
           "kind": "build",
           "learn": "A README that sells: screenshots, GIF, architecture, setup",
           "title": "README with screenshots/GIF",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "Make a README",
@@ -13226,6 +13406,7 @@
           "kind": "build",
           "learn": "Presenting your project in 2 minutes",
           "title": "2-minute demo video",
+          "doneWhen": null,
           "learnLinks": [
             {
               "label": "Tech Interview Handbook: Behavioral",
@@ -13242,7 +13423,687 @@
           "learn": null,
           "title": "Record a 2-minute JobHunt Web walkthrough + architecture"
         }
-      ]
+      ],
+      "weeks": []
+    },
+    {
+      "code": "snippetvault",
+      "area": "node",
+      "heading": "Project 3",
+      "stack": [
+        "Node.js",
+        "Express",
+        "MongoDB",
+        "JWT",
+        "Jest",
+        "Socket.IO",
+        "Docker"
+      ],
+      "resources": [
+        {
+          "label": "Node.js docs",
+          "url": "https://nodejs.org/docs/latest/api/"
+        },
+        {
+          "label": "Express guide",
+          "url": "https://expressjs.com/en/guide/routing/"
+        },
+        {
+          "label": "Mongoose docs",
+          "url": "https://mongoosejs.com/docs/guide.html"
+        },
+        {
+          "label": "Zod",
+          "url": "https://zod.dev/"
+        },
+        {
+          "label": "Jest",
+          "url": "https://jestjs.io/docs/getting-started"
+        },
+        {
+          "label": "Socket.IO",
+          "url": "https://socket.io/docs/v4/"
+        },
+        {
+          "label": "roadmap.sh/nodejs",
+          "url": "https://roadmap.sh/nodejs"
+        }
+      ],
+      "name": "SnippetVault API",
+      "description": "Save, tag, search and share code snippets. Teaches REST, data modelling, auth, testing, and real-time features.",
+      "tasks": [
+        {
+          "week": 23,
+          "dow": 0,
+          "date": "2027-03-08",
+          "weekTitle": "Setup",
+          "kind": "build",
+          "learn": "Node runtime, CommonJS vs ES modules, npm + package.json scripts",
+          "title": "Init repo, npm, folder structure (routes/controllers/models/middleware), ESLint + Prettier, .env",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "Node.js: Introduction",
+              "url": "https://nodejs.org/learn/getting-started/introduction-to-nodejs"
+            },
+            {
+              "label": "Node.js: ECMAScript modules",
+              "url": "https://nodejs.org/api/esm.html"
+            },
+            {
+              "label": "npm: scripts",
+              "url": "https://docs.npmjs.com/cli/v10/using-npm/scripts"
+            }
+          ]
+        },
+        {
+          "week": 23,
+          "dow": 1,
+          "date": "2027-03-09",
+          "weekTitle": "Setup",
+          "kind": "build",
+          "learn": "The `http` module, request/response cycle, event loop basics",
+          "title": "Raw `http` server with no Express (understand req/res), then switch to Express",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "Node.js: http module",
+              "url": "https://nodejs.org/api/http.html"
+            },
+            {
+              "label": "Node.js: The event loop",
+              "url": "https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick"
+            }
+          ]
+        },
+        {
+          "week": 23,
+          "dow": 2,
+          "date": "2027-03-10",
+          "weekTitle": "Setup",
+          "kind": "build",
+          "learn": "Express routing and the middleware chain (`next()`, order matters)",
+          "title": "Health route, JSON body parsing, 404 + error-handling middleware",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "Express: Routing",
+              "url": "https://expressjs.com/en/guide/routing/"
+            },
+            {
+              "label": "Express: Using middleware",
+              "url": "https://expressjs.com/en/guide/using-middleware/"
+            }
+          ]
+        },
+        {
+          "week": 23,
+          "dow": 3,
+          "date": "2027-03-11",
+          "weekTitle": "Setup",
+          "kind": "build",
+          "learn": "REST design: resources, HTTP verbs, status codes (200/201/204/400/404)",
+          "title": "In-memory CRUD for snippets with correct status codes",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "MDN: HTTP request methods",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods"
+            },
+            {
+              "label": "MDN: HTTP status codes",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"
+            }
+          ]
+        },
+        {
+          "week": 23,
+          "dow": 4,
+          "date": "2027-03-12",
+          "weekTitle": "Setup",
+          "kind": "build",
+          "learn": "async/await errors in Express; Postman collections and environments",
+          "title": "Test every route in Postman/Thunder Client; commit the collection + a README skeleton",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "Express: Error handling",
+              "url": "https://expressjs.com/en/guide/error-handling/"
+            },
+            {
+              "label": "Postman: Environments",
+              "url": "https://learning.postman.com/docs/use/send-requests/variables/managing-environments/"
+            }
+          ]
+        },
+        {
+          "week": 23,
+          "dow": 4,
+          "date": "2027-03-12",
+          "weekTitle": "Setup",
+          "kind": "checkpoint",
+          "learn": null,
+          "title": "From a blank folder: an Express server with GET/POST `/notes` (in memory) + 404 + error middleware in 20 minutes"
+        },
+        {
+          "week": 24,
+          "dow": 0,
+          "date": "2027-03-15",
+          "weekTitle": "Database",
+          "kind": "build",
+          "learn": "Documents vs tables: when MongoDB fits; connection strings and config",
+          "title": "Connect Mongoose (local MongoDB or Atlas free tier); config module",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "MongoDB: Data modeling",
+              "url": "https://www.mongodb.com/docs/manual/data-modeling/"
+            },
+            {
+              "label": "MongoDB: Connection strings",
+              "url": "https://www.mongodb.com/docs/manual/reference/connection-string/"
+            }
+          ]
+        },
+        {
+          "week": 24,
+          "dow": 1,
+          "date": "2027-03-16",
+          "weekTitle": "Database",
+          "kind": "build",
+          "learn": "Mongoose schemas, models, built-in validation, timestamps",
+          "title": "Snippet schema (title, code, language, tags, timestamps) with validation; replace the in-memory store",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "Mongoose: Schemas",
+              "url": "https://mongoosejs.com/docs/guide.html"
+            },
+            {
+              "label": "Mongoose: Validation",
+              "url": "https://mongoosejs.com/docs/validation.html"
+            }
+          ]
+        },
+        {
+          "week": 24,
+          "dow": 2,
+          "date": "2027-03-17",
+          "weekTitle": "Database",
+          "kind": "build",
+          "learn": "Querying: filters, text indexes, pagination with skip/limit + sort",
+          "title": "Filter by language/tag, text search, pagination, sorting",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "Mongoose: Queries",
+              "url": "https://mongoosejs.com/docs/queries.html"
+            },
+            {
+              "label": "MongoDB: Text indexes",
+              "url": "https://www.mongodb.com/docs/manual/core/indexes/index-types/index-text/"
+            }
+          ]
+        },
+        {
+          "week": 24,
+          "dow": 3,
+          "date": "2027-03-18",
+          "weekTitle": "Database",
+          "kind": "build",
+          "learn": "Validating input at the boundary with Zod; a consistent error shape",
+          "title": "Request validation middleware (Zod); a consistent error response shape",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "Zod: Basic usage",
+              "url": "https://zod.dev/basics"
+            }
+          ]
+        },
+        {
+          "week": 24,
+          "dow": 4,
+          "date": "2027-03-19",
+          "weekTitle": "Database",
+          "kind": "build",
+          "learn": "Layered architecture: route → controller → service → model",
+          "title": "Refactor into a service layer + async error wrapper",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "Express: express.Router",
+              "url": "https://expressjs.com/en/guide/routing/#expressrouter"
+            },
+            {
+              "label": "Node best practices: Project structure",
+              "url": "https://github.com/goldbergyoni/nodebestpractices#1-project-architecture-practices"
+            }
+          ]
+        },
+        {
+          "week": 24,
+          "dow": 4,
+          "date": "2027-03-19",
+          "weekTitle": "Database",
+          "kind": "checkpoint",
+          "learn": null,
+          "title": "Explain out loud: schema vs model, and why pagination needs a sort. Then add a `?limit=` cap (max 50) without looking anything up"
+        },
+        {
+          "week": 25,
+          "dow": 0,
+          "date": "2027-03-22",
+          "weekTitle": "Auth",
+          "kind": "build",
+          "learn": "Password hashing: bcrypt, salts, cost factor (never store plain text)",
+          "title": "User model, bcrypt hashing, register endpoint",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "OWASP: Password storage",
+              "url": "https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html"
+            },
+            {
+              "label": "npm: bcrypt",
+              "url": "https://www.npmjs.com/package/bcrypt"
+            }
+          ]
+        },
+        {
+          "week": 25,
+          "dow": 1,
+          "date": "2027-03-23",
+          "weekTitle": "Auth",
+          "kind": "build",
+          "learn": "JWT anatomy (header.payload.signature), stateless auth, expiry",
+          "title": "Login → JWT; auth middleware",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "JWT: Introduction",
+              "url": "https://www.jwt.io/introduction"
+            },
+            {
+              "label": "RFC 7519 (JWT)",
+              "url": "https://datatracker.ietf.org/doc/html/rfc7519"
+            }
+          ]
+        },
+        {
+          "week": 25,
+          "dow": 2,
+          "date": "2027-03-24",
+          "weekTitle": "Auth",
+          "kind": "build",
+          "learn": "Authentication vs authorization; 401 vs 403",
+          "title": "Ownership: only the owner can edit/delete (403)",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "MDN: 401 Unauthorized",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/401"
+            },
+            {
+              "label": "MDN: 403 Forbidden",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/403"
+            }
+          ]
+        },
+        {
+          "week": 25,
+          "dow": 3,
+          "date": "2027-03-25",
+          "weekTitle": "Auth",
+          "kind": "build",
+          "learn": "Cookies: httpOnly, Secure, SameSite; refresh-token flow",
+          "title": "Refresh token in an httpOnly cookie + logout",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "MDN: Using HTTP cookies",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies"
+            },
+            {
+              "label": "Auth0: Refresh tokens",
+              "url": "https://auth0.com/docs/secure/tokens/refresh-tokens"
+            }
+          ]
+        },
+        {
+          "week": 25,
+          "dow": 4,
+          "date": "2027-03-26",
+          "weekTitle": "Auth",
+          "kind": "build",
+          "learn": "OWASP basics: helmet headers, CORS, rate limiting, brute-force protection",
+          "title": "Security: helmet, CORS config, rate limiting on auth routes",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "Express: Security best practices",
+              "url": "https://expressjs.com/en/advanced/best-practice-security/"
+            },
+            {
+              "label": "Helmet",
+              "url": "https://helmet.js.org/"
+            },
+            {
+              "label": "npm: express-rate-limit",
+              "url": "https://www.npmjs.com/package/express-rate-limit"
+            }
+          ]
+        },
+        {
+          "week": 25,
+          "dow": 4,
+          "date": "2027-03-26",
+          "weekTitle": "Auth",
+          "kind": "checkpoint",
+          "learn": null,
+          "title": "Draw the login → JWT → protected-route flow from memory; explain 401 vs 403 and where the refresh token lives"
+        },
+        {
+          "week": 26,
+          "dow": 0,
+          "date": "2027-03-29",
+          "weekTitle": "Features",
+          "kind": "build",
+          "learn": "Slugs and unique indexes",
+          "title": "Public/private snippets; share via slug",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "MongoDB: Unique indexes",
+              "url": "https://www.mongodb.com/docs/manual/core/index-unique/"
+            }
+          ]
+        },
+        {
+          "week": 26,
+          "dow": 1,
+          "date": "2027-03-30",
+          "weekTitle": "Features",
+          "kind": "build",
+          "learn": "Embedding vs referencing; `populate` and its cost",
+          "title": "Collections (folders): refs + populate",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "MongoDB: Embed vs link related data",
+              "url": "https://www.mongodb.com/docs/manual/data-modeling/best-practices/#link-related-data"
+            },
+            {
+              "label": "Mongoose: Populate",
+              "url": "https://mongoosejs.com/docs/populate.html"
+            }
+          ]
+        },
+        {
+          "week": 26,
+          "dow": 2,
+          "date": "2027-03-31",
+          "weekTitle": "Features",
+          "kind": "build",
+          "learn": "The aggregation pipeline: $match, $group, $sort, $limit",
+          "title": "Aggregation pipeline: top tags, snippets per language",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "MongoDB: Aggregation pipeline",
+              "url": "https://www.mongodb.com/docs/manual/core/aggregation-pipeline/"
+            }
+          ]
+        },
+        {
+          "week": 26,
+          "dow": 3,
+          "date": "2027-04-01",
+          "weekTitle": "Features",
+          "kind": "build",
+          "learn": "Structured logging, log levels, request IDs for tracing",
+          "title": "Structured logging (pino) + request IDs",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "Pino",
+              "url": "https://getpino.io/"
+            },
+            {
+              "label": "pino-http",
+              "url": "https://github.com/pinojs/pino-http"
+            }
+          ]
+        },
+        {
+          "week": 26,
+          "dow": 4,
+          "date": "2027-04-02",
+          "weekTitle": "Features",
+          "kind": "build",
+          "learn": "OpenAPI: describing an API so others can use it",
+          "title": "OpenAPI/Swagger docs",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "Swagger: OpenAPI 3.0 guide",
+              "url": "https://swagger.io/docs/specification/v3_0/about/"
+            },
+            {
+              "label": "OpenAPI: Getting started",
+              "url": "https://learn.openapis.org/"
+            }
+          ]
+        },
+        {
+          "week": 26,
+          "dow": 4,
+          "date": "2027-04-02",
+          "weekTitle": "Features",
+          "kind": "checkpoint",
+          "learn": null,
+          "title": "Write an aggregation pipeline from memory: snippet count per tag, top 5"
+        },
+        {
+          "week": 27,
+          "dow": 0,
+          "date": "2027-04-05",
+          "weekTitle": "Testing + real-time",
+          "kind": "build",
+          "learn": "The testing pyramid; Jest basics (describe/it/expect, setup/teardown)",
+          "title": "Jest + Supertest + mongodb-memory-server setup",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "Jest: Getting started",
+              "url": "https://jestjs.io/docs/getting-started"
+            },
+            {
+              "label": "Jest: Setup and teardown",
+              "url": "https://jestjs.io/docs/setup-teardown"
+            }
+          ]
+        },
+        {
+          "week": 27,
+          "dow": 1,
+          "date": "2027-04-06",
+          "weekTitle": "Testing + real-time",
+          "kind": "build",
+          "learn": "Integration tests over HTTP with Supertest",
+          "title": "Tests for the auth flows",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "Supertest",
+              "url": "https://github.com/forwardemail/supertest"
+            }
+          ]
+        },
+        {
+          "week": 27,
+          "dow": 2,
+          "date": "2027-04-07",
+          "weekTitle": "Testing + real-time",
+          "kind": "build",
+          "learn": "Test isolation: fresh data per test, mocks vs real dependencies",
+          "title": "Tests for CRUD + permissions",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "Jest: Mock functions",
+              "url": "https://jestjs.io/docs/mock-functions"
+            },
+            {
+              "label": "mongodb-memory-server",
+              "url": "https://github.com/typegoose/mongodb-memory-server"
+            }
+          ]
+        },
+        {
+          "week": 27,
+          "dow": 3,
+          "date": "2027-04-08",
+          "weekTitle": "Testing + real-time",
+          "kind": "build",
+          "learn": "WebSockets vs HTTP; Socket.IO events and rooms",
+          "title": "Socket.IO: live notification when someone favourites your snippet",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "MDN: WebSockets API",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API"
+            },
+            {
+              "label": "Socket.IO: Rooms",
+              "url": "https://socket.io/docs/v4/rooms/"
+            }
+          ]
+        },
+        {
+          "week": 27,
+          "dow": 4,
+          "date": "2027-04-09",
+          "weekTitle": "Testing + real-time",
+          "kind": "build",
+          "learn": "Caching: LRU, TTL, cache invalidation, measuring before optimising",
+          "title": "In-memory LRU cache for a hot query; measure before and after",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "npm: lru-cache",
+              "url": "https://www.npmjs.com/package/lru-cache"
+            }
+          ]
+        },
+        {
+          "week": 27,
+          "dow": 4,
+          "date": "2027-04-09",
+          "weekTitle": "Testing + real-time",
+          "kind": "checkpoint",
+          "learn": null,
+          "title": "Write a new Supertest test for a 403 case without copying an existing test"
+        },
+        {
+          "week": 28,
+          "dow": 0,
+          "date": "2027-04-12",
+          "weekTitle": "Ship",
+          "kind": "build",
+          "learn": "Docker: images vs containers, Dockerfile layers, docker-compose",
+          "title": "Dockerfile + docker-compose (API + Mongo)",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "Docker: What is an image?",
+              "url": "https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-an-image/"
+            },
+            {
+              "label": "Docker Compose",
+              "url": "https://docs.docker.com/compose/"
+            }
+          ]
+        },
+        {
+          "week": 28,
+          "dow": 1,
+          "date": "2027-04-13",
+          "weekTitle": "Ship",
+          "kind": "build",
+          "learn": "CI: what a pipeline runs and why (lint → test → build)",
+          "title": "GitHub Actions CI: lint + tests",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "GitHub Actions: Building Node.js",
+              "url": "https://docs.github.com/en/actions/tutorials/build-and-test-code/nodejs"
+            }
+          ]
+        },
+        {
+          "week": 28,
+          "dow": 2,
+          "date": "2027-04-14",
+          "weekTitle": "Ship",
+          "kind": "build",
+          "learn": "12-factor config: env vars per environment, no secrets in git",
+          "title": "Deploy to a free tier, or record a demo",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "The Twelve-Factor App: Config",
+              "url": "https://12factor.net/config"
+            }
+          ]
+        },
+        {
+          "week": 28,
+          "dow": 3,
+          "date": "2027-04-15",
+          "weekTitle": "Ship",
+          "kind": "build",
+          "learn": "Documenting a project: README structure, architecture diagrams",
+          "title": "README: features, architecture diagram, API table",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "Make a README",
+              "url": "https://www.makeareadme.com/"
+            },
+            {
+              "label": "C4 model (diagrams)",
+              "url": "https://c4model.com/"
+            }
+          ]
+        },
+        {
+          "week": 28,
+          "dow": 4,
+          "date": "2027-04-16",
+          "weekTitle": "Ship",
+          "kind": "build",
+          "learn": "Telling your project story in interviews (problem → design → trade-offs → result)",
+          "title": "Retro + 3 resume bullets with numbers",
+          "doneWhen": null,
+          "learnLinks": [
+            {
+              "label": "Tech Interview Handbook: Behavioral",
+              "url": "https://www.techinterviewhandbook.org/behavioral-interview/"
+            }
+          ]
+        },
+        {
+          "week": 28,
+          "dow": 4,
+          "date": "2027-04-16",
+          "weekTitle": "Ship",
+          "kind": "checkpoint",
+          "learn": null,
+          "title": "Record a 2-minute explanation of SnippetVault's architecture on your phone"
+        }
+      ],
+      "weeks": []
     },
     {
       "code": "portfolio",

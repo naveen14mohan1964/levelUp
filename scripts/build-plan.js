@@ -220,19 +220,7 @@ function buildPhase2() {
 // ---------- Project track (§7 of STUDY_PLAN.md) ----------
 const PROJECTS = [
   {
-    code: 'snippetvault', area: 'node', heading: 'Project 1', stack: ['Node.js', 'Express', 'MongoDB', 'JWT', 'Jest', 'Socket.IO', 'Docker'],
-    resources: [
-      { label: 'Node.js docs', url: 'https://nodejs.org/docs/latest/api/' },
-      { label: 'Express guide', url: 'https://expressjs.com/en/guide/routing/' },
-      { label: 'Mongoose docs', url: 'https://mongoosejs.com/docs/guide.html' },
-      { label: 'Zod', url: 'https://zod.dev/' },
-      { label: 'Jest', url: 'https://jestjs.io/docs/getting-started' },
-      { label: 'Socket.IO', url: 'https://socket.io/docs/v4/' },
-      { label: 'roadmap.sh/nodejs', url: 'https://roadmap.sh/nodejs' },
-    ],
-  },
-  {
-    code: 'jobhunt-api', area: 'dotnet', heading: 'Project 2', stack: ['.NET 10', 'ASP.NET Core', 'EF Core', 'SQL Server', 'Identity/JWT', 'xUnit', 'Serilog'],
+    code: 'jobhunt-api', area: 'dotnet', heading: 'Project 1', stack: ['.NET 10', 'ASP.NET Core', 'EF Core', 'SQL Server', 'Identity/JWT', 'xUnit', 'Serilog'],
     resources: [
       { label: 'ASP.NET Core Web API', url: 'https://learn.microsoft.com/en-us/aspnet/core/web-api/' },
       { label: 'EF Core', url: 'https://learn.microsoft.com/en-us/ef/core/' },
@@ -243,7 +231,7 @@ const PROJECTS = [
     ],
   },
   {
-    code: 'jobhunt-web', area: 'react', heading: 'Project 3', description: 'React + TypeScript front end for the JobHunt API: auth, Kanban board, dashboard, tests.', stack: ['React', 'TypeScript', 'Vite', 'TanStack Query', 'React Hook Form + Zod', 'dnd-kit', 'Vitest', 'Playwright'],
+    code: 'jobhunt-web', area: 'react', heading: 'Project 2', description: 'React + TypeScript front end for the JobHunt API: auth, Kanban board, dashboard, tests.', stack: ['React', 'TypeScript', 'Vite', 'TanStack Query', 'React Hook Form + Zod', 'dnd-kit', 'Vitest', 'Playwright'],
     resources: [
       { label: 'react.dev', url: 'https://react.dev/learn' },
       { label: 'React TypeScript cheatsheet', url: 'https://react-typescript-cheatsheet.netlify.app/' },
@@ -252,6 +240,18 @@ const PROJECTS = [
       { label: 'dnd-kit', url: 'https://dndkit.com/' },
       { label: 'Vitest', url: 'https://vitest.dev/guide/' },
       { label: 'Testing Library', url: 'https://testing-library.com/docs/react-testing-library/intro/' },
+    ],
+  },
+  {
+    code: 'snippetvault', area: 'node', heading: 'Project 3', stack: ['Node.js', 'Express', 'MongoDB', 'JWT', 'Jest', 'Socket.IO', 'Docker'],
+    resources: [
+      { label: 'Node.js docs', url: 'https://nodejs.org/docs/latest/api/' },
+      { label: 'Express guide', url: 'https://expressjs.com/en/guide/routing/' },
+      { label: 'Mongoose docs', url: 'https://mongoosejs.com/docs/guide.html' },
+      { label: 'Zod', url: 'https://zod.dev/' },
+      { label: 'Jest', url: 'https://jestjs.io/docs/getting-started' },
+      { label: 'Socket.IO', url: 'https://socket.io/docs/v4/' },
+      { label: 'roadmap.sh/nodejs', url: 'https://roadmap.sh/nodejs' },
     ],
   },
 ];
@@ -270,6 +270,7 @@ function parseProjects(md) {
     const description = lines.slice(1).find((l) => /^\*[^*]/.test(l));
     // "#### Week 1 · Setup" → "| Mon | learn | build |" rows → "**✅ Checkpoint (Fri, no docs):** text"
     const tasks = [];
+    const weeks = []; // assignment details per week (when the plan has them)
     let week = null;
     let weekTitle = '';
     for (const l of lines) {
@@ -279,12 +280,22 @@ function parseProjects(md) {
         weekTitle = stripMd(wh[2]);
         continue;
       }
-      const row = l.match(/^\| (Mon|Tue|Wed|Thu|Fri) \| (.*) \| (.*) \|\s*$/);
+      // assignment weeks: "**🎯 Objective:** …", "**🪜 Level:** …", "**📦 Deliverable:** …"
+      const meta = l.match(/^\*\*(🎯 Objective|🪜 Level|📦 Deliverable):\*\* (.+)$/u);
+      if (meta && week) {
+        const key = { '🎯 Objective': 'objective', '🪜 Level': 'level', '📦 Deliverable': 'deliverable' }[meta[1]];
+        let w = weeks.find((x) => x.week === week);
+        if (!w) weeks.push((w = { week, title: weekTitle }));
+        w[key] = stripMd(meta[2]);
+        continue;
+      }
+      // "| Mon | learn | build |" or, for assignment weeks, "| Mon | learn | build | done when |"
+      const row = l.match(/^\| (Mon|Tue|Wed|Thu|Fri) \| ([^|]*) \| ([^|]*) \|(?: ([^|]*) \|)?\s*$/);
       if (row && week) {
         const dow = DOW.indexOf(row[1]);
         tasks.push({
           week, dow, date: addDays(START_DATE, (week - 1) * 7 + dow), weekTitle,
-          kind: 'build', learn: row[2].trim(), title: row[3].trim(),
+          kind: 'build', learn: row[2].trim(), title: row[3].trim(), doneWhen: row[4]?.trim() || null,
         });
         continue;
       }
@@ -293,7 +304,7 @@ function parseProjects(md) {
         tasks.push({ week, dow: 4, date: addDays(START_DATE, (week - 1) * 7 + 4), weekTitle, kind: 'checkpoint', learn: null, title: cp[1].trim() });
       }
     }
-    projects.push({ ...def, name, description: description ? stripMd(description) : def.description || '', tasks });
+    projects.push({ ...def, name, description: description ? stripMd(description) : def.description || '', tasks, weeks });
   }
 
   // Week 22 wrap-up: "Mon: ... · Tue: ... · Fri: rest"
@@ -382,7 +393,7 @@ for (const d of plan.days) {
 for (const p of plan.projects) {
   for (const t of p.tasks) {
     if (t.kind !== 'build') continue;
-    t.learnLinks = p.code === 'portfolio' ? LINKS.PORTFOLIO_LINKS[t.dow] || [] : LINKS.PROJECT_LEARN_LINKS[t.week]?.[t.dow] || [];
+    t.learnLinks = p.code === 'portfolio' ? LINKS.PORTFOLIO_LINKS[t.dow] || [] : LINKS.PROJECT_LEARN_LINKS[p.code]?.[t.week]?.[t.dow] || [];
   }
 }
 plan.channels = LINKS.CHANNELS;

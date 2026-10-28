@@ -6,7 +6,7 @@ const wrap = (fn) => (req, res, next) => fn(req, res, next).catch(next);
 const AREAS = ['node', 'dotnet', 'react'];
 
 const TASK_COLS = `CAST(id AS int) AS id, project_code, week_no, week_title, day_index,
-  CONVERT(char(10), plan_date, 23) AS plan_date, kind, learn, learn_links, learn_done, title, done, built_from_scratch, notes, done_at`;
+  CONVERT(char(10), plan_date, 23) AS plan_date, kind, learn, learn_links, learn_done, done_when, brief, title, done, built_from_scratch, notes, done_at`;
 // learn_links is stored as JSON text
 const withLinks = (t) => ({ ...t, learn_links: JSON.parse(t.learn_links || '[]') });
 
@@ -20,8 +20,10 @@ router.get('/projects/:area', wrap(async (req, res) => {
     FROM dbo.projects WHERE area = @area ORDER BY sort_order;
     SELECT ${TASK_COLS} FROM dbo.project_tasks
     WHERE project_code IN (SELECT code FROM dbo.projects WHERE area = @area)
-    ORDER BY plan_date, CASE kind WHEN 'build' THEN 0 ELSE 1 END, id;`);
-  const [projects, rawTasks] = r.recordsets;
+    ORDER BY plan_date, CASE kind WHEN 'build' THEN 0 ELSE 1 END, id;
+    SELECT project_code, week_no, objective, level, deliverable FROM dbo.project_weeks
+    WHERE project_code IN (SELECT code FROM dbo.projects WHERE area = @area);`);
+  const [projects, rawTasks, weekInfo] = r.recordsets;
   const tasks = rawTasks.map(withLinks);
 
   res.json(projects.map((p) => {
@@ -29,7 +31,11 @@ router.get('/projects/:area', wrap(async (req, res) => {
     const weeks = [];
     for (const t of own) {
       let w = weeks.find((x) => x.week_no === t.week_no);
-      if (!w) weeks.push((w = { week_no: t.week_no, title: t.week_title, tasks: [] }));
+      if (!w) {
+        // assignment weeks also carry an objective, a level and a deliverable
+        const info = weekInfo.find((x) => x.project_code === p.code && x.week_no === t.week_no);
+        weeks.push((w = { week_no: t.week_no, title: t.week_title, objective: info?.objective || null, level: info?.level || null, deliverable: info?.deliverable || null, tasks: [] }));
+      }
       w.tasks.push(t);
     }
     return { ...p, stack: JSON.parse(p.stack || '[]'), resources: JSON.parse(p.resources || '[]'), weeks };

@@ -133,100 +133,100 @@ const CHANNELS = [
   l('William Fiset', 'https://www.youtube.com/@WilliamFiset-videos'),
 ];
 
-// Projects: one array per Learn topic (Mon..Fri), indexed by week number (1–21).
-const PROJECT_LEARN_LINKS = {
-  1: [
+// Projects: one array per Learn topic (Mon..Fri), indexed by week number (1–21): .NET 1–8, Node 9–14, React 15–21.
+const LEGACY_WEEK_LINKS = {
+  9: [
     [l('Node.js: Introduction', 'https://nodejs.org/learn/getting-started/introduction-to-nodejs'), l('Node.js: ECMAScript modules', 'https://nodejs.org/api/esm.html'), l('npm: scripts', 'https://docs.npmjs.com/cli/v10/using-npm/scripts')],
     [l('Node.js: http module', 'https://nodejs.org/api/http.html'), l('Node.js: The event loop', 'https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick')],
     [l('Express: Routing', 'https://expressjs.com/en/guide/routing/'), l('Express: Using middleware', 'https://expressjs.com/en/guide/using-middleware/')],
     [l('MDN: HTTP request methods', `${MDN}/Web/HTTP/Reference/Methods`), l('MDN: HTTP status codes', `${MDN}/Web/HTTP/Reference/Status`)],
     [l('Express: Error handling', 'https://expressjs.com/en/guide/error-handling/'), l('Postman: Environments', 'https://learning.postman.com/docs/use/send-requests/variables/managing-environments/')],
   ],
-  2: [
+  10: [
     [l('MongoDB: Data modeling', 'https://www.mongodb.com/docs/manual/data-modeling/'), l('MongoDB: Connection strings', 'https://www.mongodb.com/docs/manual/reference/connection-string/')],
     [l('Mongoose: Schemas', 'https://mongoosejs.com/docs/guide.html'), l('Mongoose: Validation', 'https://mongoosejs.com/docs/validation.html')],
     [l('Mongoose: Queries', 'https://mongoosejs.com/docs/queries.html'), l('MongoDB: Text indexes', 'https://www.mongodb.com/docs/manual/core/indexes/index-types/index-text/')],
     [l('Zod: Basic usage', 'https://zod.dev/basics')],
     [l('Express: express.Router', 'https://expressjs.com/en/guide/routing/#expressrouter'), l('Node best practices: Project structure', 'https://github.com/goldbergyoni/nodebestpractices#1-project-architecture-practices')],
   ],
-  3: [
+  11: [
     [l('OWASP: Password storage', 'https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html'), l('npm: bcrypt', 'https://www.npmjs.com/package/bcrypt')],
     [l('JWT: Introduction', 'https://www.jwt.io/introduction'), l('RFC 7519 (JWT)', 'https://datatracker.ietf.org/doc/html/rfc7519')],
     [l('MDN: 401 Unauthorized', `${MDN}/Web/HTTP/Reference/Status/401`), l('MDN: 403 Forbidden', `${MDN}/Web/HTTP/Reference/Status/403`)],
     [l('MDN: Using HTTP cookies', `${MDN}/Web/HTTP/Guides/Cookies`), l('Auth0: Refresh tokens', 'https://auth0.com/docs/secure/tokens/refresh-tokens')],
     [l('Express: Security best practices', 'https://expressjs.com/en/advanced/best-practice-security/'), l('Helmet', 'https://helmet.js.org/'), l('npm: express-rate-limit', 'https://www.npmjs.com/package/express-rate-limit')],
   ],
-  4: [
+  12: [
     [l('MongoDB: Unique indexes', 'https://www.mongodb.com/docs/manual/core/index-unique/')],
     [l('MongoDB: Embed vs link related data', 'https://www.mongodb.com/docs/manual/data-modeling/best-practices/#link-related-data'), l('Mongoose: Populate', 'https://mongoosejs.com/docs/populate.html')],
     [l('MongoDB: Aggregation pipeline', 'https://www.mongodb.com/docs/manual/core/aggregation-pipeline/')],
     [l('Pino', 'https://getpino.io/'), l('pino-http', 'https://github.com/pinojs/pino-http')],
     [l('Swagger: OpenAPI 3.0 guide', 'https://swagger.io/docs/specification/v3_0/about/'), l('OpenAPI: Getting started', 'https://learn.openapis.org/')],
   ],
-  5: [
+  13: [
     [l('Jest: Getting started', 'https://jestjs.io/docs/getting-started'), l('Jest: Setup and teardown', 'https://jestjs.io/docs/setup-teardown')],
     [l('Supertest', 'https://github.com/forwardemail/supertest')],
     [l('Jest: Mock functions', 'https://jestjs.io/docs/mock-functions'), l('mongodb-memory-server', 'https://github.com/typegoose/mongodb-memory-server')],
     [l('MDN: WebSockets API', `${MDN}/Web/API/WebSockets_API`), l('Socket.IO: Rooms', 'https://socket.io/docs/v4/rooms/')],
     [l('npm: lru-cache', 'https://www.npmjs.com/package/lru-cache')],
   ],
-  6: [
+  14: [
     [l('Docker: What is an image?', 'https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-an-image/'), l('Docker Compose', 'https://docs.docker.com/compose/')],
     [l('GitHub Actions: Building Node.js', 'https://docs.github.com/en/actions/tutorials/build-and-test-code/nodejs')],
     [l('The Twelve-Factor App: Config', 'https://12factor.net/config')],
     [l('Make a README', 'https://www.makeareadme.com/'), l('C4 model (diagrams)', 'https://c4model.com/')],
     [l('Tech Interview Handbook: Behavioral', 'https://www.techinterviewhandbook.org/behavioral-interview/')],
   ],
-  7: [
+  1: [
     [l('dotnet sln', `${MS}/dotnet/core/tools/dotnet-sln`), l('Common web app architectures', `${MS}/dotnet/architecture/modern-web-apps-azure/common-web-application-architectures`)],
     [l('ASP.NET Core: Dependency injection', `${MS}/aspnet/core/fundamentals/dependency-injection`), l('ASP.NET Core: Middleware', `${MS}/aspnet/core/fundamentals/middleware/`), l('ASP.NET Core: Configuration', `${MS}/aspnet/core/fundamentals/configuration/`)],
     [l('C#: Records', `${MS}/dotnet/csharp/fundamentals/types/records`), l('C#: Nullable reference types', `${MS}/dotnet/csharp/fundamentals/null-safety/nullable-reference-types`)],
     [l('EF Core: DbContext configuration', `${MS}/ef/core/dbcontext-configuration/`), l('EF Core: Migrations', `${MS}/ef/core/managing-schemas/migrations/`)],
     [l('ASP.NET Core: APIs overview', `${MS}/aspnet/core/fundamentals/apis`), l('Tutorial: Prevent over-posting (DTOs)', `${MS}/aspnet/core/tutorials/first-web-api#prevent-over-posting`)],
   ],
-  8: [
+  2: [
     [l('Mapster', 'https://github.com/MapsterMapper/Mapster')],
     [l('C#: Asynchronous programming', `${MS}/dotnet/csharp/asynchronous-programming/`), l('Cancellation in managed threads', `${MS}/dotnet/standard/threading/cancellation-in-managed-threads`)],
     [l('EF Core: Client vs server evaluation', `${MS}/ef/core/querying/client-eval`), l('EF Core: Pagination', `${MS}/ef/core/querying/pagination`)],
     [l('FluentValidation: ASP.NET Core', 'https://docs.fluentvalidation.net/en/latest/aspnet.html'), l('ASP.NET Core: Handle errors (ProblemDetails)', `${MS}/aspnet/core/fundamentals/error-handling-api`)],
     [l('ASP.NET Core: Write custom middleware', `${MS}/aspnet/core/fundamentals/middleware/write`), l('ASP.NET Core: Error handling', `${MS}/aspnet/core/fundamentals/error-handling`)],
   ],
-  9: [
+  3: [
     [l('ASP.NET Core Identity', `${MS}/aspnet/core/security/authentication/identity`)],
     [l('Configure JWT bearer authentication', `${MS}/aspnet/core/security/authentication/configure-jwt-bearer-authentication`)],
     [l('EF Core: Global query filters', `${MS}/ef/core/querying/filters`)],
     [l('Policy-based authorization', `${MS}/aspnet/core/security/authorization/policies`), l('Role-based authorization', `${MS}/aspnet/core/security/authorization/roles`)],
     [l('Auth0: Refresh token rotation', 'https://auth0.com/docs/secure/tokens/refresh-tokens/refresh-token-rotation')],
   ],
-  10: [
+  4: [
     [l('EF Core: Relationships', `${MS}/ef/core/modeling/relationships`), l('EF Core: Loading related data', `${MS}/ef/core/querying/related-data/`), l('EF Core: Tracking vs no-tracking', `${MS}/ef/core/querying/tracking`)],
     [l('EF Core: Interceptors', `${MS}/ef/core/logging-events-diagnostics/interceptors`)],
     [l('EF Core: Complex query operators', `${MS}/ef/core/querying/complex-query-operators`)],
     [l('ASP.NET Core: Hosted services', `${MS}/aspnet/core/fundamentals/host/hosted-services`)],
     [l('.NET DI: Service lifetimes', `${MS}/dotnet/core/extensions/dependency-injection/service-lifetimes`), l('.NET DI guidelines (captive dependency)', `${MS}/dotnet/core/extensions/dependency-injection/guidelines`)],
   ],
-  11: [
+  5: [
     [l('Serilog.AspNetCore', 'https://github.com/serilog/serilog-aspnetcore')],
     [l('Unit testing with xUnit', `${MS}/dotnet/core/testing/unit-testing-csharp-with-xunit`), l('NSubstitute: Getting started', 'https://nsubstitute.github.io/help/getting-started/')],
     [l('ASP.NET Core: Integration tests', `${MS}/aspnet/core/test/integration-tests`)],
     [l('ASP.NET Core: OpenAPI overview', `${MS}/aspnet/core/fundamentals/openapi/overview`)],
     [l('ASP.NET Core: Rate limiting', `${MS}/aspnet/core/performance/rate-limit`)],
   ],
-  12: [
+  6: [
     [l('ASP.NET Core: In-memory cache', `${MS}/aspnet/core/performance/caching/memory`), l('ASP.NET Core: Output caching', `${MS}/aspnet/core/performance/caching/output`)],
     [l('EF Core: Indexes', `${MS}/ef/core/modeling/indexes`), l('EF Core: Simple logging (see the SQL)', `${MS}/ef/core/logging-events-diagnostics/simple-logging`)],
     [l('ASP.NET Core: Health checks', `${MS}/aspnet/core/host-and-deploy/health-checks`)],
     [l('Containerize a .NET app', `${MS}/dotnet/core/docker/build-container`), l('SQL Server in Docker', `${MS}/sql/linux/install-upgrade/quickstart-install-docker`)],
     [l('roadmap.sh: ASP.NET Core', 'https://roadmap.sh/aspnet-core')],
   ],
-  13: [
+  7: [
     [l('ASP.NET Core: File uploads', `${MS}/aspnet/core/mvc/models/file-uploads`)],
     [l('.NET: File providers', `${MS}/aspnet/core/fundamentals/file-providers`)],
     [l('SQL Server: Full-text search', `${MS}/sql/relational-databases/search/full-text-search`)],
     [l('Architectural principles (SOLID)', `${MS}/dotnet/architecture/modern-web-apps-azure/architectural-principles`)],
     [l('Refactoring catalog', 'https://refactoring.guru/refactoring/catalog')],
   ],
-  14: [
+  8: [
     [l('GitHub Actions: Building .NET', 'https://docs.github.com/en/actions/tutorials/build-and-test-code/net')],
     [l('Azure App Service: .NET quickstart', `${MS}/azure/app-service/quickstart-dotnetcore`), l('Azure SQL Database free offer', `${MS}/azure/azure-sql/database/free-offer`)],
     [l('Mermaid: ER diagrams', 'https://mermaid.js.org/syntax/entityRelationshipDiagram.html'), l('C4 model', 'https://c4model.com/')],
@@ -292,5 +292,14 @@ const PORTFOLIO_LINKS = [
   [l('Tech Interview Handbook: Behavioral', 'https://www.techinterviewhandbook.org/behavioral-interview/')],
   [],
 ];
+
+// Learn links per project, then week. The object above was written when weeks 1–6 were Node, 7–14 the old .NET
+// track and 15–21 React: Node now runs in weeks 23–28 (+14) and .NET has its own 14-week set (dotnet-links.js).
+const pick = (from, to, shift) => Object.fromEntries(Object.entries(LEGACY_WEEK_LINKS).filter(([w]) => w >= from && w <= to).map(([w, v]) => [Number(w) + shift, v]));
+const PROJECT_LEARN_LINKS = {
+  'jobhunt-api': require('./dotnet-links'),
+  'jobhunt-web': pick(15, 21, 0),
+  snippetvault: pick(9, 14, 14),
+};
 
 module.exports = { DSA_DAY_LINKS, PHASE2_LINKS, CHANNELS, PROJECT_LEARN_LINKS, PORTFOLIO_LINKS };
