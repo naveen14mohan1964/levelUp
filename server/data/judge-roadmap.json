@@ -1,0 +1,1130 @@
+{
+ "about": "Engineering judgement and domain expertise, from scratch to advanced: what judgement is and why it is the scarce skill now → trade-offs → making and recording decisions (ADRs, design docs) → estimation, risk and scope → judgement in code (reviews, refactoring, technical debt) → judgement in production (incidents, rollouts, postmortems) → judgement with AI tools → product and business sense → becoming a domain expert (glossaries, workflows, DDD) → a payments deep dive you can explain in interviews → showing judgement and domain depth in interviews and at work. Every lesson ends with a standalone exercise. Links checked 2026-10-28.",
+ "levels": [
+  {
+   "n": 1,
+   "title": "What engineering judgement is, and why it is the scarce skill now",
+   "goal": "Spot the decisions hidden in any piece of work, sort them by how reversible they are, and say exactly what an answer depends on.",
+   "lessons": [
+    {
+     "id": "EJ1-1",
+     "title": "Judgement is deciding well under uncertainty",
+     "minutes": 40,
+     "learn": "Engineering judgement is the ability to choose a good course of action when information is incomplete, the options have different costs, and there is no single correct answer to look up. It matters more as code becomes cheaper to produce: an AI tool can implement any option you describe, but someone still has to decide which option fits the users, the team, the deadline and the risk. In 'Who Needs an Architect?', Martin Fowler quotes Ralph Johnson: architecture is the decisions you wish you could get right early, the things that are hard to change. To apply this, train yourself to notice the decision hiding inside each task before you start typing: what are the options, and what would make one better than another?",
+     "links": [
+      [
+       "Martin Fowler: Who Needs an Architect? (PDF)",
+       "https://martinfowler.com/ieeeSoftware/whoNeedsArchitect.pdf"
+      ],
+      [
+       "Staff Engineer: Work on what matters",
+       "https://staffeng.com/guides/work-on-what-matters/"
+      ]
+     ],
+     "build": "Scenario: a developer is asked to 'add CSV export to the orders page'. Write down every decision hidden in that one sentence (at least 8): for example, synchronous download or emailed file, which columns, date and currency formats, maximum rows, who is allowed to export, what happens with 1 million rows, whether to reuse an existing library. For each decision, write two options and one sentence on what the choice depends on. Mark which decisions an AI tool could make alone and which need context only a person has.",
+     "check": "Why does engineering judgement become more valuable, not less, as AI tools make writing code cheaper?"
+    },
+    {
+     "id": "EJ1-2",
+     "title": "The scope of your decisions is your seniority",
+     "minutes": 40,
+     "learn": "Engineering levels are defined less by how much code a person writes and more by the size and lifetime of the decisions they are trusted with. A useful ladder is: a function, a feature, a service, a system that spans several teams. Early in a career you decide how to build something; with seniority you also decide what to build, whether to build it at all, and you own the consequences when it goes wrong. Will Larson's staff archetypes show that senior roles differ in shape (tech lead, architect, solver, right hand) but all are measured by the decisions and outcomes they own.",
+     "links": [
+      [
+       "Staff Engineer: Staff archetypes",
+       "https://staffeng.com/guides/staff-archetypes/"
+      ],
+      [
+       "Staff Engineer: Work on what matters",
+       "https://staffeng.com/guides/work-on-what-matters/"
+      ]
+     ],
+     "build": "Write a 4-row table (function, feature, service, system). For each row, invent one realistic decision at that scope for a food-delivery company: for example, 'how to round prices' (function), 'whether restaurants can pause orders' (feature), 'how the order service retries payment' (service), 'whether to split the monolith' (system). For each, add who would normally decide it, how long the decision lasts, and what it costs if it is wrong. Finish with two sentences on what changes as you move down the table.",
+     "check": "What is the difference between deciding how to build something and deciding whether to build it?"
+    },
+    {
+     "id": "EJ1-3",
+     "title": "One-way doors and two-way doors",
+     "minutes": 45,
+     "learn": "In his 2015 shareholder letter, Jeff Bezos split decisions into two types. Type 1 decisions are one-way doors: consequential and irreversible or nearly so, and they deserve slow, careful deliberation. Type 2 decisions are two-way doors: changeable and reversible, so they should be made quickly by a person or small group with good judgement, because if you are wrong you can walk back through. He warns that large organisations tend to apply the heavy Type 1 process to everything, which makes them slow; in his 2016 letter he adds that most decisions should be made with about 70% of the information you wish you had. In software, a public API contract, a database schema holding live data, or a long vendor contract are one-way doors; a UI layout, an internal helper function or a feature behind a flag are two-way doors.",
+     "links": [
+      [
+       "Amazon: 2015 Letter to Shareholders (one-way and two-way doors)",
+       "https://s2.q4cdn.com/299287126/files/doc_financials/annual/2015-Letter-to-Shareholders.PDF"
+      ],
+      [
+       "Amazon: Jeff Bezos' 2016 Letter to Shareholders",
+       "https://www.aboutamazon.com/news/company-news/2016-letter-to-shareholders"
+      ],
+      [
+       "Farnam Street: Reversible and Irreversible Decisions",
+       "https://fs.blog/reversible-irreversible-decisions/"
+      ]
+     ],
+     "build": "Classify these 10 decisions as one-way or two-way, and for each one-way door write what reversing it would cost: (1) the name of a public REST endpoint used by mobile apps, (2) the colour of a button, (3) choosing a cloud provider with a 3-year commit discount, (4) the default page size of an internal list, (5) storing user ids as integers vs UUIDs, (6) adding a column to a table, (7) deleting a column that holds customer data, (8) switching a logging library, (9) the format of events written to a shared message bus, (10) a pricing change announced to customers. Then pick two one-way doors and describe how you could make each one more reversible (a version prefix, a backup, a feature flag, an adapter).",
+     "check": "What could turn a two-way door into a one-way door after you ship it?"
+    },
+    {
+     "id": "EJ1-4",
+     "title": "Turn 'it depends' into what it depends on",
+     "minutes": 40,
+     "learn": "'It depends' is the right first answer to most engineering questions and a useless final one. The skill is to name the variables the answer depends on (data size, read/write ratio, team experience, deadline, cost of being wrong) and then give a concrete answer for each realistic case: 'If there are under 10,000 rows and one writer, use X; if there are many concurrent writers, use Y.' This turns an opinion into a small model that others can check and challenge. It also reveals which variable matters most, which tells you what to measure or ask about before deciding.",
+     "links": [
+      [
+       "Lethain: Write five, then synthesize: good engineering strategy is boring",
+       "https://lethain.com/good-engineering-strategy-is-boring/"
+      ],
+      [
+       "Choose Boring Technology (Dan McKinley)",
+       "https://boringtechnology.club/"
+      ]
+     ],
+     "build": "Answer these three questions in 'it depends on' form. For each, name 2 to 4 variables and write a one-line answer per realistic case in a small table: (1) Should a web app cache API responses in memory or in Redis? (2) Should a team of four write a new service in a language only one of them knows? (3) Should a startup build its own login system or use a hosted identity provider? Under each table, write the single variable that would flip your answer if it changed.",
+     "check": "Pick one of your three answers: which single variable, if it changed, would flip your recommendation?"
+    },
+    {
+     "id": "EJ1-5",
+     "title": "Keep a decision journal",
+     "minutes": 30,
+     "learn": "After an outcome is known, memory rewrites itself: you believe you saw it coming (hindsight bias), so you cannot learn from your own calls unless you record them before the result. A decision journal entry captures the date, the situation, the options considered, what you expect to happen, your confidence, and how you feel at the time. Reviewing entries weeks or months later separates bad decisions from bad luck, because a good decision can still have a bad outcome and a bad one can get lucky. Over time the journal shows your blind spots, for example consistently overconfident estimates.",
+     "links": [
+      [
+       "Farnam Street: How a Decision Journal Changed the Way I Make Decisions",
+       "https://fs.blog/decision-journal/"
+      ]
+     ],
+     "build": "Create a decision journal template with these fields: date, decision, context, options considered, choice, expected outcome, confidence (%), review date, actual outcome, lesson. Fill in two entries for this scenario: a team lead decides to ship a release on Friday evening to meet a promise to a client, 80% confident nothing breaks. Write entry A as if the release went fine and entry B as if it caused an outage. Then write two sentences: was the decision itself good or bad, and does the outcome change that answer? Optional: start using the template for one real decision you are making this week.",
+     "check": "How would you tell, when you review an entry later, whether a bad outcome came from a bad decision or from bad luck?"
+    }
+   ]
+  },
+  {
+   "n": 2,
+   "title": "Trade-offs: the core of every decision",
+   "goal": "Name the cost of every option you choose, including the costs that show up later or somewhere else.",
+   "lessons": [
+    {
+     "id": "EJ2-1",
+     "title": "Every choice has a cost",
+     "minutes": 40,
+     "learn": "Every engineering option has costs; the only question is whether you have noticed them. Costs include time to build, time to operate, money, latency, risk, learning effort for the team, lock-in, and the alternatives you gave up (opportunity cost). Google's SRE book makes this concrete: each extra 'nine' of reliability costs much more and slows feature work, so 100% reliability is the wrong target for almost every service. Dan McKinley's 'innovation tokens' apply the same idea to technology choices: a team can only absorb a few new, unfamiliar tools at once, so each one should be spent where it buys a real advantage.",
+     "links": [
+      [
+       "Google SRE book: Embracing Risk",
+       "https://sre.google/sre-book/embracing-risk/"
+      ],
+      [
+       "Choose Boring Technology (Dan McKinley)",
+       "https://boringtechnology.club/"
+      ]
+     ],
+     "build": "Scenario: a 5-person team building an internal HR tool is choosing between a well-known relational database they already run and a new graph database a developer is excited about. Write a cost sheet with rows: build time, running cost, operational effort, learning cost, hiring, lock-in, what is given up. Fill both columns with a rough rating or number and one line of reasoning each. End with a recommendation and say whether the graph database is a good use of an innovation token here.",
+     "check": "What is an 'innovation token' and when is it worth spending one?"
+    },
+    {
+     "id": "EJ2-2",
+     "title": "Simplicity and YAGNI vs future-proofing",
+     "minutes": 45,
+     "learn": "YAGNI ('you aren't gonna need it') says: do not build a capability for a future you only imagine. Martin Fowler lists four costs of building a presumptive feature: the cost of building it, the cost of delay to features you postponed to build it, the cost of carrying the extra complexity, and the cost of repair when the guess about the future was wrong. Future-proofing is still valuable, but the cheapest form of it is code that is simple and easy to change, not code that predicts the future. YAGNI does not excuse sloppy code; it relies on keeping the code clean enough to extend later.",
+     "links": [
+      [
+       "Martin Fowler: Yagni",
+       "https://martinfowler.com/bliki/Yagni.html"
+      ],
+      [
+       "Martin Fowler: Is Design Dead?",
+       "https://martinfowler.com/articles/designDead.html"
+      ],
+      [
+       "Google SRE book: Simplicity",
+       "https://sre.google/sre-book/simplicity/"
+      ]
+     ],
+     "build": "Scenario: a developer building a single-shop online store adds multi-currency support, a plugin system, multi-tenant database columns and an abstract payment-provider interface with one implementation, 'because we might need them'. For each of the four additions, estimate Fowler's four costs (build, delay, carry, repair) in rough developer-days, and decide keep or remove. Then name one thing in this design that is worth future-proofing now because changing it later would be a one-way door, and explain why.",
+     "check": "What are the four costs of building a presumptive feature?"
+    },
+    {
+     "id": "EJ2-3",
+     "title": "Build vs buy vs open source",
+     "minutes": 45,
+     "learn": "For any capability you can build it yourself, buy it (a paid service or product), or adopt open source. Buy or adopt when the capability is not what makes your product different and a good option exists; build when it is your core differentiator or when no option fits your constraints. Joel Spolsky's rule of thumb: if it is a core business function, do it yourself. Compare full lifetime costs, not just the start: integration, upgrades, security patches, pricing changes, vendor lock-in, data ownership, and the attention it takes from your team.",
+     "links": [
+      [
+       "Joel on Software: In Defense of Not-Invented-Here Syndrome",
+       "https://www.joelonsoftware.com/2001/10/14/in-defense-of-not-invented-here-syndrome/"
+      ],
+      [
+       "Microsoft Learn: Choose an Azure technology (technology choices overview)",
+       "https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/technology-choices-overview"
+      ]
+     ],
+     "build": "Scenario: a small company building a fitness app needs (a) user authentication, (b) sending push notifications, (c) the workout-recommendation logic that is the product's main selling point, and (d) error tracking. For each, make a row with columns: build / buy / open source, effort, yearly cost, lock-in risk, control, what happens if the vendor raises prices or shuts down. Give a recommendation per row with one sentence of justification, and explain why (c) is different from the others.",
+     "check": "Why should a company usually build its core differentiator but buy commodity capabilities like login or error tracking?"
+    },
+    {
+     "id": "EJ2-4",
+     "title": "Consistency, latency and cost",
+     "minutes": 45,
+     "learn": "Distributed systems force trade-offs between consistency (everyone sees the latest data), availability (every request gets an answer), latency (how fast) and cost. The CAP theorem says that during a network partition a distributed store must give up either consistency or availability. PACELC extends it: even with no partition, you trade latency against consistency, because waiting for replicas to agree takes time. Most caching, replication and queueing decisions are really answers to one question: how much does a stale or slow answer cost this particular user?",
+     "links": [
+      [
+       "Wikipedia: CAP theorem",
+       "https://en.wikipedia.org/wiki/CAP_theorem"
+      ],
+      [
+       "Wikipedia: PACELC theorem",
+       "https://en.wikipedia.org/wiki/PACELC_theorem"
+      ],
+      [
+       "Microsoft Learn: Azure Well-Architected Framework pillars",
+       "https://learn.microsoft.com/en-us/azure/well-architected/pillars"
+      ]
+     ],
+     "build": "For each piece of data, write how stale it may safely be (never, seconds, minutes, hours), how fast it must load, and therefore whether it can be cached, replicated asynchronously, or must be read from the primary: (1) a bank account balance before a transfer, (2) the like count on a social post, (3) a product's price at checkout, (4) a product's description, (5) seat availability on a flight, (6) a user's profile picture, (7) an inventory count shown on a product page. Explain the difference in your answers for (3) and (4).",
+     "check": "What kind of data must never be served stale, and what does that rule out in the design?"
+    },
+    {
+     "id": "EJ2-5",
+     "title": "Second-order effects",
+     "minutes": 35,
+     "learn": "First-order thinking asks 'what happens next?'; second-order thinking keeps asking 'and then what?'. Many engineering fixes have second-order effects that are worse than the original problem: automatic retries fix a flaky call and then multiply load during an outage; a strict code-review rule improves quality and then encourages huge batched pull requests that are reviewed less carefully. Chesterton's fence is the matching caution: before removing something whose purpose you do not understand, find out why it was put there. Apply this by tracing each change through users, cost, the team and other systems for at least two steps.",
+     "links": [
+      [
+       "Farnam Street: Second-Order Thinking",
+       "https://fs.blog/second-order-thinking/"
+      ],
+      [
+       "Wikipedia: Chesterton's fence",
+       "https://en.wikipedia.org/wiki/Chesterton%27s_fence"
+      ]
+     ],
+     "build": "For each of these changes, write a three-step chain (first-order, second-order, third-order effect) and one guard you would add because of it: (1) a team adds automatic retries (3 attempts) to every call to a payment provider, (2) management sets a target of 90% unit-test coverage, (3) a team caches the user permissions list for 24 hours to cut database load, (4) a company bans deployments on Fridays. For one of them, describe what Chesterton's fence would ask you to check before undoing it.",
+     "check": "When has fixing a problem quickly created a bigger problem later, and what would have prevented it?"
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "title": "Making and recording decisions",
+   "goal": "Run a decision from options to a written record that a teammate can read, challenge and follow a year later.",
+   "lessons": [
+    {
+     "id": "EJ3-1",
+     "title": "Options and a criteria matrix",
+     "minutes": 45,
+     "learn": "A structured decision starts by writing at least three options, including 'do nothing', so you are not choosing between your favourite and a straw man. Next, agree on the criteria (cost, risk, time to deliver, operability, team skill) and their weights before scoring, otherwise you will unconsciously tune the weights to justify the option you already liked. Then score each option against each criterion and multiply by the weights. Treat the matrix as a thinking tool, not a calculator: if the winner feels wrong, a criterion is probably missing, and finding it is the point.",
+     "links": [
+      [
+       "Wikipedia: Decision matrix",
+       "https://en.wikipedia.org/wiki/Decision_matrix"
+      ],
+      [
+       "Microsoft Learn: Technology choices overview",
+       "https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/technology-choices-overview"
+      ]
+     ],
+     "build": "Scenario: a 6-person team runs a monolith that takes 40 minutes to build and deploy, and releases have become risky. Options: (A) split into microservices, (B) modularise the monolith and speed up the pipeline, (C) do nothing for six months, plus one option of your own. Fix 5 weighted criteria first, then score every option 1 to 5, compute totals, and write one paragraph on what the matrix did not capture.",
+     "check": "Why should you fix the criteria and weights before you score the options?"
+    },
+    {
+     "id": "EJ3-2",
+     "title": "Architecture Decision Records",
+     "minutes": 45,
+     "learn": "An Architecture Decision Record (ADR) is a short text file that records one significant decision. Michael Nygard's format has five parts: Title, Context (the forces at play, stated neutrally), Decision (in active voice: 'We will...'), Status (proposed, accepted, deprecated, superseded) and Consequences (all of them, good and bad). ADRs are numbered and kept in the code repository, so the reasoning lives next to the code it explains. An accepted ADR is never edited; when the decision changes, you write a new ADR that supersedes it, so the history of reasoning stays intact.",
+     "links": [
+      [
+       "Michael Nygard: Documenting Architecture Decisions",
+       "https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions"
+      ],
+      [
+       "adr.github.io: Architectural Decision Records",
+       "https://adr.github.io/"
+      ],
+      [
+       "Martin Fowler: Architecture Decision Record",
+       "https://martinfowler.com/bliki/ArchitectureDecisionRecord.html"
+      ]
+     ],
+     "build": "Write ADR 0001 in Nygard's format for this scenario: a team building a booking system must decide whether to store appointment times in UTC or in the clinic's local time zone. Clinics are in three time zones and some regions observe daylight saving. Keep it under one page and list at least two negative consequences. Then write ADR 0002, dated a year later, that supersedes 0001 after a new requirement appears (you choose it), and show how the status of 0001 changes.",
+     "check": "Why is an accepted ADR superseded instead of edited?"
+    },
+    {
+     "id": "EJ3-3",
+     "title": "Design docs and RFCs",
+     "minutes": 45,
+     "learn": "A design doc (often called an RFC) is written before a larger piece of work so that people can find problems while changing direction is still cheap. A common structure, used at Google, is: context and scope, goals and non-goals, the design itself, alternatives considered, and cross-cutting concerns such as security, privacy and observability. The non-goals and alternatives sections are where judgement shows; a doc with no rejected alternatives is a description, not a decision. Keep it short enough that reviewers will actually read it, and circulate it to the people most likely to disagree.",
+     "links": [
+      [
+       "Malte Ubl: Design Docs at Google",
+       "https://www.industrialempathy.com/posts/design-docs-at-google/"
+      ],
+      [
+       "The Pragmatic Engineer: Engineering Planning with RFCs, Design Documents and ADRs",
+       "https://newsletter.pragmaticengineer.com/p/rfcs-and-design-docs"
+      ]
+     ],
+     "build": "Write a 1 to 2 page design doc for this scenario: a news website wants to send readers a daily email digest of articles matching their interests, for 2 million subscribers. Include context, 3 goals, 3 non-goals, the design with one simple diagram, two alternatives you rejected and why, and a section on privacy and on what happens if the email provider is down. Then list the three questions you would most want a reviewer to challenge.",
+     "check": "What is the purpose of a non-goals section?"
+    },
+    {
+     "id": "EJ3-4",
+     "title": "Pre-mortems",
+     "minutes": 35,
+     "learn": "A pre-mortem, described by psychologist Gary Klein, is run at the start of a project. The team imagines the project has already failed, then each person independently writes down the reasons why, before any discussion. Because failure is assumed rather than hypothetical, people raise risks they would otherwise keep quiet about, and the independent writing stops the loudest voice from setting the agenda. The final step is to turn the most likely and most damaging reasons into actions now: a test, a spike, a monitor, a backup plan or a scope cut.",
+     "links": [
+      [
+       "Harvard Business Review: Performing a Project Premortem (Gary Klein)",
+       "https://hbr.org/2007/09/performing-a-project-premortem"
+      ],
+      [
+       "Atlassian Team Playbook: Pre-mortem",
+       "https://www.atlassian.com/team-playbook/plays/pre-mortem"
+      ]
+     ],
+     "build": "Scenario: a company plans to migrate its customer database from one database engine to another over a weekend, with 4 hours of planned downtime. It is Monday and the migration has failed badly. In 10 minutes, write at least 10 reasons why. Rank them by likelihood times impact, and for the top 3 write a specific action that would be taken before the weekend (for example, a dry run on a production copy, a tested rollback script, a row-count check).",
+     "check": "Why does assuming the failure has already happened surface more risks than asking what could go wrong?"
+    },
+    {
+     "id": "EJ3-5",
+     "title": "Disagree and commit, and writing the why",
+     "minutes": 35,
+     "learn": "In his 2016 shareholder letter Bezos describes 'disagree and commit': state your disagreement clearly while the decision is open, then back the decision fully once it is made, instead of quietly slowing it down. It is healthy only when the disagreement was genuinely heard and recorded; otherwise it becomes silence under pressure. Writing down the 'why' behind a decision (in an ADR, a pull request description or a commit message) is what lets a future reader judge whether the reasons still hold, and is how you revisit a decision fairly later.",
+     "links": [
+      [
+       "Amazon: Jeff Bezos' 2016 Letter to Shareholders",
+       "https://www.aboutamazon.com/news/company-news/2016-letter-to-shareholders"
+      ],
+      [
+       "Wikipedia: Disagree and commit",
+       "https://en.wikipedia.org/wiki/Disagree_and_commit"
+      ]
+     ],
+     "build": "Scenario: a tech lead decides the team will adopt a new frontend framework; you believe the old one is fine and the migration will cost three months. Write (1) a short message stating your disagreement with your strongest reasons, (2) the strongest argument for the lead's decision, written as fairly as you can, (3) what evidence in six months would show who was right, and (4) what committing looks like in practice. Then rewrite these commit messages so each says why: 'fix bug', 'update config', 'refactor service', 'bump timeout to 30s'.",
+     "check": "What has to happen before 'disagree and commit' is healthy rather than just silence?"
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "title": "Estimation, risk and scope",
+   "goal": "Give estimates as honest ranges, find and retire the riskiest unknown first, and cut scope while keeping the value.",
+   "lessons": [
+    {
+     "id": "EJ4-1",
+     "title": "Estimate with ranges and confidence",
+     "minutes": 45,
+     "learn": "A single-number estimate hides uncertainty; a range with a confidence level shows it, for example '3 to 6 days, 80% confident'. Three-point estimation asks for optimistic, most likely and pessimistic values, which forces you to think about what could go wrong. The cone of uncertainty says early estimates are naturally wide and narrow as you learn more, and the planning fallacy says people underestimate their own tasks even when they know similar tasks overran. Joel Spolsky's evidence-based scheduling corrects for this by using each person's history of estimate versus actual time to produce a probability of finishing by each date.",
+     "links": [
+      [
+       "Joel on Software: Evidence Based Scheduling",
+       "https://www.joelonsoftware.com/2007/10/26/evidence-based-scheduling/"
+      ],
+      [
+       "Wikipedia: Three-point estimation",
+       "https://en.wikipedia.org/wiki/Three-point_estimation"
+      ],
+      [
+       "Wikipedia: Planning fallacy",
+       "https://en.wikipedia.org/wiki/Planning_fallacy"
+      ]
+     ],
+     "build": "Practice drill: for each of these 6 tasks give an optimistic, likely and pessimistic estimate and a confidence %: (1) add a 'forgot password' flow to an existing login, (2) upgrade a framework by one major version in a medium-sized app, (3) fix a bug that only happens in production once a day, (4) add a column and backfill it in a 50 million-row table, (5) write a CSV import with validation, (6) integrate with a third-party API you have never used. Write one sentence per task on what drives the width of the range. Then calibrate: give 90% confidence ranges for 5 facts you can look up (for example the year SQL was first standardised, the length of the Nile), check them, and note how many fell outside your ranges.",
+     "check": "Why is '4 days' a worse answer than '3 to 6 days, 80% confident' even if it is the same midpoint?"
+    },
+    {
+     "id": "EJ4-2",
+     "title": "Back-of-the-envelope numbers",
+     "minutes": 40,
+     "learn": "A back-of-the-envelope or Fermi estimate breaks an unknown quantity into factors you can each guess within a factor of ten, then multiplies them. Combined with a few remembered numbers (a memory reference takes about 100 nanoseconds, an SSD read about 100 microseconds, a round trip between continents about 150 milliseconds, a day has roughly 100,000 seconds), it lets you rule designs in or out in minutes. The goal is the right order of magnitude, not precision. Always write your assumptions down, because they are what others will check.",
+     "links": [
+      [
+       "Latency numbers every programmer should know",
+       "https://gist.github.com/jboner/2841832"
+      ],
+      [
+       "Wikipedia: Fermi problem",
+       "https://en.wikipedia.org/wiki/Fermi_problem"
+      ]
+     ],
+     "build": "Estimate, showing every assumption: (1) the average and peak requests per second for a chat app with 5 million daily users who each send 40 messages a day, (2) the storage needed per year for those messages at 200 bytes each, (3) whether one database server could handle the write load, (4) how long it takes to copy 1 TB over a 1 Gbps link. For each answer, state which assumption, if 10 times larger, would change the design.",
+     "check": "Roughly how many times slower is a cross-region network round trip than a read from memory?"
+    },
+    {
+     "id": "EJ4-3",
+     "title": "Spikes and prototypes buy information",
+     "minutes": 40,
+     "learn": "A spike is a short, time-boxed piece of work done to answer a question, not to ship a feature. You write the question first ('Can this library parse our largest file in under 2 seconds?'), set the time box (for example half a day), and stop when the time is up, whether or not the answer is clean. The output of a spike is a decision or a better estimate, and the code is usually thrown away or rewritten properly. Shape Up's hill charts describe the same idea: the uphill half of work is figuring out unknowns, and you want to get over the hill early.",
+     "links": [
+      [
+       "Wikipedia: Spike (software development)",
+       "https://en.wikipedia.org/wiki/Spike_(software_development)"
+      ],
+      [
+       "Shape Up: Show Progress (hill charts: figuring out vs making happen)",
+       "https://basecamp.com/shapeup/3.4-chapter-13"
+      ]
+     ],
+     "build": "Scenario: a team must estimate 'generate PDF invoices for 100,000 customers every month-end'. Write three spike questions that would most reduce uncertainty (each answerable yes/no or with a number), a time box for each, the evidence that would count as an answer, and how each possible answer would change the estimate or the design. Then write the one-paragraph spike report you would expect at the end, using made-up but plausible results.",
+     "check": "How do you know when a spike is finished?"
+    },
+    {
+     "id": "EJ4-4",
+     "title": "Find the riskiest assumption first",
+     "minutes": 40,
+     "learn": "Every plan rests on assumptions about users, technology, data and time. List them, then rank each by how likely it is to be wrong and how much damage that would cause, and work on the riskiest one first, because discovering it late is what wrecks schedules. The cheapest test of an assumption is often not code: a conversation with a user, a query on real data, or a one-hour prototype. Shape Up calls these unknowns rabbit holes and resolves them while shaping the work, before a team commits to it.",
+     "links": [
+      [
+       "Shape Up: Risks and Rabbit Holes",
+       "https://basecamp.com/shapeup/1.4-chapter-05"
+      ],
+      [
+       "Wikipedia: Cone of Uncertainty",
+       "https://en.wikipedia.org/wiki/Cone_of_Uncertainty"
+      ]
+     ],
+     "build": "Scenario: a startup plans a feature that lets small shops sync their inventory with an online marketplace every 5 minutes. List at least 8 assumptions behind it (for example: shops keep accurate stock counts, the marketplace API allows that request rate, shops have stable internet). Score each 1 to 5 for likelihood of being wrong and for impact, sort by the product, and for the top two write the cheapest test that could prove them wrong within a week.",
+     "check": "Why is it better to work on the riskiest part first rather than the easiest part first?"
+    },
+    {
+     "id": "EJ4-5",
+     "title": "Cut scope without cutting value",
+     "minutes": 40,
+     "learn": "Shape Up fixes the time available (the appetite) and makes the scope the variable: first decide how much a problem is worth, then shape a solution that fits that budget. This is the reverse of estimating: an estimate starts from a design and asks how long it takes, while an appetite starts from a time limit and asks what design fits. When time runs short, compare what you have to the user's current situation rather than to the ideal, and sort remaining work into must-haves and nice-to-haves ('scope hammering'). Cutting a whole lower-value feature usually beats shipping every feature half-finished.",
+     "links": [
+      [
+       "Shape Up: Set Boundaries",
+       "https://basecamp.com/shapeup/1.2-chapter-03"
+      ],
+      [
+       "Shape Up: Decide When to Stop",
+       "https://basecamp.com/shapeup/3.5-chapter-14"
+      ]
+     ],
+     "build": "Scenario: a team has a 2-week appetite to let users book a table at a restaurant. The wish list: pick date and time, party size, special requests, email confirmation, SMS reminder, cancel or modify a booking, waitlist, deposit payment, restaurant dashboard, calendar sync, reviews after the meal. Mark each must-have or nice-to-have against the question 'what is the smallest thing that replaces phoning the restaurant?', write a cut list with one reason per cut, and describe the simplest version of one must-have (for example, cancellation by link in the email instead of a full account page).",
+     "check": "What is the difference between an estimate and an appetite?"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "title": "Judgement in code",
+   "goal": "Review, refactor, abstract and test with clear reasons, spending effort where it changes outcomes.",
+   "lessons": [
+    {
+     "id": "EJ5-1",
+     "title": "Code review: what matters vs nitpicks",
+     "minutes": 45,
+     "learn": "Code review exists to keep the codebase healthy and to share knowledge, not to make every change perfect. Google's standard is to approve a change once it definitely improves the overall health of the code, even if it is not exactly what the reviewer would have written. Review the important things first: design, correctness, complexity and tests, then naming, comments and style. Label optional points 'Nit:' so the author knows what blocks the merge, leave formatting to automated tools, and beware bikeshedding (Parkinson's law of triviality): long debates about trivial details while important problems pass unnoticed.",
+     "links": [
+      [
+       "Google Engineering Practices: The Standard of Code Review",
+       "https://google.github.io/eng-practices/review/reviewer/standard.html"
+      ],
+      [
+       "Google Engineering Practices: What to look for in a code review",
+       "https://google.github.io/eng-practices/review/reviewer/looking-for.html"
+      ],
+      [
+       "Wikipedia: Law of triviality",
+       "https://en.wikipedia.org/wiki/Law_of_triviality"
+      ]
+     ],
+     "build": "Review this described change as if it were a pull request: 'Adds a discount endpoint. The handler reads the discount percentage from the request body, applies it to the order total, and saves it. Variable names use abbreviations like dsc and amt. There are no tests. It uses floating-point numbers for money. The function is 120 lines long. Indentation is inconsistent.' Write your comments in three groups: blocking, should-fix, and Nit. Explain in one line each why every blocking comment blocks, and say which comment you would hand to an automated tool instead.",
+     "check": "When should a reviewer approve a change that is not perfect?"
+    },
+    {
+     "id": "EJ5-2",
+     "title": "When to refactor",
+     "minutes": 40,
+     "learn": "Refactoring means changing the structure of code without changing its behaviour, in small steps, with tests confirming nothing broke. The best time to refactor is just before or during a change: preparatory refactoring makes the change you are about to make easy, and 'litter-pickup' refactoring leaves code slightly cleaner each time you touch it. Code that nobody needs to change can stay ugly. Large rewrites from scratch are the classic mistake Joel Spolsky warns about: old code contains years of bug fixes and edge cases that a rewrite throws away.",
+     "links": [
+      [
+       "Martin Fowler: Workflows of Refactoring",
+       "https://martinfowler.com/articles/workflowsOfRefactoring/"
+      ],
+      [
+       "Martin Fowler: Opportunistic Refactoring",
+       "https://martinfowler.com/bliki/OpportunisticRefactoring.html"
+      ],
+      [
+       "Joel on Software: Things You Should Never Do, Part I",
+       "https://www.joelonsoftware.com/2000/04/06/things-you-should-never-do-part-i/"
+      ]
+     ],
+     "build": "Scenario: you must add a new shipping method to a 600-line function that calculates shipping cost with nested if/else blocks for 5 existing methods, and it has no tests. Write a step-by-step plan: what tests you add first (characterisation tests), which small refactors you do and in what order, where the new method goes, and what you deliberately leave alone. Then write two short paragraphs: one arguing for a full rewrite of the shipping module and one against, and say which you choose.",
+     "check": "Why should a refactor and a behaviour change go in separate commits?"
+    },
+    {
+     "id": "EJ5-3",
+     "title": "Technical debt as a deliberate loan",
+     "minutes": 40,
+     "learn": "Ward Cunningham's technical debt metaphor: taking a shortcut is like borrowing money; the extra effort every later change costs is the interest; cleaning it up is paying back the principal. Martin Fowler's debt quadrant splits debt by reckless vs prudent and deliberate vs inadvertent. Prudent, deliberate debt ('we must ship now and will deal with the consequences') is a legitimate tool when it is recorded and repaid; reckless debt ('we don't have time for design') is just mess. The judgement is in tracking the interest: debt in code you rarely touch costs little, debt in code you change weekly costs a lot.",
+     "links": [
+      [
+       "Martin Fowler: Technical Debt",
+       "https://martinfowler.com/bliki/TechnicalDebt.html"
+      ],
+      [
+       "Martin Fowler: Technical Debt Quadrant",
+       "https://martinfowler.com/bliki/TechnicalDebtQuadrant.html"
+      ]
+     ],
+     "build": "Classify these 6 shortcuts into Fowler's quadrant and, for each, write the interest paid, the cost to repay, and a decision (pay now, pay when touched, or accept): (1) a hard-coded tax rate shipped to meet a launch, (2) copy-pasted validation in 4 places, (3) no database indexes because the developer did not know about them, (4) a cron job that emails a CSV instead of a proper report screen, (5) a deprecated library with a known security issue, (6) an old reporting module nobody has changed in 3 years. Rank which to pay first and explain the ranking.",
+     "check": "What makes technical debt prudent rather than reckless?"
+    },
+    {
+     "id": "EJ5-4",
+     "title": "When to add an abstraction: the rule of three",
+     "minutes": 40,
+     "learn": "An abstraction (a shared function, base class, interface or generic component) hides the differences between several cases behind one shape. The rule of three, attributed to Don Roberts in Fowler's Refactoring: the first time, just write it; the second time, notice the duplication but duplicate anyway; the third time, refactor, because by then you can see what really varies. Sandi Metz warns that 'duplication is far cheaper than the wrong abstraction': a wrong abstraction collects flags and conditionals until nobody can change it safely. If you find one, inline it back into its callers and start again.",
+     "links": [
+      [
+       "Wikipedia: Rule of three (computer programming)",
+       "https://en.wikipedia.org/wiki/Rule_of_three_(computer_programming)"
+      ],
+      [
+       "Sandi Metz: The Wrong Abstraction",
+       "https://sandimetz.com/blog/2016/1/20/the-wrong-abstraction"
+      ],
+      [
+       "Kent C. Dodds: AHA Programming",
+       "https://kentcdodds.com/blog/aha-programming"
+      ]
+     ],
+     "build": "Scenario: a codebase has a shared function sendNotification(user, message, isEmail, isSms, isUrgent, skipIfWeekend, templateId, retryCount) used in 7 places, and most callers pass different combinations of flags. Write a diagnosis: the signs this is the wrong abstraction, what each caller probably needed, and a step-by-step plan to inline it and rebuild smaller pieces. Then describe a separate case where the same 10 lines of date formatting appear in 3 places, and explain why extracting them is the right call there.",
+     "check": "What are the warning signs that an abstraction is the wrong one?"
+    },
+    {
+     "id": "EJ5-5",
+     "title": "Deciding what to test",
+     "minutes": 45,
+     "learn": "Tests buy confidence that you can change code without breaking it, so spend testing effort where a bug would be both likely and expensive. The test pyramid recommends many fast unit tests, fewer integration tests and very few end-to-end tests; Kent C. Dodds argues that integration tests often give the best confidence per unit of effort ('Write tests. Not too many. Mostly integration.'). Test behaviour through public interfaces rather than implementation details, so that refactoring does not break tests that should still pass. A test that never fails, or fails for the wrong reasons, has a cost and no value.",
+     "links": [
+      [
+       "Martin Fowler: The Practical Test Pyramid",
+       "https://martinfowler.com/articles/practical-test-pyramid.html"
+      ],
+      [
+       "Kent C. Dodds: Write tests. Not too many. Mostly integration.",
+       "https://kentcdodds.com/blog/write-tests"
+      ]
+     ],
+     "build": "Scenario: a money-transfer API has these behaviours: validate the amount, check the balance, block transfers to the same account, apply a daily limit, write a ledger entry, send a confirmation email, show a formatted receipt. For each, rate the cost of a bug (1 to 5) and the likelihood (1 to 5), choose the test level (unit, integration or end-to-end) that gives the cheapest confidence, and write the test name in 'given/when/then' form. Mark which ones you would not test at all and why.",
+     "check": "Why do tests that check implementation details make refactoring harder?"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "title": "Judgement in production",
+   "goal": "Make calm, ordered decisions during an incident, limit the blast radius of every release, and learn from failures without blame.",
+   "lessons": [
+    {
+     "id": "EJ6-1",
+     "title": "Mitigate first: rollback vs fix forward",
+     "minutes": 45,
+     "learn": "During an incident the first goal is to stop user impact, not to find the root cause; understanding can come after users are safe. Generic mitigations work without understanding the bug: roll back the latest release, turn off a feature flag, drain traffic from a bad region or server, add capacity, or block an abusive client. Rollback is usually the safest default when a recent change lines up with the problem. Fixing forward (shipping a new fix) is justified when rollback is impossible or riskier, for example after a migration that already changed data, which is why safe rollbacks must be designed in advance by keeping versions backward compatible.",
+     "links": [
+      [
+       "Google SRE workbook: Incident Response",
+       "https://sre.google/workbook/incident-response/"
+      ],
+      [
+       "O'Reilly: Generic mitigations (Jennifer Mace)",
+       "https://www.oreilly.com/content/generic-mitigations/"
+      ],
+      [
+       "AWS Builders' Library: Ensuring rollback safety during deployments",
+       "https://aws.amazon.com/builders-library/ensuring-rollback-safety-during-deployments/"
+      ]
+     ],
+     "build": "For each scenario, choose the first mitigation, say whether you roll back or fix forward, and explain why in two sentences: (1) error rate jumped from 0.1% to 8% ten minutes after a deploy, (2) a deploy one hour ago included a migration that renamed a column, and the old version cannot read the new schema, (3) a third-party payment provider is returning timeouts and nothing was deployed, (4) one customer is sending 50 times its normal traffic and slowing everyone down, (5) a feature launched behind a flag is showing wrong prices to 5% of users. Then write how the team in scenario (2) could have made rollback safe.",
+     "check": "Why can rolling back be the wrong call after a database migration?"
+    },
+    {
+     "id": "EJ6-2",
+     "title": "Blast radius, feature flags and gradual rollouts",
+     "minutes": 45,
+     "learn": "Blast radius is how much breaks, and for how many users, if a change is bad. You shrink it by releasing to a small slice first (a canary), comparing its error rate and latency against the rest, and expanding in steps while watching those metrics, with an automatic stop if they get worse. Feature flags separate deploying code from releasing a feature, so a feature can be switched off in seconds without a new deploy. Flags have a cost: each one adds another path through the code, so release flags should be short-lived and removed once the rollout is complete.",
+     "links": [
+      [
+       "Martin Fowler: Feature Toggles (aka Feature Flags)",
+       "https://martinfowler.com/articles/feature-toggles.html"
+      ],
+      [
+       "Google SRE workbook: Canarying Releases",
+       "https://sre.google/workbook/canarying-releases/"
+      ],
+      [
+       "AWS Builders' Library: Automating safe, hands-off deployments",
+       "https://aws.amazon.com/builders-library/automating-safe-hands-off-deployments/"
+      ]
+     ],
+     "build": "Scenario: a ride-hailing company is changing its fare calculation, used in 20 cities. Write a rollout plan: the flag design, the stages (for example internal staff, 1% of one city, one city, 25%, 100%), the metrics and thresholds that would stop the rollout at each stage, who decides to continue, how to roll back, and the date the flag is deleted. Add one sentence on why fare calculation deserves a more careful rollout than a change to the help page.",
+     "check": "What is the difference between deploying code and releasing a feature?"
+    },
+    {
+     "id": "EJ6-3",
+     "title": "On-call decisions with partial information",
+     "minutes": 40,
+     "learn": "On call you often have to act before you understand. A disciplined loop helps: triage (how bad is it and how many users are affected), stabilise (mitigate), then form hypotheses and test them against evidence such as logs, metrics and recent changes, instead of chasing the first idea. When more than one person is involved, assign clear roles (incident commander, operations, communications) so people do not duplicate or contradict each other. Communicate status at fixed intervals even when the update is 'still investigating', and declare incidents early: standing down a false alarm is cheap, declaring late is expensive.",
+     "links": [
+      [
+       "Google SRE book: Managing Incidents",
+       "https://sre.google/sre-book/managing-incidents/"
+      ],
+      [
+       "Google SRE book: Effective Troubleshooting",
+       "https://sre.google/sre-book/effective-troubleshooting/"
+      ],
+      [
+       "Google SRE book: Being On-Call",
+       "https://sre.google/sre-book/being-on-call/"
+      ]
+     ],
+     "build": "Work through this scenario and write your decisions at each time stamp: 02:10 an alert says checkout latency is 5 times normal; 02:15 you see the database CPU at 95%; 02:20 you notice a nightly report job started at 02:00 and a deploy went out at 18:00 yesterday; 02:30 the latency is getting worse and support says customers cannot pay. For each step, write what you check, what you do, what you tell whom, and your current hypotheses ranked. Finish with the status update you would post at 02:30.",
+     "check": "Why should you declare an incident early, even if it turns out to be minor?"
+    },
+    {
+     "id": "EJ6-4",
+     "title": "Blameless postmortems",
+     "minutes": 45,
+     "learn": "A postmortem is a written record of an incident: what happened, its impact, the actions taken, the causes, and the follow-ups that prevent it happening again. Blameless means it assumes people acted reasonably with the information they had, and looks for the conditions that allowed the failure, such as missing alerts, unsafe defaults or unclear runbooks. Google's SRE book lists typical triggers: user-visible downtime beyond a threshold, data loss, on-call intervention such as a rollback, or a long time to resolve. Blame makes people hide information, which makes the next incident worse and slower to fix.",
+     "links": [
+      [
+       "Google SRE book: Postmortem Culture: Learning from Failure",
+       "https://sre.google/sre-book/postmortem-culture/"
+      ],
+      [
+       "Atlassian: How to run a blameless postmortem",
+       "https://www.atlassian.com/incident-management/postmortem/blameless"
+      ],
+      [
+       "Dan Luu: Reading postmortems",
+       "https://danluu.com/postmortem-lessons/"
+      ]
+     ],
+     "build": "Write a blameless postmortem for this incident: 'A developer ran a cleanup script against production instead of staging. It deleted 3 days of order records. Backups existed, but the restore took 9 hours because nobody had tested it. Customers saw missing orders for most of a day.' Include summary, impact, timeline (invent plausible times), at least three system-level contributing causes, what went well, and 4 action items with owners and dates. Then rewrite the sentence 'The developer ran the script on the wrong database' so that it names conditions instead of a person. Optional: write a short postmortem for a real bug you have seen.",
+     "check": "What does a team lose when postmortems assign blame to individuals?"
+    }
+   ]
+  },
+  {
+   "n": 7,
+   "title": "Judgement with AI tools",
+   "goal": "Use AI to write code and features while you stay the one who decides what is correct, safe and worth shipping.",
+   "lessons": [
+    {
+     "id": "EJ7-1",
+     "title": "When to trust AI output, and how to verify it",
+     "minutes": 45,
+     "learn": "An AI coding assistant predicts plausible text; it does not run your code, know your business rules or check its own claims, so its output is a draft, not an answer. Errors come in two kinds: loud ones (a method that does not exist, which the compiler catches) and quiet ones (an off-by-one date range, a missing permission check, a wrong rounding rule) that look correct and pass a quick read. Your level of trust should depend on how cheaply and reliably you can check the result, and on how costly a wrong answer would be. To verify, run the code, test edge cases and failure paths, read the official docs for any API it used, and ask \"what would have to be true for this to be wrong?\"",
+     "links": [
+      [
+       "Simon Willison: Hallucinations in code are the least dangerous form of LLM mistakes",
+       "https://simonwillison.net/2025/Mar/2/hallucinations-in-code/"
+      ],
+      [
+       "Simon Willison: Here's how I use LLMs to help me write code",
+       "https://simonwillison.net/2025/Mar/11/using-llms-for-code/"
+      ]
+     ],
+     "build": "Ask any AI assistant to write a function that calculates a loan's monthly EMI and the total interest, given principal, annual rate and tenure in months. Before running it, predict three inputs where it might be wrong (0% interest, a 1-month tenure, a very large principal). Write tests for those cases and compare against a hand calculation or an online EMI calculator. Record each bug you found as loud or quiet, then write a 6-item \"verify before I accept\" checklist based on what you learned.",
+     "check": "Why is a plausible-looking logic error from an LLM more dangerous than a call to a method that does not exist?"
+    },
+    {
+     "id": "EJ7-2",
+     "title": "Reviewing AI-written code like a pull request from a stranger",
+     "minutes": 50,
+     "learn": "Code review exists to catch defects and keep a codebase understandable; AI-written code needs the same review, often a stricter one, because the author has no memory of your conventions, threat model or past incidents. AI code has typical failure modes: outdated or invented APIs, exceptions caught and ignored, missing input validation and authorisation checks, inefficient data access such as N+1 queries, duplicated helpers, and tests that assert what the code does rather than what it should do. Review it like a pull request from a stranger: understand every line, ask who can call it and with what input, and check that the tests would fail if the behaviour were wrong. The goal is code you have proven works, not code that looks finished.",
+     "links": [
+      [
+       "Simon Willison: Your job is to deliver code you have proven to work",
+       "https://simonwillison.net/2025/Dec/18/code-proven-to-work/"
+      ],
+      [
+       "Addy Osmani: My LLM coding workflow going into 2026",
+       "https://addyosmani.com/blog/ai-coding-workflow/"
+      ]
+     ],
+     "build": "Ask an AI assistant to generate an HTTP endpoint for a fictional clinic booking system: \"PATCH /appointments/{id}/cancel\", where patients may cancel only their own appointments and only up to 2 hours before the slot. Review the generated code as if it were a PR and write at least five review comments covering correctness, authorisation, time-zone handling, data access and tests. Then write one test that fails on the original code and passes after your fix.",
+     "check": "Which two kinds of defect do AI-generated tests commonly miss, and how would you catch them?"
+    },
+    {
+     "id": "EJ7-3",
+     "title": "Deciding where an LLM fits and where it does not",
+     "minutes": 45,
+     "learn": "A large language model (LLM) is a good fit when the input is messy natural language, the task tolerates some error, and the output is easy for a person or an automatic check to verify: summarising, drafting, classifying free text, extracting fields from documents. It is a poor fit when you need exact, repeatable, auditable answers (money, permissions, legal rules), when a plain function or database query would do the job, or when a wrong answer is costly and hard to spot. A useful order of preference is plain code first, then a single prompt, then a fixed chain of prompts, and an autonomous agent only when the simpler options fail. Every LLM feature also adds new risks, such as prompt injection and leaking sensitive data, that you must design for.",
+     "links": [
+      [
+       "Anthropic: Building effective agents",
+       "https://www.anthropic.com/engineering/building-effective-agents"
+      ],
+      [
+       "Google PAIR Guidebook: User needs and defining success",
+       "https://pair.withgoogle.com/chapter/user-needs/"
+      ],
+      [
+       "OWASP: Top 10 for LLM applications",
+       "https://genai.owasp.org/llm-top-10/"
+      ]
+     ],
+     "build": "A fictional online grocery company wants AI in six places: (1) answering \"where is my order?\", (2) calculating refunds for missing items, (3) summarising customer complaints for the weekly review, (4) deciding which customers get a discount, (5) suggesting recipes from the cart, (6) tagging support tickets by category. For each, fill a table: error tolerance, how the output is verified, cost of a wrong answer, non-LLM alternative, and your decision (LLM, plain code or hybrid) with a one-line reason. Optional: apply this table to something you are working on.",
+     "check": "For which task does a plain SQL query beat an LLM, and why?"
+    },
+    {
+     "id": "EJ7-4",
+     "title": "Evals: judgement made measurable",
+     "minutes": 60,
+     "learn": "An eval (evaluation) is a repeatable test set for an AI feature: real or realistic inputs, a description of what a good output looks like, and a way to score it, such as exact match, code assertions, or a human or LLM grader following a written rubric. Evals matter because LLM output varies and a prompt or model change can improve one case while breaking others; without measurement, \"it seems better\" is a feeling, not a decision. Start by reading many real outputs and writing down the ways they fail, group those into categories, and turn each category into test cases. Then run the eval on every change and compare scores.",
+     "links": [
+      [
+       "Hamel Husain: Your AI product needs evals",
+       "https://hamel.dev/blog/posts/evals/"
+      ],
+      [
+       "Claude Docs: Define success criteria and build evaluations",
+       "https://docs.claude.com/en/docs/test-and-evaluate/develop-tests"
+      ],
+      [
+       "OpenAI: Evals guide",
+       "https://platform.openai.com/docs/guides/evals"
+      ]
+     ],
+     "build": "Imagine a support bot for a fictional bank that answers questions about card fees and blocking a lost card. Write 20 realistic customer questions, including tricky ones (vague wording, two questions in one, an attempt to make the bot reveal another customer's data). For each, write the key facts a correct answer must include and what it must never say. Write a pass/fail rubric with 3 to 5 failure categories, then run the questions through any chatbot, grade the answers by hand and calculate a pass rate per category.",
+     "check": "Why should you read and label real outputs before writing an automated grader?"
+    },
+    {
+     "id": "EJ7-5",
+     "title": "Accountability: you own what you ship",
+     "minutes": 30,
+     "learn": "Accountability means you answer for the outcome of what you ship, whoever or whatever wrote it; \"the AI wrote it\" is not accepted in an incident review, a code review or an interview. You are responsible for the code you merge, the data you paste into a tool and the claims you make about the result. In practice that means understanding every line well enough to debug it under pressure, following your organisation's rules on which code and data may go into which AI tools, and being open about where AI was used.",
+     "links": [
+      [
+       "The Pragmatic Engineer: AI tooling for software engineers, reality check",
+       "https://newsletter.pragmaticengineer.com/p/ai-tooling-2024"
+      ],
+      [
+       "Martin Fowler: Exploring generative AI",
+       "https://martinfowler.com/articles/exploring-gen-ai.html"
+      ]
+     ],
+     "build": "Write a one-page personal \"How I use AI at work\" policy as a template: which tasks you use AI for, what you never paste into an AI tool (credentials, customer personal data, confidential client code), how you verify output, and how you disclose AI use in pull requests. Then read this scenario: an AI-generated discount rule at a fictional e-commerce company gave 50% off instead of 5% for six hours. Write the three-paragraph incident summary the responsible engineer should post, taking ownership and listing two process changes.",
+     "check": "A bug from AI-generated code reaches production. What do you say in the incident review, and what do you change in your process?"
+    }
+   ]
+  },
+  {
+   "n": 8,
+   "title": "Product and business sense",
+   "goal": "Choose and argue for the work that moves a real metric, and cut or reshape the work that does not.",
+   "lessons": [
+    {
+     "id": "EJ8-1",
+     "title": "Impact over activity",
+     "minutes": 45,
+     "learn": "Activity is what you did (tickets closed, lines written, meetings attended); impact is what changed for users or the business because of it (time saved, revenue earned or protected, errors avoided). Product companies hire, rate and promote engineers on impact, so for any task you should be able to say who it helps, what changes for them and how you would measure that. Teams that are given problems to solve, rather than features to build, need engineers who understand the problem, because that understanding changes the technical choices. The habit to build is asking \"what outcome is this for?\" before starting work.",
+     "links": [
+      [
+       "SVPG: Product vs feature teams",
+       "https://www.svpg.com/product-vs-feature-teams/"
+      ],
+      [
+       "StaffEng: Work on what matters",
+       "https://staffeng.com/guides/work-on-what-matters/"
+      ]
+     ],
+     "build": "Rewrite these ten activity statements as impact statements in the form \"did X, which changed Y from A to B for C\", inventing plausible numbers and noting what data you would need to confirm them: built a reporting API; fixed 40 bugs; migrated a database; added caching; wrote unit tests; built an admin screen; set up CI; upgraded a framework; added logging; reviewed 100 PRs. Mark which ones you could not make impactful and explain why. Optional: do the same for ten things you did in the last six months.",
+     "check": "How would you rewrite \"Built a reporting API\" as an impact statement, and what data would you need to back it up?"
+    },
+    {
+     "id": "EJ8-2",
+     "title": "Picking the metric that matters",
+     "minutes": 45,
+     "learn": "A metric is a number you track to know whether the product is working; a good one reflects value delivered to users, moves when you improve the product and is hard to game. A north star metric is the single number that best captures the value customers get (for example, rides completed rather than app downloads); input metrics are the smaller levers a team can move directly. Vanity metrics such as sign-ups or page views go up without proving value. A guardrail metric protects against side effects, so that improving one number does not quietly damage another.",
+     "links": [
+      [
+       "Amplitude: Every product needs a north star metric",
+       "https://amplitude.com/blog/product-north-star-metric"
+      ],
+      [
+       "Reforge: Don't let your north star metric deceive you",
+       "https://www.reforge.com/blog/north-star-metric-growth"
+      ]
+     ],
+     "build": "For a fictional food-delivery app, choose one north star metric, three input metrics and two guardrail metrics, and write one line on why each was chosen. List three vanity metrics the marketing team might suggest and explain why each is weak. Then repeat the exercise for a fictional online course platform and note what changed between the two products and why.",
+     "check": "Why is \"number of orders placed\" a weaker north star for a food-delivery app than one tied to orders delivered on time?"
+    },
+    {
+     "id": "EJ8-3",
+     "title": "Talking to users and reading support tickets",
+     "minutes": 45,
+     "learn": "Product sense, the instinct for what users need, is built mainly from direct contact with users: watching them use a product, reading support tickets and complaints, and interviewing them. Good user interviews ask about past behaviour (\"tell me about the last time you...\") instead of opinions about the future (\"would you use...?\"), because people are bad at predicting their own behaviour and tend to be polite. Support tickets show where a product confuses people, which workflows break and what users actually care about. An engineer who reads them finds problems no specification mentions.",
+     "links": [
+      [
+       "The Mom Test (book site)",
+       "https://www.momtestbook.com/"
+      ],
+      [
+       "SVPG: The four big risks",
+       "https://www.svpg.com/four-big-risks/"
+      ]
+     ],
+     "build": "Here is a set of support tickets from a fictional pharmacy delivery app; write 20 realistic ones yourself first (late deliveries, prescription upload failures, wrong substitutions, refund delays, OTP not received). Tag each by root cause, count the tags and pick the top problem. Then write a 10-question interview script for customers about that problem using only past-behaviour questions, and rewrite three bad future-tense questions into good ones.",
+     "check": "Why is \"Would you use a feature that reminds you to reorder?\" a poor interview question, and what would you ask instead?"
+    },
+    {
+     "id": "EJ8-4",
+     "title": "Prioritisation: cost of delay and RICE",
+     "minutes": 50,
+     "learn": "Prioritisation is choosing what to do first when you cannot do everything. Cost of delay asks how much value you lose for each week something is not done; dividing it by how long the work takes (CD3) favours jobs that are valuable and quick. RICE scores an item as Reach x Impact x Confidence / Effort, which forces you to write down your assumptions and discounts ideas you are unsure about. Both are tools that make a decision visible and open to argument; they do not decide for you.",
+     "links": [
+      [
+       "Intercom: RICE prioritization",
+       "https://www.intercom.com/blog/rice-simple-prioritization-for-product-managers/"
+      ],
+      [
+       "Black Swan Farming: Cost of delay",
+       "https://blackswanfarming.com/cost-of-delay/"
+      ],
+      [
+       "Atlassian: Prioritization frameworks",
+       "https://www.atlassian.com/agile/product-management/prioritization-framework"
+      ]
+     ],
+     "build": "A fictional lending app has this backlog: faster loan approval screen, fix a bug causing 2% of EMI payments to fail, dark mode, a regulatory reporting change due in 3 weeks, referral programme, admin bulk export, new onboarding tutorial, retry logic for credit-bureau calls. Invent reach, impact, confidence and effort for each, score them with RICE, then rank them again by cost of delay divided by duration. Write a short note on where the two orders disagree and which order you would actually follow.",
+     "check": "Two items have the same RICE score, but one has a hard deadline next week. Which approach captures that, and how?"
+    },
+    {
+     "id": "EJ8-5",
+     "title": "Saying no and negotiating scope",
+     "minutes": 40,
+     "learn": "Every team has more requests than capacity, so saying no is part of the job; doing it well keeps trust and protects deadlines. A good \"no\" is really \"not this, not now, here is what we can do\": restate the goal behind the request, show the trade-off (what slips if it goes in), and offer a smaller version that meets most of the need. A useful rule is to hold the date and the quality bar fixed and negotiate scope. Say it early and in writing; silently absorbing extra work leads to missed deadlines and lost credibility.",
+     "links": [
+      [
+       "Atlassian: Scope creep and how to manage it",
+       "https://www.atlassian.com/work-management/project-management/scope-creep"
+      ],
+      [
+       "StaffEng: Staying aligned with authority",
+       "https://staffeng.com/guides/staying-aligned-with-authority/"
+      ]
+     ],
+     "build": "Scenario: two weeks before launch of a fictional hospital appointment booking system, the client asks to add SMS reminders, multi-language support and a doctor rating feature. Write a reply of under 150 words: the goal in one line, two scope options with what each delivers and costs, your recommendation, and what is explicitly out. Then practise saying it aloud in under a minute.",
+     "check": "What is the difference between refusing a request and negotiating its scope?"
+    }
+   ]
+  },
+  {
+   "n": 9,
+   "title": "Domain expertise: becoming the person who knows the business",
+   "goal": "Pick a domain that fits your target companies, learn it fast, and map it with DDD's strategic tools.",
+   "lessons": [
+    {
+     "id": "EJ9-1",
+     "title": "What domain expertise is and why it compounds",
+     "minutes": 40,
+     "learn": "A domain is the area of business a piece of software serves, such as payments, logistics or healthcare. Domain expertise is knowing how that business really works: its vocabulary, workflows, rules, money flows, regulations and edge cases, and which of them the software must get exactly right. It compounds because every feature, incident and conversation in the same domain adds to what you know, and it is hard for AI tools to supply because much of it lives in a company's context rather than in public code. An engineer who knows that a chargeback can arrive weeks after a payment writes very different code from one who does not.",
+     "links": [
+      [
+       "DDD Community: What is Domain-Driven Design?",
+       "https://www.dddcommunity.org/learning-ddd/what_is_ddd/"
+      ],
+      [
+       "Martin Fowler: Domain-driven design",
+       "https://martinfowler.com/bliki/DomainDrivenDesign.html"
+      ]
+     ],
+     "build": "Pick a domain you know as a customer (food delivery, banking, airline booking, online shopping). Write one paragraph describing it: who the users are, who pays whom, and the main workflow. List five business rules software in that domain must enforce, and five edge cases a newcomer would miss (for example, a partial refund on a combined order). Mark which of these an AI code generator could not know without being told.",
+     "check": "What is one domain rule that a code generator could not learn from a codebase alone?"
+    },
+    {
+     "id": "EJ9-2",
+     "title": "Choosing a domain to go deep on",
+     "minutes": 40,
+     "learn": "You cannot be an expert in everything, so choose a domain deliberately. A good choice sits where three things overlap: companies you want to work for hire in it, you already have some context in it, and it interests you enough to keep reading for a year or more. In India, fintech and payments, e-commerce and logistics, B2B SaaS, health tech and HR tech all hire many product engineers. One primary and one secondary domain is enough; depth in one beats a list of buzzwords.",
+     "links": [
+      [
+       "StaffEng: Work on what matters",
+       "https://staffeng.com/guides/work-on-what-matters/"
+      ],
+      [
+       "Wikipedia: Applicant tracking system",
+       "https://en.wikipedia.org/wiki/Applicant_tracking_system"
+      ]
+     ],
+     "build": "Make a table of 15 product companies you would like to work for and label each with its domain. Count companies per domain, then score each domain from 1 to 5 on hiring demand, your existing context and your interest. Choose a primary and a secondary domain and write a three-line rationale, plus three things you will read in the next month for the primary one.",
+     "check": "Why does having built software in a domain give you a head start there, and what would it not teach you?"
+    },
+    {
+     "id": "EJ9-3",
+     "title": "Learning a domain fast: glossary, workflows, regulations, competitors",
+     "minutes": 50,
+     "learn": "You can learn the basics of a new domain in a few weeks if you build four artefacts. A glossary of 30 to 50 terms in the business's own words; the main workflows drawn end to end with their states; the regulations and rules that constrain those workflows; and a comparison of how three competitors solve the same problem. The product docs, API references and help centres of leading companies in the domain are excellent free textbooks, because their data models encode years of domain decisions.",
+     "links": [
+      [
+       "Stripe Docs: How PaymentIntents work",
+       "https://docs.stripe.com/payments/paymentintents/lifecycle"
+      ],
+      [
+       "Greenhouse: Harvest API reference",
+       "https://developers.greenhouse.io/harvest.html"
+      ]
+     ],
+     "build": "Choose one domain (for example online payments, using the Stripe docs, or hiring software, using the Greenhouse API docs). Create a domain-notes document with: a 30-term glossary with a one-line definition and an example for each, one workflow diagram with its states, two regulations or rules that matter, and a three-product comparison table. Note five terms whose meaning surprised you.",
+     "check": "Why are a company's public API docs a good way to learn its domain model?"
+    },
+    {
+     "id": "EJ9-4",
+     "title": "Ubiquitous language and bounded contexts",
+     "minutes": 50,
+     "learn": "Domain-Driven Design (DDD) is an approach that shapes software around the business domain; its strategic tools help you organise large domains. A ubiquitous language is a shared, precise vocabulary used by business people and code alike, so the same words appear in conversations, class names, API fields and database columns. A bounded context is the boundary within which one model and its language stay consistent; the same word (\"customer\", \"order\", \"account\") can mean different things in different contexts, which is fine when the boundaries are explicit. A context map shows how bounded contexts relate and how they translate between each other.",
+     "links": [
+      [
+       "Martin Fowler: Ubiquitous language",
+       "https://martinfowler.com/bliki/UbiquitousLanguage.html"
+      ],
+      [
+       "Martin Fowler: Bounded context",
+       "https://martinfowler.com/bliki/BoundedContext.html"
+      ],
+      [
+       "DDD Crew: Context mapping",
+       "https://github.com/ddd-crew/context-mapping"
+      ]
+     ],
+     "build": "Take a fictional online grocery company with these areas: catalogue, ordering, warehouse picking, delivery, payments and customer support. Write how the word \"order\" and the word \"product\" are understood in each area, and where the meanings differ. Draw the bounded contexts and a context map showing which context depends on which. Then write a 15-term ubiquitous-language glossary for the ordering context only.",
+     "check": "The word \"account\" means different things to a bank's lending team and its login system. How do bounded contexts help you handle words like this?"
+    },
+    {
+     "id": "EJ9-5",
+     "title": "Event storming: mapping a domain with events",
+     "minutes": 45,
+     "learn": "Event storming is a workshop technique for exploring a domain quickly. You first write domain events, things that happened that the business cares about, on sticky notes in the past tense (\"Order placed\", \"Payment failed\") and arrange them on a timeline. Then you add the commands that cause them, the actors who issue those commands, policies (\"whenever X happens, do Y\"), external systems, and hot spots where people are confused or disagree. It quickly exposes missing rules and suggests natural boundaries for bounded contexts, and you can run a useful version alone.",
+     "links": [
+      [
+       "EventStorming (Alberto Brandolini)",
+       "https://www.eventstorming.com/"
+      ],
+      [
+       "DDD Crew: DDD starter modelling process",
+       "https://github.com/ddd-crew/ddd-starter-modelling-process"
+      ]
+     ],
+     "build": "Run a solo event storm for a fictional hospital outpatient booking system, from \"Patient registered\" to \"Bill paid\". Use Excalidraw or paper. List at least 20 domain events in time order, then add commands, actors, policies, external systems (for example an insurance provider) and at least three hot spots. Draw boundaries around groups of events that could become bounded contexts and name each one.",
+     "check": "Why are domain events written in the past tense, and what does that make you think about?"
+    }
+   ]
+  },
+  {
+   "n": 10,
+   "title": "A domain deep dive you can talk about in interviews",
+   "goal": "Explain payments fundamentals with an engineer's precision, then apply the same method to a domain of your choice.",
+   "lessons": [
+    {
+     "id": "EJ10-1",
+     "title": "How money moves: the payment lifecycle and UPI basics",
+     "minutes": 55,
+     "learn": "Moving money is a multi-step process, not one event. A card payment goes through authorisation (the card issuer approves and holds the funds), capture (the merchant claims them), then clearing and settlement (money actually moves between banks, later and in batches), and refunds or chargebacks can follow weeks afterwards. UPI, India's real-time payment system run by NPCI, is a push payment: the payer's app sends the request through its PSP bank to NPCI's switch, which has the payer's (remitter) bank debit and the payee's (beneficiary) bank credit; the customer sees the result in seconds, while banks settle with each other later in cycles. Because any step can time out or return a pending status, payment systems model explicit states (pending, success, failed, reversed) and check the status before acting, never assuming.",
+     "links": [
+      [
+       "Wikipedia: Unified Payments Interface",
+       "https://en.wikipedia.org/wiki/Unified_Payments_Interface"
+      ],
+      [
+       "NPCI: UPI product overview",
+       "https://www.npci.org.in/what-we-do/upi/product-overview"
+      ],
+      [
+       "Stripe Docs: How PaymentIntents work",
+       "https://docs.stripe.com/payments/paymentintents/lifecycle"
+      ]
+     ],
+     "build": "Draw the sequence diagram of a customer paying a fictional online grocery store by UPI: payer app, PSP bank, NPCI, remitter bank, beneficiary bank, merchant backend. Then write the payment state machine from the merchant's point of view (created, pending, success, failed, refunded), with what triggers each transition. Finally, write what the merchant should do in three cases: success callback, failure callback, and no response after 2 minutes.",
+     "check": "The customer's UPI app says the money was debited but the merchant backend shows the payment as pending. What do you do, and what must you not do?"
+    },
+    {
+     "id": "EJ10-2",
+     "title": "Double-entry ledgers",
+     "minutes": 55,
+     "learn": "Double-entry bookkeeping records every transaction as entries in at least two accounts, with total debits equal to total credits; money always moves from somewhere to somewhere. This makes errors visible, because a bug that creates or loses money leaves the books out of balance. Software ledgers built on this idea make entries immutable (append only), derive balances by summing entries instead of storing an editable balance, store amounts as integers in the smallest currency unit (paise) to avoid rounding errors, and fix mistakes by adding reversing entries rather than editing rows. The result is a balance you can explain line by line to an auditor.",
+     "links": [
+      [
+       "Modern Treasury: Accounting for developers, part I",
+       "https://www.moderntreasury.com/journal/accounting-for-developers-part-i"
+      ],
+      [
+       "Square: Books, an immutable double-entry accounting database service",
+       "https://developer.squareup.com/blog/books-an-immutable-double-entry-accounting-database-service/"
+      ]
+     ],
+     "build": "Design a minimal ledger schema with three tables: accounts, transactions and entries (amount in paise, debit or credit, account id, transaction id), plus a rule that each transaction's debits equal its credits. On paper or in any SQL database, write the entries for this scenario at a fictional marketplace: a customer pays 500 rupees, the platform keeps a 2% fee, the seller is paid out, and then the customer gets a full refund. Show every account's balance after each step.",
+     "check": "Why do ledgers correct mistakes with reversing entries instead of updating the original row?"
+    },
+    {
+     "id": "EJ10-3",
+     "title": "Idempotency and reconciliation",
+     "minutes": 55,
+     "learn": "A request is idempotent if repeating it has the same effect as doing it once. Networks can fail after the server has acted but before the client hears back, so clients retry; without protection a retry can charge a customer twice. An idempotency key is a unique id the client sends with the request: the server stores it with the result and, on a retry with the same key, returns the stored result instead of acting again. Reconciliation is the regular comparison of your records with an external source of truth (bank statements, a payment provider's settlement report) to find missing, duplicated or mismatched transactions; idempotency prevents most duplicates, and reconciliation catches what still slips through.",
+     "links": [
+      [
+       "Stripe: Designing robust and predictable APIs with idempotency",
+       "https://stripe.com/blog/idempotency"
+      ],
+      [
+       "Brandur: Implementing Stripe-like idempotency keys in Postgres",
+       "https://brandur.org/idempotency-keys"
+      ],
+      [
+       "Stripe Docs: Payout reconciliation report",
+       "https://docs.stripe.com/reports/payout-reconciliation"
+      ]
+     ],
+     "build": "Write the design for an idempotent \"POST /payments\" endpoint for a fictional bill-payment app: where the key is stored, what is stored with it (a hash of the request body and the response), what happens on a retry with the same body, with a different body, and while the first request is still in progress. Write pseudocode or real code in any language. Then take two small made-up tables, 10 internal payments and 10 bank settlement rows with three planted mismatches, and write the matching rules that find all three.",
+     "check": "What should your API do if it receives the same idempotency key with a different request body, and why?"
+    },
+    {
+     "id": "EJ10-4",
+     "title": "Compliance at an engineer's level: KYC and PCI DSS",
+     "minutes": 45,
+     "learn": "Financial software is regulated, and engineers need to know the rules that shape their designs, without acting as lawyers. KYC (Know Your Customer) rules, set in India by the RBI's KYC Master Direction for regulated entities such as banks and NBFCs, require verifying a customer's identity before certain services, which affects onboarding flows, document storage and audit trails. PCI DSS is the security standard for any system that stores, processes or transmits cardholder data; the cheapest way to comply is to keep card data out of your systems by using a payment provider's hosted fields or tokens, which shrinks your scope. RBI's card-on-file tokenisation rules also stop merchants from storing card numbers, and the CVV must never be stored after authorisation. Treat this as an engineer's map, not legal advice.",
+     "links": [
+      [
+       "PCI Security Standards Council: PCI DSS",
+       "https://www.pcisecuritystandards.org/standards/pci-dss/"
+      ],
+      [
+       "Stripe: What is PCI DSS compliance?",
+       "https://stripe.com/guides/pci-compliance"
+      ],
+      [
+       "RBI: Master Direction, Know Your Customer (KYC)",
+       "https://www.rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=11566"
+      ]
+     ],
+     "build": "Draw a data-flow diagram of a checkout page for a fictional online electronics store in two versions: one where card numbers pass through the store's own server, and one using a payment provider's hosted card fields. Mark which components are in PCI DSS scope in each. Then list what a KYC onboarding flow for a fictional lending app needs: data collected, where it is stored, who can access it, how long it is kept, and what is logged for audit.",
+     "check": "How does using a payment provider's hosted card fields reduce your PCI DSS scope?"
+    },
+    {
+     "id": "EJ10-5",
+     "title": "Apply the same method to a second domain",
+     "minutes": 50,
+     "learn": "The questions you asked about payments work for any domain, and using them is how you build depth quickly. What is the lifecycle of the core object, and what states and transitions does it have? What is the source of truth, and how do records stay consistent with outside systems? What happens on failure, retry or duplicate? Which rules and regulations apply, including personal-data duties such as consent and deletion under India's Digital Personal Data Protection Act? Answering these turns \"I built a CRUD app\" into \"I understand how this business works\", which is what interviewers listen for.",
+     "links": [
+      [
+       "Wikipedia: Applicant tracking system",
+       "https://en.wikipedia.org/wiki/Applicant_tracking_system"
+      ],
+      [
+       "Greenhouse: Harvest API reference",
+       "https://developers.greenhouse.io/harvest.html"
+      ]
+     ],
+     "build": "Choose a second domain that interests you (for example hiring software, food delivery, hospital bookings or insurance claims). Write a domain note with: the core object's state machine with allowed transitions, a 20-term glossary, three failure cases (a duplicate, a stale or out-of-sync status, an external party that never responds) and how a system should handle each, the source of truth for each key record, and one data-privacy rule the system must implement. Optional: apply this to something you are working on.",
+     "check": "Which part of your chosen domain plays the role that reconciliation plays in payments, and how would a system handle it?"
+    }
+   ]
+  },
+  {
+   "n": 11,
+   "title": "Showing judgement and domain depth in interviews and at work",
+   "goal": "Make your decisions and domain knowledge visible in interviews, documents and public writing, and keep practising.",
+   "lessons": [
+    {
+     "id": "EJ11-1",
+     "title": "Behavioural stories about decisions (STAR with the trade-off explicit)",
+     "minutes": 50,
+     "learn": "Behavioural interviews test how you have acted in real situations, and product companies use them to probe judgement with questions such as \"tell me about a difficult technical decision\". STAR is a structure for answering: Situation, Task, Action, Result. To show judgement, make the Action a decision: the options you considered, the criteria you used, what you gave up and why, and what you would do differently now. Keep each story to about two minutes, say \"I\" for your own part, and end with a measurable result or a clear lesson.",
+     "links": [
+      [
+       "Wikipedia: Situation, task, action, result",
+       "https://en.wikipedia.org/wiki/Situation,_task,_action,_result"
+      ],
+      [
+       "Amazon: Leadership principles",
+       "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+      ]
+     ],
+     "build": "Use this template for five stories: Situation (2 lines), Task (1 line), Options considered, Chose, Gave up, Why, Result (with a number), What I would do differently. Fill it first for this practice case: an engineer had to choose between shipping a feature on time with a known performance problem or delaying a week to fix it. Then fill it for four decisions from your own experience (study, internships, side projects or work). Record yourself telling two of them and trim each to under two minutes.",
+     "check": "In a STAR story about a decision, what makes the action section show judgement rather than just effort?"
+    },
+    {
+     "id": "EJ11-2",
+     "title": "Talking trade-offs in system design rounds",
+     "minutes": 50,
+     "learn": "A system design interview asks you to design a large system, such as a URL shortener or a payment service, in about 45 minutes; the interviewer grades how you reason and decide, not whether you find one right answer. Clarify functional requirements, scale and constraints first. Then at each choice (SQL or NoSQL, synchronous or asynchronous, consistency or availability) name at least two options, the deciding factor for this problem, and the cost of the option you picked. Domain knowledge adds depth: saying \"payments need idempotency keys and a ledger\" shows understanding that generic designs lack.",
+     "links": [
+      [
+       "Hello Interview: System design delivery framework",
+       "https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery"
+      ],
+      [
+       "Malte Ubl: Design docs at Google",
+       "https://www.industrialempathy.com/posts/design-docs-at-google/"
+      ]
+     ],
+     "build": "Do a 45-minute mock design of \"a payment and refund service for an e-commerce site\" on Excalidraw or paper, speaking aloud and recording yourself. Afterwards, list every decision you made and check that each states the options, the deciding factor and the cost. Rewrite the three weakest explanations, then repeat the drill a week later with \"a doctor appointment booking system\".",
+     "check": "What is the difference between saying \"I'll use Kafka\" and explaining a trade-off about it?"
+    },
+    {
+     "id": "EJ11-3",
+     "title": "Writing for stakeholders",
+     "minutes": 45,
+     "learn": "Stakeholders are the people affected by or deciding on your work: managers, product managers, clients, other teams. They usually read only the first lines, so put the decision or the ask first, then the context, the options and your recommendation. Match the reader: a manager wants impact, risk and dates; an engineer wants the design and edge cases; a client wants to know what changes for them. Short, specific writing with numbers, dates and a named owner builds trust faster than meetings.",
+     "links": [
+      [
+       "The Pragmatic Engineer: RFCs and design docs",
+       "https://blog.pragmaticengineer.com/rfcs-and-design-docs/"
+      ],
+      [
+       "Google engineering practices: Writing good CL descriptions",
+       "https://google.github.io/eng-practices/review/developer/cl-descriptions.html"
+      ]
+     ],
+     "build": "Scenario: at a fictional insurance company, a database migration needed for a new claims feature will take two weeks longer than planned because of data-quality problems. Write it three ways: a 3-line chat update for the engineering manager, a half-page note for the business owner of the claims product, and a one-page design note for the engineers doing the migration. Each must lead with the decision or ask. Swap the three with a friend or peer and ask which was clearest and why.",
+     "check": "Why should a status update lead with the decision or ask rather than the background?"
+    },
+    {
+     "id": "EJ11-4",
+     "title": "Making your judgement visible",
+     "minutes": 45,
+     "learn": "Good judgement that nobody sees does not help your career, so make your reasoning visible. Write short design notes before building, pull request descriptions that explain why and what you rejected, and keep a brag document: a running log of your decisions and their outcomes, useful for reviews and interviews. Occasional public posts about a specific trade-off, with evidence and the result, are more credible than general opinions and show employers how you think.",
+     "links": [
+      [
+       "GitHub Blog: How to write the perfect pull request",
+       "https://github.blog/developer-skills/github/how-to-write-the-perfect-pull-request/"
+      ],
+      [
+       "Julia Evans: Get your work recognized, write a brag document",
+       "https://jvns.ca/blog/brag-documents/"
+      ],
+      [
+       "swyx: Learn in public",
+       "https://www.swyx.io/learn-in-public"
+      ]
+     ],
+     "build": "Take this weak PR description: \"Added caching to product API. Fixed some bugs.\" Rewrite it for a fictional e-commerce team with context, the change, alternatives considered and rejected, how it was tested, and risks. Then start a decisions log with five entries from this roadmap's exercises (date, decision, options, reason, outcome). Finally, draft a LinkedIn-style post of under 200 words about one trade-off from those exercises, such as when not to use an LLM, with the reasoning and the result.",
+     "check": "What makes a post about a technical decision credible rather than generic?"
+    },
+    {
+     "id": "EJ11-5",
+     "title": "A 90-day plan to keep practising",
+     "minutes": 40,
+     "learn": "Judgement and domain depth grow through repetition with feedback, not by finishing a course once. A sustainable practice plan has three layers: small weekly habits (log one decision, read and summarise one domain article, read some support tickets or talk to one user), a monthly output that someone else can see (a design note, a mock interview, a post), and a quarterly review of what changed and what to adjust. Linking the plan to a concrete goal, such as a job switch, keeps it going and turns practice into interview material.",
+     "links": [
+      [
+       "StaffEng: Learn to never be wrong",
+       "https://staffeng.com/guides/learn-to-never-be-wrong/"
+      ],
+      [
+       "Will Larson: Work on what matters",
+       "https://lethain.com/work-on-what-matters/"
+      ]
+     ],
+     "build": "Fill in a 90-day plan template: goal (one sentence), weekly habits (three, each under 30 minutes), monthly outputs (three, for example a payments deep-dive note, a domain event-storm write-up and two mock system design rounds), how you will get feedback on each, and review dates on day 30, 60 and 90 with the questions you will ask yourself. Put the weekly habits in a calendar or task tool as recurring items.",
+     "check": "How will you know after 90 days that your judgement or domain depth actually improved?"
+    }
+   ]
+  }
+ ]
+}

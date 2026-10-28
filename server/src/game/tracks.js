@@ -12,6 +12,7 @@ const TRACKS = [
   { key: 'dsa', label: 'DSA' },
   { key: 'lld', label: 'LLD' },
   { key: 'hld', label: 'HLD' },
+  { key: 'judge', label: 'Judgement' },
   { key: 'react', label: 'React' },
   { key: 'dotnet', label: '.NET' },
   { key: 'node', label: 'Node.js' },

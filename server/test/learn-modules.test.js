@@ -19,6 +19,20 @@ describe('roadmaps', () => {
       }
     });
   }
+  test('judge: engineering judgement + domain expertise, 11 levels; every lesson has links, a build and a checkpoint', () => {
+    const r = MODULES.judge.roadmap;
+    assert.equal(r.levels.length, 11);
+    const lessons = r.levels.flatMap((lv) => lv.lessons);
+    assert.ok(lessons.length >= 40, `${lessons.length} lessons`);
+    assert.equal(new Set(lessons.map((x) => x.id)).size, lessons.length, 'ids are unique');
+    assert.ok(lessons.every((x) => /^EJ\d+-\d+$/.test(x.id)));
+    for (const x of lessons) {
+      assert.ok(x.links.length >= 1 && x.links.every(([l, u]) => l && /^https:\/\//.test(u)), x.id);
+      assert.ok(x.build.length > 20 && x.check.endsWith('?') && x.minutes >= 20 && x.minutes <= 120, x.id);
+    }
+    const all = JSON.stringify(r).toLowerCase();
+    for (const w of ['two-way door', 'trade-off', 'decision record', 'estimat', 'technical debt', 'postmortem', 'eval', 'ubiquitous language', 'bounded context', 'double-entry', 'idempoten', 'STAR']) assert.ok(all.includes(w.toLowerCase()), w);
+  });
   test('they cover the core topics', () => {
     const lld = JSON.stringify(MODULES.lld.roadmap);
     for (const w of ['SOLID', 'Singleton', 'Strategy', 'Observer', 'deadlock', 'LRU', 'parking lot', 'Splitwise', 'BookMyShow', 'Elevator']) assert.ok(lld.toLowerCase().includes(w.toLowerCase()), w);

@@ -9,6 +9,7 @@ const load = (key) => JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..'
 const MODULES = {
   lld: { key: 'lld', label: 'LLD', title: 'Low-level design', roadmap: load('lld') },
   hld: { key: 'hld', label: 'HLD', title: 'High-level design', roadmap: load('hld') },
+  judge: { key: 'judge', label: 'Judgement', title: 'Engineering judgement & domain expertise', roadmap: load('judge') },
 };
 
 module.exports = { MODULES };

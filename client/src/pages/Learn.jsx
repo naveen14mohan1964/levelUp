@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../api.js';
 import { areaByKey } from '../areas.js';
 import { ErrorBox, Loading, ProgressBar, ProgressRing } from '../components/ui.jsx';
@@ -15,6 +15,7 @@ const TABS = [['today', '🎯 Today'], ['roadmap', '🗺️ Roadmap']];
 const SUBTITLE = {
   lld: 'Object-oriented design + machine coding, from OOP to classic interview problems (Java)',
   hld: 'System design, from how the web works to distributed systems and classic interview designs',
+  judge: 'Make better calls under uncertainty, and become the engineer who knows the business',
 };
 
 export default function Learn({ track }) {
@@ -33,6 +34,7 @@ export default function Learn({ track }) {
       <div className="page-head">
         <div>
           <h1>{area.icon} {data.title}</h1>
+          {track === 'hld' && <Link className="btn drills-link" to="/hld/drills">🏗️ 35-min design drills</Link>}
           <div className="muted small">{SUBTITLE[track]}</div>
         </div>
         <div className="row gap center-v">
