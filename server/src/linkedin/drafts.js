@@ -86,8 +86,20 @@ function factsFrom(ctx, buildLog = '') {
 }
 
 /** Builds the prompt (pure, so it's testable). */
-function buildPrompt({ pillar, angle, voiceSamples, facts, avoidEmployer, employerName, format = 'story', years = 2, intro = '' }) {
+function buildPrompt({ pillar, angle, voiceSamples, facts, avoidEmployer, employerName, format = 'story', years = 2, intro = '', source = null }) {
   const fmt = FORMATS[format] || FORMATS.story;
+  // a post that reacts to a news article: the article is the one outside source it may use (Stay updated -> Generate post)
+  const news = source ? `
+## The news this post reacts to
+${source.title} (${source.source}${source.published ? `, ${source.published}` : ''})
+Link: ${source.url}
+${source.text ? `What the article says (${source.grounded === 'article' ? 'its text' : 'the feed summary only'}):\n"""\n${source.text}\n"""` : ''}
+Rules for this post:
+- Open with my take or a sharp question the news raises for engineers, not "X just announced Y".
+- Summarise the news in one or two sentences, attributed to ${source.source}, and use ONLY claims stated above. Never add details, numbers or quotes that are not there.${source.grounded === 'article' ? '' : ' Only the summary was available, so stay high level about what the article says.'}
+- Then give my view: what it changes for engineers who build with it, a trade-off or risk, and what I'd try or watch.
+- Put the link in first_comment ("Source: ${source.url}"), never in the post body.
+` : '';
   return `Write ONE LinkedIn post for me, in MY voice.
 
 ## Who I am
@@ -96,7 +108,7 @@ A software engineer with ${years} years of professional experience${intro ? `: $
 ## Pillar
 ${pillar.name}${pillar.hint ? ` (ideas: ${pillar.hint})` : ''}
 ${angle ? `\nMy angle for this post: ${angle}` : ''}
-
+${news}
 ## Format: ${fmt.label}
 ${fmt.how}
 
@@ -142,13 +154,13 @@ async function generateImagePrompt(text) {
 }
 
 /** Calls Gemini and lightly cleans the result. Returns { text, hook, facts_used, first_comment, format }. */
-async function generateDraft({ pillar, angle, settings, date, format }) {
+async function generateDraft({ pillar, angle, settings, date, format, source = null }) {
   const ctx = await buildContext(date);
   const chosen = pickFormat(format);
   const prompt = buildPrompt({
     pillar, angle, format: chosen, facts: factsFrom(ctx, settings.li_build_log), voiceSamples: settings.li_voice_samples,
     avoidEmployer: settings.li_avoid_employer, employerName: settings.li_employer_name,
-    years: Number(settings.li_years_experience) || 2, intro: settings.li_my_intro,
+    years: Number(settings.li_years_experience) || 2, intro: settings.li_my_intro, source,
   });
   const out = await generate([{ text: prompt }], {
     schema: DRAFT_SCHEMA, temperature: 0.85, thinking: 'medium', // writing quality is worth a few extra seconds here

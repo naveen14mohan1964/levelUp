@@ -67,16 +67,68 @@ async function refreshNews({ feeds = FEEDS, fetchImpl = fetch, perFeed = 15 } = 
     summary.ok++;
   }
   await pool.request().input('old', sql.BigInt, Date.now() - KEEP_DAYS * DAY)
-    .query(`DELETE FROM dbo.ai_news WHERE status <> 'saved' AND COALESCE(published_ms, fetched_ms) < @old`);
+    .query(`DELETE FROM dbo.ai_news WHERE status <> 'saved' AND COALESCE(published_ms, fetched_ms) < @old
+            AND NOT EXISTS (SELECT 1 FROM dbo.ai_news_posts p WHERE p.news_id = dbo.ai_news.id)`);
   return summary;
 }
 
-/** Daily refresh in the always-on app (first run 3 minutes after start). */
-function start() {
-  const run = () => refreshNews().then((s) => s.added && console.log(`AI news: ${s.added} new from ${s.ok}/${s.feeds} feeds`))
-    .catch((e) => console.warn('AI news refresh failed:', e.message));
-  setTimeout(run, 3 * 60 * 1000).unref();
-  setInterval(run, DAY).unref();
+// ---- the daily job: a fixed time of day, remembered in dbo.settings so restarts and laptop sleep don't skip or repeat it
+const RUN_HOUR = 6; // 06:00 local time
+const LAST_RUN_KEY = 'ai_news_last_run'; // JSON { ms, ok, feeds, added, failed }
+const CHECK_EVERY = 10 * 60 * 1000;
+const RETRY_AFTER = 30 * 60 * 1000; // a feed failed on the network: try again soon instead of tomorrow
+
+/** The most recent scheduled moment (today's 06:00, or yesterday's if it's still before 06:00). */
+function lastSlot(now = Date.now()) {
+  const d = new Date(now);
+  d.setHours(RUN_HOUR, 0, 0, 0);
+  if (d.getTime() > now) d.setDate(d.getDate() - 1);
+  return d.getTime();
+}
+const nextSlot = (now = Date.now()) => { const d = new Date(lastSlot(now)); d.setDate(d.getDate() + 1); return d.getTime(); };
+
+async function lastRun(pool) {
+  const r = await pool.request().input('k', sql.NVarChar, LAST_RUN_KEY).query('SELECT v FROM dbo.settings WHERE k = @k');
+  try { return JSON.parse(r.recordset[0]?.v || 'null'); } catch { return null; }
+}
+async function saveRun(pool, run) {
+  await pool.request().input('k', sql.NVarChar, LAST_RUN_KEY).input('v', sql.NVarChar, JSON.stringify(run)).query(`
+    MERGE dbo.settings AS t USING (SELECT @k AS k) AS s ON t.k = s.k
+    WHEN MATCHED THEN UPDATE SET v = @v WHEN NOT MATCHED THEN INSERT (k, v) VALUES (@k, @v);`);
 }
 
-module.exports = { ROADMAP, FEEDS, parseFeed, refreshNews, start };
+/** Fetch now and remember the run (used by the daily job and the Refresh button). */
+async function refreshAndRecord(opts) {
+  const s = await refreshNews(opts);
+  const pool = await getPool();
+  await saveRun(pool, { ms: Date.now(), ok: s.ok, feeds: s.feeds, added: s.added, failed: s.failed.map((f) => f.source) });
+  return s;
+}
+
+/** Daily job in the always-on app: runs once per day at 06:00, catches up after sleep or downtime. */
+function start() {
+  let busy = false;
+  let retryAt = 0;
+  const tick = async () => {
+    if (busy) return;
+    try {
+      const pool = await getPool();
+      const prev = await lastRun(pool);
+      const due = !prev || prev.ms < lastSlot() || (retryAt && Date.now() >= retryAt);
+      if (!due) return;
+      busy = true;
+      const s = await refreshAndRecord();
+      retryAt = s.failed.length ? Date.now() + RETRY_AFTER : 0;
+      console.log(`AI news: ${s.added} new from ${s.ok}/${s.feeds} feeds${s.failed.length ? ` (${s.failed.length} failed, retrying in 30 min)` : ''}`);
+    } catch (e) {
+      retryAt = Date.now() + RETRY_AFTER;
+      console.warn('AI news refresh failed:', e.message);
+    } finally {
+      busy = false;
+    }
+  };
+  setTimeout(tick, 60 * 1000).unref();
+  setInterval(tick, CHECK_EVERY).unref();
+}
+
+module.exports = { ROADMAP, FEEDS, parseFeed, refreshNews, refreshAndRecord, lastRun, nextSlot, lastSlot, RUN_HOUR, start };

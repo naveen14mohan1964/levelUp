@@ -16,10 +16,47 @@
 .ai-level-lessons { margin-top: 0.6rem; display: grid; gap: 0.5rem; }
 .ai-level-lessons .card { margin-bottom: 0; background: var(--bg); }
 .ai-news { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
-.ai-news-item { padding: 0.6rem 0.7rem; border: 1px solid var(--border); border-radius: 10px; overflow-wrap: anywhere; }
-.ai-news-item.unread { border-left: 3px solid var(--ai); }
+.ai-news-item {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--s-100); align-items: start;
+  padding: var(--s-100) var(--s-200) var(--s-100) var(--s-100); border: 1px solid var(--glass-border); border-radius: var(--radius-sm);
+  background: var(--surface-2); overflow-wrap: anywhere; transition: opacity 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
+}
+/* unread = a rail inside the card in the area colour (no one-sided border) */
+.ai-news-item { position: relative; }
+.ai-news-item.unread::before { content: ''; position: absolute; left: 3px; top: 10px; bottom: 10px; width: 3px; border-radius: 999px; background: var(--ai); }
+.ai-news-item.is-read { opacity: 0.72; }
+.ai-news-item.is-read .ai-news-title { font-weight: 500; }
+.ai-news-item.fresh { border-color: color-mix(in srgb, var(--ai) 55%, transparent); animation: news-in 0.9s var(--ease-enter) both; }
+@keyframes news-in { from { opacity: 0; transform: translateY(-8px); filter: blur(4px); } }
+.news-read { display: flex; padding: var(--s-50) var(--s-25) 0 var(--s-75); cursor: pointer; }
+.news-read input { width: 18px; height: 18px; accent-color: var(--success); }
+.news-main { min-width: 0; }
+.news-new, .news-saved { margin-left: var(--s-75); font-size: 11px; font-weight: 700; padding: 1px var(--s-75); border-radius: 999px; }
+.news-new { color: var(--on-bright); background: var(--ai); }
+.news-saved { color: var(--brand-text); background: color-mix(in srgb, var(--brand) 18%, transparent); }
+.news-count { margin-left: var(--s-75); font-variant-numeric: tabular-nums; color: var(--muted); }
+.chip-btn.on .news-count { color: inherit; }
+.news-schedule { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-25) var(--s-50); }
+.live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); position: relative; flex: none; }
+.live-dot::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--success); animation: ring-pulse 2s var(--ease-fade) infinite; }
+@media (prefers-reduced-motion: reduce) { .ai-news-item.fresh, .live-dot::after { animation: none; } }
 .ai-news-title { font-weight: 600; display: inline-block; margin: 0.15rem 0; }
 .ai-news-item p { margin: 0.2rem 0 0.4rem; }
 
 /* keep long text readable on wide screens (~85 characters per line) */
 .ai-lesson-body > p, .ai-block p, .ai-news-item p { max-width: 85ch; }
+
+/* ---------- Stay updated: paging, skeleton rows, the post panel ---------- */
+.news-more { display: flex; align-items: center; gap: var(--s-100); margin-top: var(--s-200); }
+.news-sk { display: flex; gap: var(--s-100); padding: var(--s-100); border: 1px solid var(--glass-border); border-radius: var(--radius-sm); background: var(--surface-2); margin-bottom: var(--s-75); }
+.news-sk .sk { background: var(--surface-3); }
+.news-actions { margin-top: var(--s-50); align-items: center; }
+.btn.news-write { padding: var(--s-50) var(--s-100); font-size: 13px; }
+.btn.news-write.on { border-color: var(--ai); }
+.ai-news-item.writing { border-color: color-mix(in srgb, var(--ai) 45%, transparent); }
+.news-post { margin-top: var(--s-100); padding: var(--s-100); border-radius: var(--radius-xs); background: var(--surface); border: 1px solid var(--glass-border); display: grid; gap: var(--s-75); }
+.news-angle { flex: 1 1 260px; font: inherit; font-size: 14px; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-xs); padding: var(--s-75) var(--s-100); }
+.news-post-body { display: grid; gap: var(--s-100); }
+.news-post-block { padding: var(--s-100); border-radius: var(--radius-xs); background: var(--surface-2); }
+.news-post-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--s-50); font-size: 13px; }
+.news-post-text { margin: 0; white-space: pre-wrap; line-height: 22px; max-width: 75ch; }

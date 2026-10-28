@@ -4,6 +4,28 @@ const assert = require('node:assert/strict');
 const { startServer, stopServer, api, sqlQuery } = require('./helpers');
 const { ROADMAP, parseFeed } = require('../src/ai/feeds');
 
+describe('news → LinkedIn post (pure parts)', () => {
+  test('article text: prefers <article>, drops scripts/nav/footer, decodes entities; short pages give null', async () => {
+    const { htmlToText, fetchArticleText } = require('../src/ai/article');
+    const html = '<html><nav>Menu</nav><article><h1>Evals &amp; agents</h1><script>x()</script><p>First point.</p><p>Second&#39;s point.</p></article><footer>©</footer></html>';
+    assert.equal(htmlToText(html), "Evals & agents\nFirst point.\nSecond's point.");
+    const long = `<article><p>${'word '.repeat(200)}</p></article>`;
+    const ok = (body, type = 'text/html') => async () => ({ ok: true, headers: { get: () => type }, text: async () => body });
+    assert.ok((await fetchArticleText('https://x', { fetchImpl: ok(long) })).startsWith('word'));
+    assert.equal(await fetchArticleText('https://x', { fetchImpl: ok('<article>tiny</article>') }), null, 'too short: probably a paywall');
+    assert.equal(await fetchArticleText('https://x', { fetchImpl: ok(long, 'application/pdf') }), null);
+    assert.equal(await fetchArticleText('https://x', { fetchImpl: async () => { throw new Error('offline'); } }), null);
+  });
+  test('the draft prompt gets a news section with attribution rules and the link in the first comment', () => {
+    const { buildPrompt } = require('../src/linkedin/drafts');
+    const source = { title: 'New eval API', source: 'OpenAI', url: 'https://o/x', published: '2026-10-27', text: 'It adds graders.', grounded: 'summary' };
+    const p = buildPrompt({ pillar: { name: 'AI' }, facts: [], source });
+    assert.ok(p.includes('## The news this post reacts to') && p.includes('It adds graders.') && p.includes('attributed to OpenAI'));
+    assert.ok(p.includes('Source: https://o/x') && p.includes('stay high level'));
+    assert.ok(!buildPrompt({ pillar: { name: 'AI' }, facts: [] }).includes('The news this post reacts to'), 'normal drafts are unchanged');
+  });
+});
+
 describe('roadmap', () => {
   test('14 levels from math to hired, incl. harness engineering, multi-agent, RAG at scale and FDE; every lesson has links, a build and a checkpoint', () => {
     assert.equal(ROADMAP.levels.length, 14);
@@ -94,5 +116,39 @@ describe('AI module API', () => {
     assert.deepEqual([rows[0].title, rows[0].published_ms, rows[1].title, !!rows[1].published_ms], ['Old undated', null, 'Fresh undated', true]);
     const list = (await api('GET', '/ai/news?source=Dateless')).body.items.map((x) => x.title);
     assert.deepEqual(list, ['Fresh undated', 'Old undated']);
+  });
+
+  test('news read tick: separate from saved, views + counts, mark all read; the daily job slot is 06:00', async () => {
+    const q = (view) => api('GET', `/ai/news?source=Dateless&view=${view}`).then((r) => r.body);
+    const [fresh, old] = (await q('unread')).items;
+    assert.equal((await api('PATCH', `/ai/news/${fresh.id}`, { read: true })).status, 200);
+    await api('PATCH', `/ai/news/${fresh.id}`, { status: 'saved' });
+    const saved = (await q('saved')).items[0];
+    assert.ok(saved.read_ms, 'saving keeps the read tick');
+    let body = await q('unread');
+    assert.deepEqual([body.items.map((x) => x.title), body.counts.unread, body.counts.read, body.counts.saved], [['Old undated'], 1, 1, 1]);
+    assert.equal((await api('PATCH', `/ai/news/${fresh.id}`, { read: false })).status, 200, 'untick');
+    assert.equal((await q('unread')).counts.unread, 2);
+    assert.equal((await api('PATCH', `/ai/news/${old.id}`, { status: 'read' })).status, 200, 'old clients: status read = the tick');
+    assert.equal((await api('PATCH', `/ai/news/${old.id}`, { read: 'yes' })).status, 400);
+    assert.equal((await api('POST', '/ai/news/read-all', { source: 'Dateless' })).body.marked, 1);
+    body = await q('unread');
+    assert.deepEqual([body.items.length, body.schedule.hour], [0, 6]);
+
+    // paging: one page at a time, counts stay for the whole view
+    const page1 = (await api('GET', '/ai/news?view=all&limit=1')).body;
+    const page2 = (await api('GET', '/ai/news?view=all&limit=1&offset=1')).body;
+    assert.deepEqual([page1.items.length, page2.items.length, page1.offset, page2.offset], [1, 1, 0, 1]);
+    assert.notEqual(page1.items[0].id, page2.items[0].id);
+    assert.equal(page1.items[0].posts, 0, 'each item says how many post ideas it has');
+    // post ideas: listed per item; unknown items are a 404 (generation itself calls Gemini, so it is not run here)
+    assert.deepEqual((await api('GET', `/ai/news/${fresh.id}/posts`)).body.posts, []);
+    assert.equal((await api('POST', '/ai/news/999999/post', {})).status, 404);
+
+    const { lastSlot, nextSlot } = require('../src/ai/feeds');
+    const at = (h, m = 0) => { const d = new Date(2026, 10, 2, h, m); return d.getTime(); };
+    assert.equal(new Date(lastSlot(at(5, 59))).getDate(), 1, 'before 06:00 the due slot is yesterday 06:00');
+    assert.equal(new Date(lastSlot(at(6, 0))).getHours(), 6);
+    assert.equal(nextSlot(at(14)) - lastSlot(at(14)), 86400000);
   });
 });
