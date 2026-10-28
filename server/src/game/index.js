@@ -11,8 +11,12 @@ const { comebacks: comebacksFor } = require('../checkin/rules');
 const MAX_SESSION_MIN = 240;
 const STALE_AFTER_MIN = 60; // a timer left running this long past its plan is closed at its planned length
 
-/** Minutes a session counts for: its recorded minutes, or the time so far (up to its plan) if it's still running. */
-const sessionMinutes = (s, now) => (s.ended_ms != null ? s.minutes || 0 : Math.min(Math.floor((now - s.started_ms) / 60000), s.planned_min, MAX_SESSION_MIN));
+/**
+ * Minutes a session counts for: its recorded (focused) minutes, or the time so far (up to its plan) if it's still running,
+ * minus what the camera focus guard saw as distracted.
+ */
+const sessionMinutes = (s, now) => (s.ended_ms != null ? s.minutes || 0
+  : Math.max(0, Math.min(Math.floor((now - s.started_ms) / 60000), s.planned_min, MAX_SESSION_MIN) - Math.floor((s.distracted_sec || 0) / 60)));
 
 async function closeStaleSessions(pool, now) {
   await pool.request().input('now', sql.BigInt, now).input('stale', sql.Int, STALE_AFTER_MIN).query(`
@@ -32,14 +36,17 @@ async function computeGame(pool, now = Date.now()) {
   await closeStaleSessions(pool, now);
   const since = await startedMs(pool, now);
   await require('../checkin/data').ensureStarterShield(pool); // everyone starts with one streak shield
+  await require('../cards').syncLessonCards(pool, now); // a finished lesson becomes a flashcard
   const { tracks: raw, solved, credits } = await loadTracks(pool);
   const r = await pool.request().query(`
-    SELECT CAST(id AS int) AS id, track, lesson_ref, started_ms, planned_min, ended_ms, minutes FROM dbo.focus_sessions ORDER BY started_ms;
+    SELECT CAST(id AS int) AS id, track, lesson_ref, started_ms, planned_min, ended_ms, minutes, camera, distracted_sec FROM dbo.focus_sessions ORDER BY started_ms;
     SELECT CONVERT(char(10), day, 23) AS day FROM dbo.streak_freezes;
     SELECT track, level FROM dbo.game_seen;
     SELECT earned_ms FROM dbo.streak_shields WHERE used_ms IS NULL ORDER BY id;
     SELECT CONVERT(char(10), e.eval_date, 23) AS date, e.results, (SELECT kind FROM dbo.rest_days r WHERE r.rest_date = e.eval_date) AS rest
-      FROM dbo.mentor_evaluations e ORDER BY e.eval_date;`);
+      FROM dbo.mentor_evaluations e ORDER BY e.eval_date;
+    SELECT reviewed_ms FROM dbo.flashcard_reviews ORDER BY reviewed_ms;
+    SELECT COUNT(*) AS n FROM dbo.flashcards WHERE due <= CAST(GETDATE() AS date);`);
   const sessions = r.recordsets[0].map((s) => ({ ...s, started_ms: Number(s.started_ms), ended_ms: s.ended_ms == null ? null : Number(s.ended_ms) }));
   const frozen = new Set(r.recordsets[1].map((x) => x.day));
   const seen = new Set(r.recordsets[2].map((x) => `${x.track}|${x.level}`));
@@ -53,7 +60,8 @@ async function computeGame(pool, now = Date.now()) {
   }
 
   const tracks = raw.map(progress);
-  const events = xpEvents({ tracks, problems: solved, sessions, comebacks });
+  const reviews = r.recordsets[5].map((x) => ({ ms: Number(x.reviewed_ms) }));
+  const events = xpEvents({ tracks, problems: solved, sessions, comebacks, reviews });
   const total = events.reduce((s, e) => s + e.xp, 0);
   const today = localDay(now);
   const minutes = dayMinutes(sessions.map((s) => ({ ...s, minutes: sessionMinutes(s, now) })), credits);
@@ -103,12 +111,40 @@ async function computeGame(pool, now = Date.now()) {
     week,
     tracks,
     celebrate,
-    focus: running ? { id: running.id, track: running.track, ref: running.lesson_ref, startedMs: running.started_ms, plannedMin: running.planned_min, elapsedMin: sessionMinutes(running, now) } : null,
+    focus: running ? { id: running.id, track: running.track, ref: running.lesson_ref, startedMs: running.started_ms, plannedMin: running.planned_min, elapsedMin: sessionMinutes(running, now), camera: !!running.camera, distractedSec: running.distracted_sec || 0 } : null,
+    focusToday: cameraFocus(sessions.filter((s) => localDay(s.started_ms) === today), now),
+    cards: { due: r.recordsets[6][0].n, reviewedToday: reviews.filter((x) => localDay(x.ms) === today).length },
+    byDay: activityByDay(events, minutes), // for the weekly report (left out of the API summary)
   };
 }
 
+/** Per local day: learning minutes (as the streak counts them), XP and what earned it. */
+function activityByDay(events, minutes) {
+  const out = {};
+  const day = (d) => (out[d] ||= { minutes: 0, xp: 0, lessons: 0, problems: 0, levels: 0, cards: 0 });
+  for (const [d, m] of minutes) day(d).minutes = m;
+  const KIND = { lesson: 'lessons', problem: 'problems', level: 'levels', card: 'cards' };
+  for (const e of events) {
+    if (!e.ms) continue;
+    const x = day(localDay(e.ms));
+    x.xp += e.xp;
+    if (KIND[e.kind]) x[KIND[e.kind]]++;
+  }
+  return out;
+}
+
+/** Today's camera sessions: focused vs distracted minutes and a %, for the Mentor and the Today card. */
+function cameraFocus(sessions, now) {
+  const cam = sessions.filter((s) => s.camera);
+  if (!cam.length) return null;
+  const focused = cam.reduce((n, s) => n + sessionMinutes(s, now), 0);
+  const distracted = Math.round(cam.reduce((n, s) => n + (s.distracted_sec || 0), 0) / 60);
+  const total = focused + distracted;
+  return { sessions: cam.length, focusedMin: focused, distractedMin: distracted, totalMin: total, pct: total ? Math.round((focused / total) * 100) : 100 };
+}
+
 /** The summary view: everything except each track's full level/lesson list. */
-function summary(game) {
+function summary({ byDay, ...game }) {
   return { ...game, tracks: game.tracks.map(({ levels, ...t }) => ({ ...t, levelsTotal: levels.length })) };
 }
 

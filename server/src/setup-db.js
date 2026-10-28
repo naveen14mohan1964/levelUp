@@ -24,12 +24,12 @@ async function wipe(pool) {
   await pool.request().batch(`
     DELETE FROM dbo.li_stages; DELETE FROM dbo.li_jobs; DELETE FROM dbo.li_posts; DELETE FROM dbo.li_audit;
     DELETE FROM dbo.focus_sessions; DELETE FROM dbo.streak_freezes; DELETE FROM dbo.game_seen; DELETE FROM dbo.dev_snapshots;
-    DELETE FROM dbo.mentor_evaluations; DELETE FROM dbo.mentor_outbox; DELETE FROM dbo.mentor_commitments; DELETE FROM dbo.streak_shields; DELETE FROM dbo.rest_days;
+    DELETE FROM dbo.mentor_evaluations; DELETE FROM dbo.mentor_outbox; DELETE FROM dbo.mentor_commitments; DELETE FROM dbo.streak_shields; DELETE FROM dbo.rest_days; DELETE FROM dbo.flashcards; DELETE FROM dbo.flashcard_reviews; DELETE FROM dbo.pattern_picks; DELETE FROM dbo.hld_drills; DELETE FROM dbo.assignment_progress;
     DELETE FROM dbo.learn_progress; DELETE FROM dbo.ai_progress; DELETE FROM dbo.ai_news; DELETE FROM dbo.ref_jobs; DELETE FROM dbo.ref_history; DELETE FROM dbo.ref_pursuits; DELETE FROM dbo.ref_notes; DELETE FROM dbo.ref_imports; DELETE FROM dbo.ref_companies;
     DELETE FROM dbo.li_actions; DELETE FROM dbo.li_contacts; DELETE FROM dbo.li_lists;
     DELETE FROM dbo.mentor_messages; DELETE FROM dbo.tg_inbox; DELETE FROM dbo.meals; DELETE FROM dbo.body_log;
     DELETE FROM dbo.workout_log; DELETE FROM dbo.progress_photos;
-    DELETE FROM dbo.project_tasks; DELETE FROM dbo.projects;
+    DELETE FROM dbo.project_tasks; DELETE FROM dbo.project_weeks; DELETE FROM dbo.projects;
     DELETE FROM dbo.review_log; DELETE FROM dbo.problems; DELETE FROM dbo.tasks;
     DELETE FROM dbo.days; DELETE FROM dbo.weeks; DELETE FROM dbo.settings; DELETE FROM dbo.study_log;
     DBCC CHECKIDENT ('dbo.days', RESEED, 0) WITH NO_INFOMSGS;
@@ -40,6 +40,10 @@ async function wipe(pool) {
 }
 
 const loadPlan = () => JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'plan.json'), 'utf8'));
+const loadBriefs = (code) => {
+  const file = path.join(__dirname, '..', 'data', 'briefs', `${code}.json`);
+  return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
+};
 
 async function seed(pool) {
   const plan = loadPlan();
@@ -119,9 +123,9 @@ async function seedProjects(pool) {
         await new sql.Request(tx)
           .input('code', sql.NVarChar, p.code).input('week', sql.Int, t.week).input('wt', sql.NVarChar, t.weekTitle)
           .input('dow', sql.TinyInt, t.dow).input('date', sql.Date, t.date).input('title', sql.NVarChar, t.title)
-          .input('kind', sql.NVarChar, t.kind || 'build').input('learn', sql.NVarChar, t.learn || null)
-          .query(`INSERT INTO dbo.project_tasks (project_code, week_no, week_title, day_index, plan_date, title, kind, learn)
-                  VALUES (@code, @week, @wt, @dow, @date, @title, @kind, @learn)`);
+          .input('kind', sql.NVarChar, t.kind || 'build').input('learn', sql.NVarChar, t.learn || null).input('dw', sql.NVarChar, t.doneWhen || null)
+          .query(`INSERT INTO dbo.project_tasks (project_code, week_no, week_title, day_index, plan_date, title, kind, learn, done_when)
+                  VALUES (@code, @week, @wt, @dow, @date, @title, @kind, @learn, @dw)`);
       }
     }
     await tx.commit();
@@ -159,6 +163,29 @@ async function syncRoadmaps(pool) {
     }
   }
   if (learn || checkpoints) console.log(`Roadmaps: added ${learn} learn topics and ${checkpoints} checkpoints.`);
+  // assignment details are reference data: always refreshed from plan.json (progress is untouched)
+  for (const p of projects) {
+    for (const t of p.tasks.filter((x) => x.kind === 'build' && x.doneWhen)) {
+      await pool.request().input('code', sql.NVarChar, p.code).input('week', sql.Int, t.week).input('dow', sql.TinyInt, t.dow).input('dw', sql.NVarChar, t.doneWhen)
+        .query("UPDATE dbo.project_tasks SET done_when = @dw WHERE project_code = @code AND week_no = @week AND day_index = @dow AND kind = 'build'");
+    }
+    // detailed daily briefs (Markdown) live beside the plan, one file per project: { "<week>-<dow>-<kind>": "..." }
+    const briefs = loadBriefs(p.code);
+    for (const [key, md] of Object.entries(briefs)) {
+      const [week, dow, kind] = key.split('-');
+      await pool.request().input('code', sql.NVarChar, p.code).input('week', sql.Int, Number(week)).input('dow', sql.TinyInt, Number(dow))
+        .input('kind', sql.NVarChar, kind).input('brief', sql.NVarChar(sql.MAX), md)
+        .query(`UPDATE dbo.project_tasks SET brief = @brief WHERE project_code = @code AND week_no = @week AND kind = @kind
+                AND (kind = 'checkpoint' OR day_index = @dow)`);
+    }
+    for (const w of p.weeks || []) {
+      await pool.request().input('code', sql.NVarChar, p.code).input('week', sql.Int, w.week).input('title', sql.NVarChar, w.title)
+        .input('obj', sql.NVarChar, w.objective || null).input('lvl', sql.NVarChar, w.level || null).input('del', sql.NVarChar, w.deliverable || null)
+        .query(`MERGE dbo.project_weeks AS d USING (SELECT @code AS c, @week AS w) AS s ON d.project_code = s.c AND d.week_no = s.w
+                WHEN MATCHED THEN UPDATE SET title = @title, objective = @obj, level = @lvl, deliverable = @del
+                WHEN NOT MATCHED THEN INSERT (project_code, week_no, title, objective, level, deliverable) VALUES (@code, @week, @title, @obj, @lvl, @del);`);
+    }
+  }
 }
 
 // LinkedIn posts: AI-forward pillars and real proof points, so drafts read like an experienced engineer (not a beginner diary).

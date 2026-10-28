@@ -59,7 +59,7 @@ async function compose(pool, kind, evaluation, s, now, deps = {}) {
   const st = await status(pool, now);
   const prev = (await history(pool, evaluation.date, 1)).at(-1) || null;
   const game = await require('../game').computeGame(pool, now);
-  const ctx = buildContext({ kind, evaluation, yesterdayEval: prev, pace: st.pace, streak: game.streak, shields: st.shields, commitments: st.commitments, settings: s });
+  const ctx = buildContext({ kind, evaluation, yesterdayEval: prev, pace: st.pace, streak: game.streak, shields: st.shields, commitments: st.commitments, settings: s, game });
   const msg = await writeMessage(ctx, deps);
   return { ctx, ...msg };
 }

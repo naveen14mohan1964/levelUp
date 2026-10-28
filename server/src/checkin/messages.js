@@ -41,7 +41,7 @@ function nextAction(ctx) {
  * @param kind     evening | morning
  * evaluation: the day just evaluated (evening) or yesterday (morning), so "tomorrow" is the day the action is for
  */
-function buildContext({ kind, evaluation, yesterdayEval, pace, streak, shields, commitments, settings, reason, blocker = null, shift = null }) {
+function buildContext({ kind, evaluation, yesterdayEval, pace, streak, shields, commitments, settings, reason, blocker = null, shift = null, game = null }) {
   const day = evaluation.date;
   const tomorrow = addDays(day, 1); // evening: the day after; morning (evaluation = yesterday): today
   const tracked = settings.categories;
@@ -75,6 +75,7 @@ function buildContext({ kind, evaluation, yesterdayEval, pace, streak, shields, 
     freshStart: freshStart(tomorrow),
     reason: reason || evaluation.reason || null,
     blocker,
+    focus: game?.focusToday ? { focusedMin: game.focusToday.focusedMin, totalMin: game.focusToday.totalMin, pct: game.focusToday.pct } : null, // camera focus guard
     preStart: !evaluation.rest && tracked.every((c) => !res[c] || res[c].status === 'off'), // nothing counts yet (e.g. before the plan starts)
     shiftOffer: shift?.any ? { dsaDays: shift.dsa?.days || 0, projectDays: shift.project?.days || 0 } : null,
   };
@@ -163,6 +164,7 @@ function template(ctx) {
   }
 
   if (ctx.comebacks.length) lines.push(`Comeback on ${list(ctx.comebacks)}. +${ctx.comebacks.length * 20} XP. That's how it's done.`);
+  if (ctx.focus?.totalMin) lines.push(`On camera you focused ${ctx.focus.focusedMin} of ${ctx.focus.totalMin} minutes (${ctx.focus.pct}%).`);
   if (ctx.level === 0) {
     lines.push(drill ? 'All targets hit. Do it again tomorrow.' : 'All goals met today. Good. Same again tomorrow.');
     if (left) lines.push(left);

@@ -669,3 +669,125 @@ CREATE TABLE dbo.rest_days (
   created_ms BIGINT        NOT NULL
 );
 GO
+
+-- Camera focus guard: how long the camera saw you distracted in a session (only focused minutes count)
+IF COL_LENGTH('dbo.focus_sessions', 'camera') IS NULL
+ALTER TABLE dbo.focus_sessions ADD camera BIT NOT NULL CONSTRAINT DF_focus_sessions_camera DEFAULT 0;
+GO
+IF COL_LENGTH('dbo.focus_sessions', 'distracted_sec') IS NULL
+ALTER TABLE dbo.focus_sessions ADD distracted_sec INT NOT NULL CONSTRAINT DF_focus_sessions_distracted DEFAULT 0;
+GO
+
+-- Flashcards (spaced repetition for AI / LLD / HLD): one card per finished lesson (its checkpoint question),
+-- plus your own cards. Scheduling: SM-2 style ease + interval (server/src/cards.js).
+IF OBJECT_ID('dbo.flashcards') IS NULL
+CREATE TABLE dbo.flashcards (
+  id             INT IDENTITY(1,1) PRIMARY KEY,
+  track          NVARCHAR(16)   NOT NULL,
+  lesson_ref     NVARCHAR(32)   NULL,      -- set for cards made from a lesson
+  source         NVARCHAR(8)    NOT NULL,  -- lesson | mine
+  front          NVARCHAR(500)  NOT NULL,
+  back           NVARCHAR(2000) NOT NULL,
+  ease           FLOAT          NOT NULL CONSTRAINT DF_flashcards_ease DEFAULT 2.5,
+  interval_days  INT            NOT NULL CONSTRAINT DF_flashcards_interval DEFAULT 0,
+  reps           INT            NOT NULL CONSTRAINT DF_flashcards_reps DEFAULT 0,
+  lapses         INT            NOT NULL CONSTRAINT DF_flashcards_lapses DEFAULT 0,
+  due            DATE           NOT NULL,
+  created_ms     BIGINT         NOT NULL,
+  last_review_ms BIGINT         NULL
+);
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'UX_flashcards_lesson')
+CREATE UNIQUE INDEX UX_flashcards_lesson ON dbo.flashcards (track, lesson_ref) WHERE lesson_ref IS NOT NULL;
+GO
+IF OBJECT_ID('dbo.flashcard_reviews') IS NULL
+CREATE TABLE dbo.flashcard_reviews (
+  id          INT IDENTITY(1,1) PRIMARY KEY,
+  card_id     INT     NOT NULL,
+  reviewed_ms BIGINT  NOT NULL,
+  grade       TINYINT NOT NULL -- 1 again, 2 hard, 3 good, 4 easy
+);
+GO
+
+-- Pattern mastery: the daily practice pick (today's is stored when first shown, so it doesn't change under you)
+IF OBJECT_ID('dbo.pattern_picks') IS NULL
+CREATE TABLE dbo.pattern_picks (
+  pick_date  DATE          NOT NULL PRIMARY KEY,
+  topic      NVARCHAR(50)  NOT NULL,
+  problem_id INT           NOT NULL,
+  kind       NVARCHAR(10)  NOT NULL, -- new | resolve
+  reason     NVARCHAR(300) NOT NULL,
+  created_ms BIGINT        NOT NULL
+);
+GO
+-- System design drills (35 min): answers per step, the key points you ticked, score, optional AI feedback
+IF OBJECT_ID('dbo.hld_drills') IS NULL
+CREATE TABLE dbo.hld_drills (
+  id          INT IDENTITY(1,1) PRIMARY KEY,
+  prompt_key  NVARCHAR(40)  NOT NULL,
+  started_ms  BIGINT        NOT NULL,
+  finished_ms BIGINT        NULL,
+  answers     NVARCHAR(MAX) NOT NULL,
+  checked     NVARCHAR(MAX) NOT NULL,
+  score       INT           NULL,
+  ai_feedback NVARCHAR(MAX) NULL,
+  cards       INT           NOT NULL CONSTRAINT DF_hld_drills_cards DEFAULT 0
+);
+GO
+
+-- Course assignments explained: which tasks you've marked "I understand this"
+IF OBJECT_ID('dbo.assignment_progress') IS NULL
+CREATE TABLE dbo.assignment_progress (
+  assignment_key NVARCHAR(40) NOT NULL,
+  task_id        NVARCHAR(10) NOT NULL,
+  understood     BIT          NOT NULL,
+  updated_ms     BIGINT       NOT NULL,
+  CONSTRAINT PK_assignment_progress PRIMARY KEY (assignment_key, task_id)
+);
+GO
+
+-- .NET track as weekly assignments: each day's "done when", and each week's objective / level / deliverable
+IF COL_LENGTH('dbo.project_tasks', 'done_when') IS NULL
+ALTER TABLE dbo.project_tasks ADD done_when NVARCHAR(400) NULL;
+GO
+IF OBJECT_ID('dbo.project_weeks') IS NULL
+CREATE TABLE dbo.project_weeks (
+  project_code NVARCHAR(40)  NOT NULL,
+  week_no      INT           NOT NULL,
+  title        NVARCHAR(150) NOT NULL,
+  objective    NVARCHAR(600) NULL,
+  level        NVARCHAR(30)  NULL,
+  deliverable  NVARCHAR(600) NULL,
+  CONSTRAINT PK_project_weeks PRIMARY KEY (project_code, week_no)
+);
+GO
+
+-- Detailed daily assignment brief (Markdown) per roadmap task, from server/data/briefs/<project_code>.json
+IF COL_LENGTH('dbo.project_tasks', 'brief') IS NULL
+ALTER TABLE dbo.project_tasks ADD brief NVARCHAR(MAX) NULL;
+GO
+
+-- AI news: a read tick separate from saved/hidden (status keeps new | saved | hidden; the old 'read' moves to read_ms)
+IF COL_LENGTH('dbo.ai_news', 'read_ms') IS NULL
+ALTER TABLE dbo.ai_news ADD read_ms BIGINT NULL;
+GO
+UPDATE dbo.ai_news SET read_ms = COALESCE(read_ms, fetched_ms), status = 'new' WHERE status = 'read';
+GO
+
+-- LinkedIn post ideas written from an AI news item (Stay updated -> Generate post): kept per article
+IF OBJECT_ID('dbo.ai_news_posts') IS NULL
+CREATE TABLE dbo.ai_news_posts (
+  id            INT IDENTITY(1,1) PRIMARY KEY,
+  news_id       INT            NOT NULL REFERENCES dbo.ai_news(id) ON DELETE CASCADE,
+  text          NVARCHAR(MAX)  NOT NULL,
+  first_comment NVARCHAR(1000) NULL,
+  image_prompt  NVARCHAR(2000) NULL,
+  image_alt     NVARCHAR(400)  NULL,
+  format        NVARCHAR(30)   NULL,
+  grounded      NVARCHAR(10)   NOT NULL DEFAULT 'summary', -- article | summary: what the AI read
+  created_ms    BIGINT         NOT NULL
+);
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ai_news_posts_news')
+CREATE INDEX IX_ai_news_posts_news ON dbo.ai_news_posts (news_id, created_ms DESC);
+GO

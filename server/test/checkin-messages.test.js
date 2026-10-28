@@ -8,7 +8,7 @@ const { buildContext, nextAction, slotTime, template, validate, writeMessage } =
 const SETTINGS = { strictness: 'standard', categories: ['dsa', 'learning', 'project', 'workout', 'nutrition'] };
 const INSULT = /\b(lazy|loser|pathetic|useless|worthless|failure|hopeless|never make it)\b/i;
 
-function ctxFor({ level, misses = {}, statuses = {}, mvd = [], date = '2026-10-14', strictness = 'standard', kind = 'evening', commitments = [], yesterday = null, reason = null }) {
+function ctxFor({ level, misses = {}, statuses = {}, mvd = [], date = '2026-10-14', strictness = 'standard', kind = 'evening', commitments = [], yesterday = null, reason = null, game = null }) {
   const results = Object.fromEntries(SETTINGS.categories.map((c) => [c, { status: statuses[c] || 'met', detail: '' }]));
   return buildContext({
     kind,
@@ -19,6 +19,7 @@ function ctxFor({ level, misses = {}, statuses = {}, mvd = [], date = '2026-10-1
     shields: { available: 1 },
     commitments,
     settings: { ...SETTINGS, strictness },
+    game,
   });
 }
 const lastLine = (t) => t.trim().split('\n').at(-1);
@@ -60,6 +61,12 @@ describe('the voice', () => {
     const comeback = ctxFor({ level: 0, yesterday: { results: { dsa: { status: 'missed' } } } });
     assert.match(template(comeback), /Comeback on DSA\. \+20 XP/);
     assert.match(template(ctxFor({ ...base, reason: 'office release ran late' })), /You said: "office release ran late"/);
+  });
+
+  test('the camera focus guard: the evening message reports today’s focus %', () => {
+    const game = { focusToday: { sessions: 2, focusedMin: 45, distractedMin: 15, totalMin: 60, pct: 75 } };
+    assert.match(template(ctxFor({ level: 0, game })), /On camera you focused 45 of 60 minutes \(75%\)\./);
+    assert.doesNotMatch(template(ctxFor({ level: 0 })), /On camera/, 'no camera sessions: no line');
   });
 
   test('before the plan starts nothing counts: a plain "not started" message, never invented misses, no AI call', async () => {

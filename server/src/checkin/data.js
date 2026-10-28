@@ -11,7 +11,7 @@ const { CATEGORIES, SHIELD_BANK, judge, escalate, perfectWeek } = require('./rul
 const { planPace } = require('./pace');
 
 const BACKFILL_DAYS = 14;
-const LEARN_TRACKS = ['ai', 'lld', 'hld'];
+const LEARN_TRACKS = ['ai', 'lld', 'hld', 'judge'];
 const LESSON_MINUTES = new Map([
   ...ROADMAP.levels.flatMap((lv) => lv.lessons.map((x) => [`ai|${x.id}`, x.minutes])),
   ...Object.values(MODULES).flatMap((m) => m.roadmap.levels.flatMap((lv) => lv.lessons.map((x) => [`${m.key}|${x.id}`, x.minutes]))),

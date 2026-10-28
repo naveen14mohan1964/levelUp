@@ -40,7 +40,7 @@ describe('UI in Microsoft Edge', { skip, timeout: 900_000 }, () => {
 
   // ~22 pages × 2 widths at ~3–5 s each on a busy laptop, so this one test gets a much longer cap than the others.
   test('every page renders without errors (desktop and phone width)', { timeout: 420_000 }, async () => {
-    const pages = ['/', '/dsa', '/dsa/day/2026-10-05', '/dsa/problems', '/dsa/review', '/dsa/plan', '/node', '/node/roadmap', '/dotnet', '/react/roadmap', '/workout', '/meals', '/meals/day/2026-10-05', '/progress', '/mentor', '/linkedin', '/linkedin/planner', '/linkedin/outreach', '/linkedin/outreach?view=lists', '/linkedin/outreach?view=people', '/linkedin/activity', '/linkedin/settings', '/linkedin/referrals', '/linkedin/referrals?view=companies', '/linkedin/referrals?view=pipeline', '/linkedin/referrals?view=insights', '/linkedin/referrals?view=import', '/settings'];
+    const pages = ['/', '/dsa', '/dsa/day/2026-10-05', '/dsa/problems', '/dsa/review', '/dsa/plan', '/node', '/node/roadmap', '/dotnet', '/react/roadmap', '/workout', '/meals', '/meals/day/2026-10-05', '/progress', '/mentor', '/linkedin', '/linkedin/planner', '/linkedin/outreach', '/linkedin/outreach?view=lists', '/linkedin/outreach?view=people', '/linkedin/activity', '/linkedin/settings', '/linkedin/referrals', '/linkedin/referrals?view=companies', '/linkedin/referrals?view=pipeline', '/linkedin/referrals?view=insights', '/linkedin/referrals?view=import', '/settings', '/cards', '/report', '/report/2026-10-05', '/dsa/patterns', '/dsa/companies', '/hld/drills'];
     for (const p of pages) {
       for (const width of [1280, 390]) {
         const page = await open(p, { width });
@@ -81,8 +81,8 @@ describe('UI in Microsoft Edge', { skip, timeout: 900_000 }, () => {
     await page.close();
   });
 
-  test('Node lesson: learn/build/checkpoint steps with exact doc links', { timeout: 90_000 }, async () => {
-    const page = await open('/node/day/2026-10-09');
+  test('Node lesson (week 23): learn/build/checkpoint steps with exact doc links', { timeout: 90_000 }, async () => {
+    const page = await open('/node/day/2027-03-12'); // Node is weeks 23–28 (after .NET and React): W23 Friday
     await page.getByText('Weekly checkpoint').waitFor();
     const hrefs = await page.locator('.step .doc-link').evaluateAll((as) => as.map((a) => a.href));
     assert.ok(hrefs.includes('https://expressjs.com/en/guide/error-handling/'), hrefs.join(', '));
@@ -93,8 +93,10 @@ describe('UI in Microsoft Edge', { skip, timeout: 900_000 }, () => {
     const page = await open('/workout/day/2026-10-05'); // a Monday: Strength A
     const first = page.locator('.exercises li').filter({ hasText: /push-up/i }).first();
     await first.getByRole('button', { name: '▶ How to do it' }).click();
-    await first.locator('.ex-demo img').first().waitFor();
-    assert.ok(await first.locator('.ex-demo img').first().evaluate((img) => img.complete && img.naturalWidth > 0), 'demo image loaded');
+    // a photo demo (free-exercise-db) or, for moves without one (e.g. wall push-up), the animated stick figure
+    const demo = first.locator('.ex-demo img, .stick-demo svg').first();
+    await demo.waitFor();
+    assert.ok(await demo.evaluate((el) => (el.tagName === 'IMG' ? el.complete && el.naturalWidth > 0 : el.getBBox().width > 0)), 'demo loaded');
     assert.equal(await first.locator('.ex-cues li').count(), 3);
     assert.equal(await first.locator('input[type=checkbox]').isChecked(), false); // the button didn't tick it
     await page.getByText('Recovery burns fat too').waitFor(); // sleep ring
@@ -157,7 +159,11 @@ describe('UI in Microsoft Edge', { skip, timeout: 900_000 }, () => {
 
   test('LinkedIn posts: write a draft, approve it for its slot, and see it scheduled; kill switch toggles', { timeout: 90_000 }, async () => {
     const page = await open('/linkedin/planner');
-    await page.getByRole('button', { name: 'Next week' }).click(); // so both slots are in the future
+    // so both slots are in the future; wait for next week's slots, or "Write my own" lands on the old week's re-rendering card
+    const nextWeek = page.waitForResponse((r) => r.url().includes('/api/linkedin/planner') && r.ok());
+    await page.getByRole('button', { name: 'Next week' }).click();
+    await nextWeek;
+    await page.waitForTimeout(300);
     const slot = page.locator('.li-slot').first();
     await slot.getByRole('button', { name: '✍️ Write my own' }).click();
     await slot.getByPlaceholder('Write your post…').fill('Testing my planner: week 2 of DSA starts with two pointers. #DSA');

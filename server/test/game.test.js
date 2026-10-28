@@ -120,7 +120,7 @@ describe('game API', () => {
   test('fresh start: level 1 player, no streak, every roadmap starts at level 1 lesson 1', async () => {
     const g = (await api('GET', '/game')).body;
     assert.deepEqual([g.player.level, g.player.total, g.streak.current, g.focus, g.celebrate], [1, 0, 0, null, []]);
-    assert.deepEqual(g.tracks.map((t) => t.key), ['ai', 'dsa', 'lld', 'hld', 'react', 'dotnet', 'node']);
+    assert.deepEqual(g.tracks.map((t) => t.key), ['ai', 'dsa', 'lld', 'hld', 'judge', 'react', 'dotnet', 'node']);
     const ai = g.tracks[0];
     assert.deepEqual([ai.next.ref, ai.next.level, ai.currentLevel, ai.total, ai.levelsTotal, ai.levels], ['L1-1', 1, 1, 69, 14, undefined]);
     assert.ok(g.tracks.every((t) => t.next && t.next.level === 1 && t.total > 0), 'every roadmap has a first lesson');
@@ -166,6 +166,25 @@ describe('game API', () => {
     await api('POST', '/focus/start', { track: 'ai', ref: 'L1-1', minutes: 5 });
     await sqlQuery('UPDATE dbo.focus_sessions SET started_ms = started_ms - 20 * 60000 WHERE ended_ms IS NULL');
     assert.equal((await api('POST', '/focus/stop')).body.stopped.minutes, 20);
+  });
+
+  test('camera focus guard: heartbeats store distracted time; only focused minutes count; today\'s focus %', async () => {
+    assert.deepEqual((await api('POST', '/focus/stats', { distractedSec: 60 })).body, { ok: false, running: false }, 'no timer running: nothing to update');
+    await api('POST', '/focus/start', { track: 'ai', ref: 'L1-1', minutes: 25 });
+    assert.equal((await api('POST', '/focus/stats', { distractedSec: -1 })).status, 400);
+    assert.equal((await api('POST', '/focus/stats', { distractedSec: 'lots' })).status, 400);
+    await sqlQuery('UPDATE dbo.focus_sessions SET started_ms = started_ms - 20 * 60000 WHERE ended_ms IS NULL');
+    assert.equal((await api('POST', '/focus/stats', { distractedSec: 130 })).status, 200);
+    let g = (await api('GET', '/game')).body;
+    assert.deepEqual([g.focus.elapsedMin, g.focus.camera, g.focus.distractedSec], [18, true, 130], 'running: 20 min - 2 distracted');
+    // the final count on stop wins over the last heartbeat
+    const s = (await api('POST', '/focus/stop', { distractedSec: 300, camera: true })).body;
+    assert.deepEqual([s.stopped.minutes, s.stopped.distractedSec, s.stopped.camera], [15, 300, true]);
+    assert.deepEqual(s.game.focusToday, { sessions: 1, focusedMin: 15, distractedMin: 5, totalMin: 20, pct: 75 });
+    // a session without the camera doesn't change the %
+    await api('POST', '/focus/start', { track: 'ai', ref: 'L1-1', minutes: 5 });
+    g = (await api('POST', '/focus/stop', { auto: true })).body.game;
+    assert.equal(g.focusToday.pct, 75);
   });
 
   test('finishing a level: XP, celebration (once), and the next level becomes current', async () => {

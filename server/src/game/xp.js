@@ -3,16 +3,18 @@
 // something takes its XP back, a LeetCode sync earns XP, and progress made before this existed counts too.
 const { localDay } = require('./days');
 
-const XP = { start: 5, lesson: 25, level: 150, problem: { E: 15, M: 25, H: 40 }, comeback: 20 };
+const XP = { start: 5, lesson: 25, level: 150, problem: { E: 15, M: 25, H: 40 }, comeback: 20, card: 2 };
+const CARD_XP_PER_DAY = 10; // reviews that earn XP each day (so a 200-card binge can't farm levels)
 
 /**
  * @param tracks    progressed tracks (see progression.js)
  * @param problems  [{ id, solvedMs, difficulty }] solved DSA problems (planned or added by you)
  * @param sessions  [{ track, lesson_ref, started_ms }] focus sessions
  * @param comebacks [{ ms, date, category }] goals completed the day after missing them (the Mentor's comeback bonus)
- * @returns [{ ms, xp, kind: start | lesson | level | problem | comeback, track, ref }]
+ * @param reviews   [{ ms }] flashcard reviews
+ * @returns [{ ms, xp, kind: start | lesson | level | problem | comeback | card, track, ref }]
  */
-function xpEvents({ tracks, problems, sessions, comebacks = [] }) {
+function xpEvents({ tracks, problems, sessions, comebacks = [], reviews = [] }) {
   const events = [];
   for (const t of tracks) {
     for (const lv of t.levels) {
@@ -30,6 +32,13 @@ function xpEvents({ tracks, problems, sessions, comebacks = [] }) {
     events.push({ ms: s.started_ms, xp: XP.start, kind: 'start', track: s.track, ref: s.lesson_ref || null });
   }
   for (const c of comebacks) events.push({ ms: c.ms, xp: XP.comeback, kind: 'comeback', track: c.category, ref: `comeback-${c.date}` });
+  const perDay = new Map();
+  for (const r of reviews) {
+    const day = localDay(r.ms);
+    const n = (perDay.get(day) || 0) + 1;
+    perDay.set(day, n);
+    if (n <= CARD_XP_PER_DAY) events.push({ ms: r.ms, xp: XP.card, kind: 'card', track: 'cards', ref: `card-${r.ms}` });
+  }
   return events;
 }
 
@@ -42,4 +51,4 @@ function playerLevel(total) {
   return { level, total, xpInLevel: rest, xpForNext: need };
 }
 
-module.exports = { XP, xpEvents, playerLevel };
+module.exports = { XP, CARD_XP_PER_DAY, xpEvents, playerLevel };

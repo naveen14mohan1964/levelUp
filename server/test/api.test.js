@@ -182,7 +182,7 @@ describe('daily timeline', () => {
 
 describe('project roadmaps', () => {
   test('each area returns its projects with learn topics, exact doc links and checkpoints', async () => {
-    for (const [area, n] of [['node', 36], ['dotnet', 48], ['react', 47]]) {
+    for (const [area, n] of [['node', 36], ['dotnet', 84], ['react', 47]]) {
       const { body } = await api('GET', `/projects/${area}`);
       const tasks = body.flatMap((p) => p.weeks.flatMap((w) => w.tasks));
       assert.equal(tasks.length, n, area);

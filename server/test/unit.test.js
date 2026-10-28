@@ -36,7 +36,7 @@ describe('plan data (generated from STUDY_PLAN.md)', () => {
   test('project roadmaps: learn + build per day and a checkpoint every week', () => {
     const by = Object.fromEntries(plan.projects.map((p) => [p.code, p.tasks]));
     assert.equal(by.snippetvault.length, 36);
-    assert.equal(by['jobhunt-api'].length, 48);
+    assert.equal(by['jobhunt-api'].length, 84); // 14 assignment-weeks: 5 days + a checkpoint each
     assert.equal(by['jobhunt-web'].length, 42);
     assert.equal(by.portfolio.length, 5);
     for (const code of ['snippetvault', 'jobhunt-api', 'jobhunt-web']) {
@@ -59,10 +59,14 @@ describe('plan data (generated from STUDY_PLAN.md)', () => {
     }
   });
 
-  test('doc-links.js covers every week with exactly 6 DSA days and 5 project days', () => {
+  test('doc-links.js covers every DSA week (6 days) and every project week (5 days, per project)', () => {
     for (let w = 1; w <= 13; w++) assert.equal(links.DSA_DAY_LINKS[w].length, 6, `DSA week ${w}`);
-    for (let w = 1; w <= 21; w++) assert.equal(links.PROJECT_LEARN_LINKS[w].length, 5, `project week ${w}`);
-    const all = [...Object.values(links.DSA_DAY_LINKS).flat(2), ...Object.values(links.PROJECT_LEARN_LINKS).flat(2)];
+    // per project: .NET weeks 1–14, React 15–21, Node 23–28
+    const weeks = { 'jobhunt-api': [1, 14], 'jobhunt-web': [15, 21], snippetvault: [23, 28] };
+    for (const [code, [from, to]] of Object.entries(weeks)) {
+      for (let w = from; w <= to; w++) assert.equal(links.PROJECT_LEARN_LINKS[code][w]?.length, 5, `${code} week ${w}`);
+    }
+    const all = [...Object.values(links.DSA_DAY_LINKS).flat(2), ...Object.values(links.PROJECT_LEARN_LINKS).flatMap((p) => Object.values(p)).flat(2)];
     for (const l of all) assert.doesNotThrow(() => new URL(l.url), l.url);
   });
 
