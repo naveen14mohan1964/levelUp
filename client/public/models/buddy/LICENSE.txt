@@ -1,0 +1,5 @@
+Character body, hair and eyebrows: "Universal Base Characters" (Standard) by Quaternius.
+Animations (9 clips, re-exported to clips.json): "Universal Animation Library" (Standard) by Quaternius.
+Both: CC0 1.0 Universal (public domain), https://creativecommons.org/publicdomain/zero/1.0/
+https://quaternius.com
+The ninja outfit, headband, emblem and hair spikes are added in code (components/BuddyHuman.jsx).
