@@ -8,6 +8,8 @@ const TABS = [
   { to: '/dsa/problems', label: 'Problems', match: (p) => p.startsWith('/dsa/problems') },
   { to: '/dsa/review', label: 'Review', match: (p) => p.startsWith('/dsa/review'), badge: true },
   { to: '/dsa/plan', label: 'Roadmap', match: (p) => p.startsWith('/dsa/plan') },
+  { to: '/dsa/patterns', label: 'Patterns', match: (p) => p.startsWith('/dsa/patterns') },
+  { to: '/dsa/companies', label: 'Companies', match: (p) => p.startsWith('/dsa/companies') },
 ];
 
 export default function DsaLayout() {

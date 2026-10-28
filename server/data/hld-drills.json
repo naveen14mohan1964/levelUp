@@ -1,0 +1,221 @@
+{
+  "about": "35-minute system design drills. Each step lists the key points a strong answer usually covers; after the drill you tick what you covered. Original prompts written for this app.",
+  "steps": [
+    { "key": "requirements", "label": "Requirements", "minutes": 5, "ask": "Functional must-haves, out of scope, and non-functional goals (latency, availability, consistency, scale)." },
+    { "key": "estimates", "label": "Estimates", "minutes": 5, "ask": "Users, requests per second (read vs write), storage per year, bandwidth. Round numbers are fine." },
+    { "key": "api", "label": "API", "minutes": 5, "ask": "The main endpoints or events: inputs, outputs, status codes, idempotency, pagination." },
+    { "key": "data", "label": "Data model", "minutes": 7, "ask": "Entities, keys, which database and why, indexes, access patterns." },
+    { "key": "scaling", "label": "Scaling", "minutes": 8, "ask": "High-level boxes, caching, partitioning, replication, queues, the hot path, failure handling." },
+    { "key": "tradeoffs", "label": "Trade-offs", "minutes": 5, "ask": "What you chose and gave up, bottlenecks, what you'd do next, how you'd monitor it." }
+  ],
+  "prompts": [
+    {
+      "key": "url-shortener", "title": "URL shortener", "level": "starter",
+      "brief": "Design a service like bit.ly: turn long URLs into short links and redirect fast.",
+      "scale": "100 M new links / month, 10:1 reads to writes",
+      "points": {
+        "requirements": ["Create short link, redirect, optional custom alias and expiry", "Redirect latency is the key NFR (fast, highly available)", "Analytics/out of scope stated explicitly"],
+        "estimates": ["~40 writes/s and ~400 reads/s average, peaks higher", "Storage: ~500 bytes/link → tens of GB per year", "Read-heavy: plan caching"],
+        "api": ["POST /links {longUrl, alias?, expiry?} → shortCode", "GET /{code} → 301/302 redirect (and why you chose one)", "Rate limiting / abuse protection on create"],
+        "data": ["code → longUrl, createdAt, expiresAt, owner", "Key-value or wide-column store keyed by code", "Code generation: base62 counter vs hash vs pre-generated key pool, collision handling"],
+        "scaling": ["Cache hot codes (LRU, Redis) in front of the store", "Partition by code; replicas for reads", "Stateless app servers behind a load balancer"],
+        "tradeoffs": ["301 (cacheable, less analytics) vs 302", "Counter (unique, needs coordination) vs hash (collisions)", "Expired link cleanup (lazy vs batch)"]
+      }
+    },
+    {
+      "key": "rate-limiter", "title": "Rate limiter", "level": "starter",
+      "brief": "Design an API rate limiter that allows N requests per user per window across many servers.",
+      "scale": "1 M users, 50 k requests/s across 20 API servers",
+      "points": {
+        "requirements": ["Limit per user / API key / IP, configurable rules", "Low added latency, fails open or closed (decide)", "Return 429 with retry-after"],
+        "estimates": ["Counter state per active key fits in memory (MBs to a few GB)", "Every request does one check: the limiter must be ~1 ms"],
+        "api": ["Middleware/sidecar check before the handler", "Response headers: limit, remaining, reset", "Rule config API or file"],
+        "data": ["Algorithm: token bucket vs sliding window log vs sliding window counter", "Shared store (Redis) with atomic ops / Lua script", "Key TTL equal to the window"],
+        "scaling": ["Central store vs local counters synced periodically", "Shard keys across Redis nodes", "Handle the store being down (fail open + alert)"],
+        "tradeoffs": ["Accuracy vs latency (local approximation)", "Fixed window burst at boundaries", "Per-region limits vs global"]
+      }
+    },
+    {
+      "key": "chat", "title": "1:1 and group chat", "level": "core",
+      "brief": "Design a chat app like WhatsApp with 1:1 and small group messages, online status and delivery receipts.",
+      "scale": "50 M daily users, 2 B messages / day",
+      "points": {
+        "requirements": ["Send/receive in real time, history, groups up to ~200", "Delivered/read receipts, online presence", "Messages must not be lost; ordering per conversation"],
+        "estimates": ["~25 k messages/s average, much higher peaks", "Storage: ~100 bytes × 2 B/day → ~200 GB/day", "Millions of concurrent connections"],
+        "api": ["Persistent connection (WebSocket) for send/receive", "REST for history with cursor pagination", "Client message id for idempotent retries"],
+        "data": ["messages partitioned by conversation id, sorted by time/sequence", "Wide-column store (Cassandra-like) for write-heavy history", "Per-user inbox / last-read pointer"],
+        "scaling": ["Connection gateway servers + a session registry (user → server)", "Queue between gateway and storage; fan-out for groups", "Offline users: store and push notification"],
+        "tradeoffs": ["Per-conversation ordering vs global ordering", "Fan-out on write for groups vs read", "End-to-end encryption limits server features"]
+      }
+    },
+    {
+      "key": "news-feed", "title": "News feed", "level": "core",
+      "brief": "Design a social news feed: users post, follow others, and see a ranked feed.",
+      "scale": "300 M users, average 200 follows, some celebrities with 50 M followers",
+      "points": {
+        "requirements": ["Publish post, follow/unfollow, home feed with pagination", "Feed loads fast; slight staleness is fine", "Ranking (chronological first, then ranked)"],
+        "estimates": ["Feed reads far exceed posts", "Fan-out cost = posts × followers: celebrities dominate", "Feed cache size per user (e.g. last 500 ids)"],
+        "api": ["POST /posts", "GET /feed?cursor=", "POST /follow/{userId}"],
+        "data": ["posts table, follow graph (follower → followee)", "Precomputed feed lists in cache (user → post ids)", "Media in object storage + CDN"],
+        "scaling": ["Fan-out on write for normal users", "Fan-out on read (pull) for celebrities: hybrid", "Async workers via queue; cache hydration"],
+        "tradeoffs": ["Push vs pull vs hybrid", "Freshness vs cost", "Ranking signals and where they run"]
+      }
+    },
+    {
+      "key": "notifications", "title": "Notification service", "level": "core",
+      "brief": "Design a service that sends push, SMS and email notifications for other teams' events.",
+      "scale": "10 M notifications / day, bursts of 1 M in minutes",
+      "points": {
+        "requirements": ["Multiple channels, templates, user preferences / opt-out", "At-least-once delivery without spamming duplicates", "Scheduling and rate limits per user"],
+        "estimates": ["Average ~120/s, bursts of thousands per second", "Third-party provider limits are the bottleneck"],
+        "api": ["POST /notify {userId, template, data, channels, idempotencyKey}", "Preferences API", "Status/webhook callbacks from providers"],
+        "data": ["notification log with status per channel", "user preferences and device tokens", "templates with versions"],
+        "scaling": ["Queue per channel; worker pools; retries with backoff + dead-letter queue", "Dedup by idempotency key", "Priority lanes (OTP before marketing)"],
+        "tradeoffs": ["Exactly-once is impractical: idempotency instead", "Provider failover vs cost", "Batching vs latency"]
+      }
+    },
+    {
+      "key": "file-storage", "title": "File storage and sync", "level": "core",
+      "brief": "Design a Dropbox-like service: upload files, sync across devices, share links.",
+      "scale": "50 M users, 10 GB each on average",
+      "points": {
+        "requirements": ["Upload/download, sync changes across devices, sharing", "Large files resumable; no data loss", "Version history"],
+        "estimates": ["~500 PB total storage: object storage, not a DB", "Most files unchanged: dedupe saves a lot"],
+        "api": ["Chunked/resumable upload (init, put chunk, complete)", "Changes feed / long poll for sync", "Pre-signed URLs for direct upload/download"],
+        "data": ["Metadata DB: files, versions, chunk lists, ownership", "Chunks in object storage keyed by content hash", "Per-device sync cursor"],
+        "scaling": ["Split files into chunks, upload only changed chunks", "Metadata sharded by user/namespace", "CDN for downloads; notification service for sync"],
+        "tradeoffs": ["Conflict handling (last write wins vs conflicted copy)", "Dedupe and encryption interplay", "Strong consistency for metadata, eventual for chunks"]
+      }
+    },
+    {
+      "key": "ride-hailing", "title": "Ride hailing (matching)", "level": "advanced",
+      "brief": "Design the core of an Uber-like app: drivers send locations, riders request, the system matches them.",
+      "scale": "1 M active drivers sending a location every 4 s",
+      "points": {
+        "requirements": ["Driver location updates, rider request, match, trip state", "Matching latency in seconds; no driver double-booked", "ETA and pricing out of scope or simplified"],
+        "estimates": ["~250 k location writes/s: keep in memory, not a DB per write", "Only latest location matters for matching"],
+        "api": ["Driver: location updates over a persistent connection", "Rider: POST /rides, then status updates", "Driver accept/decline with timeout"],
+        "data": ["Geospatial index (geohash / quadtree / H3 cells) in memory", "Trips table with a state machine", "Location history to cheap storage asynchronously"],
+        "scaling": ["Partition by city/region cell", "Matching service queries nearby cells, offers to best driver", "Lock/lease on a driver while offered"],
+        "tradeoffs": ["Cell size vs search cost", "Consistency of driver state vs speed", "Hot spots (airports, events)"]
+      }
+    },
+    {
+      "key": "autocomplete", "title": "Search autocomplete", "level": "core",
+      "brief": "Design type-ahead suggestions: as the user types, show the top 5 completions.",
+      "scale": "10 B queries / day, suggestions within 100 ms",
+      "points": {
+        "requirements": ["Top-k suggestions per prefix, ranked by popularity", "Very low latency; updates can lag (hourly/daily)", "Filtering (offensive terms), personalisation optional"],
+        "estimates": ["Several keystrokes per query → very high read QPS", "Prefix index size: millions of prefixes × top-5"],
+        "api": ["GET /suggest?q=prefix", "Client debouncing and caching"],
+        "data": ["Trie with top-k cached at each node, or prefix → top-k table", "Query logs aggregated offline into counts"],
+        "scaling": ["Serve from memory; shard by prefix range", "Rebuild index in batch, swap atomically", "CDN/browser cache for popular prefixes"],
+        "tradeoffs": ["Freshness vs rebuild cost (trending terms)", "Memory vs depth of precomputed top-k", "Personalised vs global ranking"]
+      }
+    },
+    {
+      "key": "payments", "title": "Payment system", "level": "advanced",
+      "brief": "Design a payment flow for a marketplace: charge buyers through a payment provider and pay sellers.",
+      "scale": "1 M payments / day, money must never be lost or double charged",
+      "points": {
+        "requirements": ["Charge, refund, payouts; status visible to users", "Correctness over speed: no double charge, auditable", "Integrate with external PSPs"],
+        "estimates": ["Low QPS (~12/s avg) but strict consistency", "Ledger grows forever: plan archival"],
+        "api": ["POST /payments with idempotency key", "Webhooks from the PSP (verify signatures)", "GET /payments/{id} status"],
+        "data": ["Double-entry ledger (immutable entries)", "Payment state machine (created → authorised → captured → settled/failed)", "Relational DB with transactions"],
+        "scaling": ["Async processing with retries and idempotency", "Reconciliation job against PSP reports", "Outbox pattern for events"],
+        "tradeoffs": ["Strong consistency vs availability", "Sync vs async confirmation to the user", "Handling unknown states (timeouts) safely"]
+      }
+    },
+    {
+      "key": "video-streaming", "title": "Video streaming", "level": "advanced",
+      "brief": "Design a YouTube-like service: upload videos and stream them smoothly on any network.",
+      "scale": "500 hours uploaded / minute, 1 B views / day",
+      "points": {
+        "requirements": ["Upload, transcode, stream, basic metadata/search", "Smooth playback (adaptive bitrate), global", "Views counter can be approximate"],
+        "estimates": ["Huge storage (multiple resolutions per video)", "Bandwidth dominated by streaming: CDN essential"],
+        "api": ["Resumable upload", "GET manifest (HLS/DASH) → segment URLs", "Metadata and view-count endpoints"],
+        "data": ["Raw + transcoded segments in object storage", "Metadata DB (video, owner, status)", "View counts aggregated asynchronously"],
+        "scaling": ["Transcoding pipeline: queue + workers (DAG of tasks)", "CDN with popular content pushed to edges", "Adaptive bitrate in the client"],
+        "tradeoffs": ["Pre-transcode all resolutions vs on demand for long tail", "CDN cost vs latency", "Exact vs approximate counters"]
+      }
+    },
+    {
+      "key": "web-crawler", "title": "Web crawler", "level": "advanced",
+      "brief": "Design a crawler that fetches a billion pages a month for a search index.",
+      "scale": "1 B pages / month, politeness per domain",
+      "points": {
+        "requirements": ["Fetch, parse, extract links, store content", "Politeness (robots.txt, per-host rate)", "Avoid duplicates and traps"],
+        "estimates": ["~400 pages/s; ~100 KB/page → ~100 TB/month", "DNS and network are the bottlenecks"],
+        "api": ["Internal: seed URLs in, content + metadata out to the indexer"],
+        "data": ["URL frontier with priority + per-host queues", "Seen-URL set (Bloom filter) and content hashes for dedupe", "Content in object storage"],
+        "scaling": ["Distributed workers partitioned by host hash", "DNS cache; async I/O", "Recrawl scheduling by change frequency"],
+        "tradeoffs": ["Freshness vs coverage", "Bloom filter false positives", "Handling JS-heavy pages"]
+      }
+    },
+    {
+      "key": "ticket-booking", "title": "Ticket booking", "level": "core",
+      "brief": "Design seat booking for movies or concerts where thousands rush for the same seats.",
+      "scale": "Spikes of 100 k users for one popular show",
+      "points": {
+        "requirements": ["Browse shows, pick seats, hold, pay, confirm", "Never double-book a seat", "Fairness under rush (queue/waiting room)"],
+        "estimates": ["Normal load low, flash spikes huge", "Seats per show small: contention, not volume, is the issue"],
+        "api": ["GET seat map", "POST hold {seats} → holdId with expiry", "POST confirm {holdId, payment}"],
+        "data": ["Seats with status (free/held/booked) and version", "Holds with TTL", "Relational DB with row locks or optimistic concurrency"],
+        "scaling": ["Virtual waiting room to meter traffic", "Cache seat map, but book against the DB", "Hold expiry job releases seats"],
+        "tradeoffs": ["Pessimistic vs optimistic locking", "Hold duration vs abandoned carts", "Consistency over availability for booking"]
+      }
+    },
+    {
+      "key": "distributed-cache", "title": "Distributed cache", "level": "advanced",
+      "brief": "Design a Redis/Memcached-like distributed cache used by many services.",
+      "scale": "1 M ops/s, 2 TB of data",
+      "points": {
+        "requirements": ["get/set/delete with TTL, eviction", "Sub-millisecond latency, high availability", "Clients across many services"],
+        "estimates": ["2 TB / 64 GB per node → ~40 nodes plus replicas", "Network round trip dominates latency"],
+        "api": ["GET/SET/DEL key with TTL", "Client library with node discovery"],
+        "data": ["In-memory hash table + LRU/LFU eviction", "Consistent hashing with virtual nodes"],
+        "scaling": ["Add/remove nodes with minimal remapping", "Primary–replica per shard, failover", "Hot keys: replicate or local cache"],
+        "tradeoffs": ["Cache-aside vs write-through", "Consistency with the database (stale reads)", "Thundering herd on expiry"]
+      }
+    },
+    {
+      "key": "job-scheduler", "title": "Distributed job scheduler", "level": "advanced",
+      "brief": "Design a scheduler that runs millions of delayed and recurring jobs reliably.",
+      "scale": "10 M jobs / day, many at the top of the hour",
+      "points": {
+        "requirements": ["One-off and cron jobs, retries, status", "At-least-once execution, no job lost", "Visibility: history and failures"],
+        "estimates": ["~120 jobs/s average, big spikes on the hour", "Job metadata small; execution time varies"],
+        "api": ["POST /jobs {schedule, payload, retries}", "GET /jobs/{id} status and runs", "Cancel/pause"],
+        "data": ["jobs table indexed by next_run_time", "runs history", "Leases for claimed jobs"],
+        "scaling": ["Pollers claim due jobs with leases (SELECT … FOR UPDATE SKIP LOCKED) or time-bucketed queues", "Workers pull from a queue", "Jitter to spread top-of-hour spikes"],
+        "tradeoffs": ["At-least-once needs idempotent jobs", "DB polling vs timer wheel", "Single leader vs partitioned schedulers"]
+      }
+    },
+    {
+      "key": "leaderboard", "title": "Real-time leaderboard", "level": "starter",
+      "brief": "Design a live leaderboard for a game: update scores and show top 100 and a player's rank.",
+      "scale": "10 M players, 50 k score updates/s",
+      "points": {
+        "requirements": ["Update score, top-N, a player's rank and neighbours", "Near real-time; ties handled", "Daily/weekly boards"],
+        "estimates": ["10 M entries fit in memory", "High write rate: in-memory structure"],
+        "api": ["POST /scores {player, delta}", "GET /leaderboard?top=100", "GET /leaderboard/{player}"],
+        "data": ["Sorted set (Redis ZSET) per board", "Durable score log in a DB"],
+        "scaling": ["Shard by board; for huge boards, score-range buckets", "Cache top-N", "Rebuild from the log on failure"],
+        "tradeoffs": ["Exact global rank vs approximate", "Single sorted set limits", "Time-windowed boards and resets"]
+      }
+    },
+    {
+      "key": "metrics", "title": "Metrics monitoring", "level": "advanced",
+      "brief": "Design a monitoring system that collects metrics from thousands of servers, graphs them and alerts.",
+      "scale": "10 k hosts × 1 k metrics every 10 s",
+      "points": {
+        "requirements": ["Ingest, store, query time series, alert on rules", "Recent data fast; old data downsampled", "Alerting must keep working during incidents"],
+        "estimates": ["~1 M data points/s", "Compression matters (delta/gorilla encoding)"],
+        "api": ["Agents push (or server pulls) metrics", "Query API with time range + aggregation", "Alert rule configuration"],
+        "data": ["Time-series DB: series id + timestamp + value", "Retention tiers with downsampling", "Labels/tags index"],
+        "scaling": ["Ingestion via queue (Kafka) to writers", "Shard by series id", "Alert evaluator separate from query path"],
+        "tradeoffs": ["Push vs pull", "Cardinality explosion from labels", "Precision vs storage cost"]
+      }
+    }
+  ]
+}

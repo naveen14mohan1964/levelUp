@@ -1,0 +1,71 @@
+{
+  "about": "Typical interview focus by company type: an ESTIMATE from common public interview reports (round structures, frequently reported question themes), not data about any single company. Teams differ; check recent reports for the exact team before you apply. Edit this file to tune it: weights split readiness between DSA, HLD, LLD and AI; pattern emphasis 3 = asked a lot, 2 = often, 1 = sometimes (every other plan pattern counts as 1); hld / lld / ai list the roadmap levels that matter most.",
+  "readyAt": { "1": 75, "2": 65, "3": 55 },
+  "profiles": [
+    {
+      "key": "bigtech", "label": "Big Tech product",
+      "categories": ["Big Tech"],
+      "rounds": "2–4 DSA rounds (medium–hard), 1 system design, 1 behavioural",
+      "weights": { "dsa": 0.6, "hld": 0.25, "lld": 0.15 },
+      "patterns": { "Graphs": 3, "Dynamic Programming": 3, "Binary Tree": 3, "Binary Search": 2, "Sliding Window": 2, "Two Pointers": 2, "Heap": 2, "Backtracking": 2, "Trie": 2, "Union-Find": 2, "Shortest Path": 2, "Monotonic Stack": 2, "Greedy": 2 },
+      "hld": [2, 3, 5, 6, 7, 8], "lld": [2, 4, 6, 8, 9]
+    },
+    {
+      "key": "quant", "label": "Trading & quant",
+      "categories": ["Trading & Quant"],
+      "rounds": "hard DSA + maths/probability puzzles, low-level and concurrency questions",
+      "weights": { "dsa": 0.75, "hld": 0.05, "lld": 0.2 },
+      "patterns": { "Dynamic Programming": 3, "Basics & Math": 3, "Bit Manipulation": 3, "Graphs": 2, "Heap": 2, "Binary Search": 2, "Advanced": 2, "Greedy": 2 },
+      "hld": [5, 6], "lld": [1, 2, 7]
+    },
+    {
+      "key": "fintech", "label": "Fintech & banking tech",
+      "categories": ["Fintech", "Banking & Finance Tech"],
+      "rounds": "DSA (medium), machine coding / LLD, system design with consistency and payments",
+      "weights": { "dsa": 0.45, "hld": 0.25, "lld": 0.3 },
+      "patterns": { "Arrays": 2, "Hashing": 2, "Strings": 2, "Sliding Window": 2, "Two Pointers": 2, "Heap": 2, "Graphs": 2, "Dynamic Programming": 2, "Intervals": 2 },
+      "hld": [2, 3, 4, 5, 6, 8], "lld": [2, 4, 6, 7, 8, 9]
+    },
+    {
+      "key": "product", "label": "Consumer product (e-commerce, travel, mobility, media…)",
+      "categories": ["Consumer Internet", "E-commerce", "Travel", "Mobility", "Logistics", "Retail Tech", "Media & Streaming", "Ad Tech", "Gaming"],
+      "rounds": "DSA (medium), a machine-coding round, system design for senior-ish roles",
+      "weights": { "dsa": 0.45, "hld": 0.25, "lld": 0.3 },
+      "patterns": { "Arrays": 2, "Hashing": 2, "Sliding Window": 2, "Binary Tree": 2, "Graphs": 2, "Dynamic Programming": 2, "Heap": 2, "Stack & Queue": 2, "Intervals": 2 },
+      "hld": [2, 3, 4, 5, 8], "lld": [4, 5, 6, 8, 9, 10]
+    },
+    {
+      "key": "saas", "label": "SaaS, infra, data & dev tools",
+      "categories": ["Enterprise SaaS", "Infra & Data", "Developer Tools", "Security", "Networking"],
+      "rounds": "DSA (medium), distributed-systems heavy design, debugging / code review",
+      "weights": { "dsa": 0.45, "hld": 0.35, "lld": 0.2 },
+      "patterns": { "Graphs": 2, "Trie": 2, "Heap": 2, "Binary Search": 2, "Hashing": 2, "Union-Find": 2, "Dynamic Programming": 2, "Strings": 2 },
+      "hld": [2, 3, 4, 5, 6, 9, 10], "lld": [2, 6, 7, 9]
+    },
+    {
+      "key": "ai", "label": "AI & semiconductors",
+      "categories": ["AI", "Semiconductors & AI"],
+      "rounds": "DSA (medium), ML/LLM fundamentals and a practical AI build, some system design",
+      "weights": { "dsa": 0.4, "hld": 0.2, "lld": 0.1, "ai": 0.3 },
+      "patterns": { "Basics & Math": 3, "Arrays": 2, "Graphs": 2, "Dynamic Programming": 2, "Heap": 2, "Binary Search": 2 },
+      "hld": [2, 3, 5], "lld": [1, 2, 7], "ai": [1, 2, 3, 5, 6, 7, 8]
+    },
+    {
+      "key": "services", "label": "Health, ed, telecom & engineering services",
+      "categories": ["HealthTech", "EdTech", "Telecom", "Industrial Tech", "Engineering Services"],
+      "rounds": "DSA (easy–medium), OOP / LLD, basic system design, project deep-dive",
+      "weights": { "dsa": 0.45, "hld": 0.2, "lld": 0.35 },
+      "patterns": { "Arrays": 2, "Strings": 2, "Hashing": 2, "Linked List": 2, "Sorting": 2, "Binary Tree": 2, "Stack & Queue": 2 },
+      "hld": [1, 2, 3, 5], "lld": [1, 2, 3, 4, 8]
+    },
+    {
+      "key": "remote", "label": "Remote-first (global)",
+      "categories": ["Remote (global)"],
+      "rounds": "practical: take-home or pair programming, system design, async communication",
+      "weights": { "dsa": 0.35, "hld": 0.35, "lld": 0.3 },
+      "patterns": { "Arrays": 2, "Hashing": 2, "Strings": 2, "Graphs": 2, "Heap": 2 },
+      "hld": [2, 3, 4, 5, 6, 9], "lld": [2, 8, 9, 10]
+    }
+  ],
+  "fallback": "product"
+}
