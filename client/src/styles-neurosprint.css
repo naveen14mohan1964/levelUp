@@ -1,0 +1,516 @@
+/* NeuroSprint: 5-Phase Cognitive Learning Tunnel */
+.neurosprint-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(10, 14, 23, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.neurosprint-container {
+  width: 100%;
+  max-width: 720px;
+  background: var(--card, #131A2A);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: ns-fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes ns-fade-in {
+  from { opacity: 0; transform: scale(0.97) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.neurosprint-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.neurosprint-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.neurosprint-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.25), rgba(249, 115, 22, 0.25));
+  color: #FBBF24;
+  border: 1px solid rgba(251, 191, 36, 0.4);
+}
+
+.neurosprint-lesson-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text, #F1F5F9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px;
+}
+
+.neurosprint-timer {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text, #F1F5F9);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.neurosprint-timer.warning {
+  color: #F87171;
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.15);
+  animation: ns-pulse 1s infinite alternate;
+}
+
+@keyframes ns-pulse {
+  from { opacity: 0.85; }
+  to { opacity: 1; transform: scale(1.03); }
+}
+
+/* Phase dots */
+.neurosprint-phases {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: rgba(0, 0, 0, 0.25);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 0.5rem;
+  overflow-x: auto;
+}
+
+.ns-phase-dot {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  opacity: 0.4;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted, #94A3B8);
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+}
+
+.ns-phase-dot.active {
+  opacity: 1;
+  color: #60A5FA;
+}
+
+.ns-phase-dot.done {
+  opacity: 0.85;
+  color: var(--success, #34D399);
+}
+
+.dot-circle {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 0.7rem;
+}
+
+.ns-phase-dot.active .dot-circle {
+  background: #3B82F6;
+  color: white;
+}
+
+.ns-phase-dot.done .dot-circle {
+  background: var(--success, #10B981);
+  color: white;
+}
+
+/* Body container */
+.neurosprint-body {
+  padding: 2rem;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ns-step {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ns-phase-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #60A5FA;
+}
+
+.ns-question {
+  font-size: 1.25rem;
+  line-height: 1.45;
+  font-weight: 700;
+  color: var(--text, #F8FAFC);
+  margin: 0;
+}
+
+/* Option buttons */
+.ns-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.ns-opt-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 1rem 1.15rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text, #F1F5F9);
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  transition: all 0.15s ease;
+}
+
+.ns-opt-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.opt-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.ns-opt-btn.is-correct {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: var(--success, #10B981);
+  color: #6EE7B7;
+}
+
+.ns-opt-btn.is-correct .opt-letter {
+  background: var(--success, #10B981);
+  color: #064E3B;
+}
+
+.ns-opt-btn.is-wrong {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: var(--danger, #EF4444);
+  color: #FCA5A5;
+  opacity: 0.65;
+}
+
+.ns-shock-box {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(245, 158, 11, 0.1));
+  border-left: 4px solid #F59E0B;
+  padding: 1.1rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin-top: 1rem;
+}
+
+.ns-shock-box strong {
+  display: block;
+  color: #FBBF24;
+  margin-bottom: 0.25rem;
+}
+
+.ns-next-btn {
+  margin-top: 1rem;
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+/* Monochunk cards */
+.ns-chunk-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 2.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ns-chunk-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text, #F8FAFC);
+  margin: 0;
+}
+
+.ns-chunk-text {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: #E2E8F0;
+  margin: 0;
+}
+
+.ns-chunk-anchor {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border-left: 3px solid #60A5FA;
+}
+
+.ns-chunk-anchor code {
+  color: #93C5FD;
+  font-size: 0.9rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.ns-chunk-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+/* Simulation sandbox */
+.ns-sim-board {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ns-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ns-slider {
+  width: 100%;
+  accent-color: #3B82F6;
+  cursor: pointer;
+}
+
+.ns-toggle-group {
+  padding: 0.5rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ns-metrics-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ns-gauge {
+  height: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 0.4rem;
+}
+
+.ns-gauge-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.15s ease, background 0.15s ease;
+}
+
+.ns-causality-box {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: #CBD5E1;
+}
+
+/* Junior PR */
+.ns-buddy-mentor-prompt {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ns-avatar-mini {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.ns-speech-bubble {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1.1rem;
+  border-radius: 12px;
+  border-bottom-left-radius: 2px;
+  font-size: 0.92rem;
+  font-style: italic;
+  color: #E2E8F0;
+}
+
+.ns-code-block {
+  background: #090D16;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.ns-code-header {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.4rem 0.85rem;
+  font-size: 0.75rem;
+  color: var(--muted, #94A3B8);
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ns-code-block pre {
+  margin: 0;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.ns-code-block code {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #38BDF8;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+
+.ns-pr-reveal {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ns-explanation {
+  background: rgba(16, 185, 129, 0.1);
+  border-left: 3px solid var(--success, #10B981);
+  padding: 0.85rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Victory */
+.ns-victory {
+  text-align: center;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.ns-victory-icon {
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+  animation: ns-bounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes ns-bounce {
+  from { transform: scale(0.3); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.ns-victory h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text, #F8FAFC);
+  margin: 0;
+}
+
+.ns-victory-subtitle {
+  color: var(--muted, #94A3B8);
+  font-size: 0.95rem;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.ns-takeaway-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.25rem 1.75rem;
+  max-width: 500px;
+  margin: 1rem auto;
+}
+
+.ns-takeaway-card blockquote {
+  margin: 0.5rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #FBBF24;
+  line-height: 1.4;
+}
+
+.ns-xp-awarded {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  background: rgba(234, 179, 8, 0.15);
+  color: #FBBF24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}

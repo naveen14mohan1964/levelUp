@@ -26,6 +26,7 @@ app.use('/api', require('./routes/report').router); // the weekly report
 app.use('/api', require('./routes/system').router); // focus guard: Faaah alarm volume (local only)
 app.use('/api', require('./routes/assignments').router); // course assignments explained (content is local-only)
 app.use('/api', require('./routes/mastery').router); // pattern mastery, company readiness, system design drills
+app.use('/api', require('./routes/neurosprint').router); // 5-phase interactive neuro-learning sprint engine
 app.use('/api', require('./routes/dev').router); // dev-only (npm run dev): reset/restore AI + game progress
 const workout = require('./routes/workout');
 app.use('/api', workout.router);

@@ -14,6 +14,7 @@ import BuddyFire from './BuddyFire.jsx';
 import { STATUS_TEXT } from '../lib/focusRules.js';
 import SoundBar from './SoundBar.jsx';
 import { DISTRACTED, useFocus } from '../focus.jsx';
+import NeuroSprint from './NeuroSprint.jsx';
 
 /** Re-renders every second while `active` (for the timer). */
 export function useNow(active) {
@@ -39,6 +40,7 @@ export default function TodayHero({ track, reason, focus }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const [xp, setXp] = useState(null);
+  const [showSprint, setShowSprint] = useState(false);
   const [wave, setWave] = useState(0); // click the buddy: he waves
   const doneBtn = useRef(null);
   const cardRef = useRef(null);
@@ -116,6 +118,7 @@ export default function TodayHero({ track, reason, focus }) {
         <div className="hero-actions">
           <button className="btn primary btn-xl sheen" disabled={busy} onClick={() => start()}><Play size={18} weight="fill" aria-hidden="true" /> Start</button>
           <button className="btn btn-lg" disabled={busy} onClick={() => start(5)}><Lightning size={18} aria-hidden="true" /> Just 5 minutes</button>
+          <button type="button" className="btn btn-lg outline" style={{ border: '1px solid rgba(245, 158, 11, 0.5)', color: '#FBBF24', background: 'rgba(245, 158, 11, 0.08)' }} onClick={() => setShowSprint(true)}>⚡ NeuroSprint (120s)</button>
           <Link className="hero-open" to={lessonLink(track.key, lesson)}>Open lesson <ArrowRight size={14} aria-hidden="true" /></Link>
           {track.key === 'ai' && (
             <span className="xp-anchor">
@@ -129,6 +132,14 @@ export default function TodayHero({ track, reason, focus }) {
       </div>
       <div className="hero-buddy"><BuddyFire charged={!!running} /><button className="buddy-hit" onClick={() => setWave((n) => n + 1)} aria-label="Say hi to the study buddy"><Buddy state={buddy} size={230} gaze={f.camOn ? g.gaze : null} approve={approve} wave={wave} /></button></div>
       </div>
+      {showSprint && lesson && (
+        <NeuroSprint
+          lesson={lesson}
+          track={track.key}
+          onComplete={markDone}
+          onClose={() => setShowSprint(false)}
+        />
+      )}
     </section>
   );
 }

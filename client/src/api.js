@@ -156,6 +156,7 @@ export const api = {
   cardDelete: (id) => request('DELETE', `/cards/${id}`),
   learn: (track) => request('GET', `/learn/${track}`),
   learnLesson: (track, id, body) => request('POST', `/learn/${track}/lessons/${id}`, body),
+  neurosprint: (body) => request('POST', '/neurosprint', body),
   aiNews: (params = {}) => request('GET', `/ai/news?${new URLSearchParams(Object.entries(params).filter(([, v]) => v))}`),
   aiNewsStatus: (id, status) => request('PATCH', `/ai/news/${id}`, { status }),
   aiNewsRead: (id, read) => request('PATCH', `/ai/news/${id}`, { read }),

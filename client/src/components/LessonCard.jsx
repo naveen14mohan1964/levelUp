@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { refreshGame } from '../game.jsx';
 import { burst } from '../lib/celebrate.js';
 import { XpFloat } from './fx.jsx';
+import NeuroSprint from './NeuroSprint.jsx';
 
 /**
  * One lesson of a self-paced roadmap (AI + FDE, LLD, HLD): learn text, links, build, checkpoint, your notes, and
@@ -9,6 +10,7 @@ import { XpFloat } from './fx.jsx';
  */
 export default function LessonCard({ lesson: l, onSave, onChange, expanded = false, status }) {
   const [open, setOpen] = useState(expanded);
+  const [showSprint, setShowSprint] = useState(false);
   const [xp, setXp] = useState(null);
   const doneBtn = useRef(null);
   const [notes, setNotes] = useState(l.notes || '');
@@ -30,7 +32,10 @@ export default function LessonCard({ lesson: l, onSave, onChange, expanded = fal
         <button className="link-btn ai-lesson-title" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
           {l.done_ms ? '✅' : open ? '▾' : '▸'} <span className="muted">{l.id}</span> {l.title}
         </button>
-        <span className="small muted nowrap">{status === 'current' && <span className="lrow-next">Next</span>} ~{l.minutes} min</span>
+        <div className="row center-v gap">
+          <button type="button" className="btn small primary outline" style={{ padding: '0.2rem 0.6rem', fontSize: '0.78rem', gap: '0.3rem' }} onClick={(e) => { e.stopPropagation(); setShowSprint(true); }}>⚡ NeuroSprint (120s)</button>
+          <span className="small muted nowrap">{status === 'current' && <span className="lrow-next">Next</span>} ~{l.minutes} min</span>
+        </div>
       </div>
       {open && (
         <div className="ai-lesson-body">
@@ -53,10 +58,19 @@ export default function LessonCard({ lesson: l, onSave, onChange, expanded = fal
                   {xp && <XpFloat key={xp} amount={25} onDone={() => setXp(null)} />}
                 </span>
               )}
+            <button type="button" className="btn outline" onClick={() => setShowSprint(true)}>⚡ 120s NeuroSprint</button>
             {l.done_ms && <span className="small muted">Done {new Date(l.done_ms).toLocaleDateString('en-IN')}</span>}
           </div>
           {error && <div className="form-error">{error}</div>}
         </div>
+      )}
+      {showSprint && (
+        <NeuroSprint
+          lesson={l}
+          track={l.id?.slice(0, 2)?.toLowerCase() || 'general'}
+          onComplete={() => save({ done: true, notes: notes || 'Mastered via 120s NeuroSprint' })}
+          onClose={() => setShowSprint(false)}
+        />
       )}
     </section>
   );
