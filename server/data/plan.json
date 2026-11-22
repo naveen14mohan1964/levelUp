@@ -1,6 +1,6 @@
 {
   "startDate": "2026-10-05",
-  "generatedAt": "2026-11-22T15:53:09.893Z",
+  "generatedAt": "2026-11-22T16:56:28.721Z",
   "weeks": [
     {
       "week": 1,
@@ -11096,7 +11096,7 @@
       "area": "fullstack",
       "heading": "Project 1",
       "name": "JobHunt Full Stack",
-      "description": "One app, built feature by feature: every week ships a .NET 10 API endpoint and the React screen that uses it. Track job applications, interviews and follow-ups; by week 21 it is tested, secured, observable, containerised and deployed.",
+      "description": "One app, built feature by feature with .NET and React in parallel: every day has a .NET 10 API lesson and a React + TypeScript lesson (about 30 minutes each) on the same feature. Track job applications, interviews and follow-ups; by week 21 it is tested, secured, observable, containerised and deployed.",
       "stack": [
         ".NET 10",
         "ASP.NET Core",
@@ -11613,8 +11613,17 @@
           "lane": "api",
           "learn": "Dependency injection and lifetimes: singleton, scoped, transient",
           "title": "IApplicationRepository with an in-memory implementation registered in DI",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`IApplicationRepository` lives in Application, `InMemoryApplicationRepository` in Infrastructure, and a temporary endpoint resolves it through `AddInfrastructure()` and returns the item count",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Dependency injection in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection"
+            },
+            {
+              "label": "Microsoft Learn: .NET dependency injection",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection"
+            }
+          ]
         },
         {
           "week": 3,
@@ -11625,8 +11634,17 @@
           "lane": "web",
           "learn": "A typed API client module; handling HTTP errors in one place",
           "title": "web/src/lib/api.ts with getApplications and an ApiError type",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`web/src/lib/api.ts` exports `request<T>`, `getApplications` and `ApiError`, the health badge uses `request<T>`, and a non-2xx response throws `ApiError` with its status",
+          "learnLinks": [
+            {
+              "label": "MDN: Using the Fetch API",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch"
+            },
+            {
+              "label": "TypeScript: Generics",
+              "url": "https://www.typescriptlang.org/docs/handbook/2/generics.html"
+            }
+          ]
         },
         {
           "week": 3,
@@ -11637,8 +11655,21 @@
           "lane": "api",
           "learn": "DTOs, mapping and HTTP status codes",
           "title": "GET /api/applications and GET /api/applications/{id} returning DTOs (404 when missing)",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`GET /api/applications` returns a JSON array of DTOs with string statuses, and `GET /api/applications/{id}` returns 200 for a known id and 404 for an unknown one",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Create responses in Minimal API applications",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses"
+            },
+            {
+              "label": "MDN: HTTP response status codes",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"
+            },
+            {
+              "label": "Microsoft Learn: Choose between controller-based APIs and minimal APIs",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/apis"
+            }
+          ]
         },
         {
           "week": 3,
@@ -11649,8 +11680,17 @@
           "lane": "web",
           "learn": "Loading, error and empty states as a pattern",
           "title": "ApplicationsPage that loads from the API with loading, empty and error states",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`ApplicationsPage` shows a loading state, the list from the API, an empty message when the API returns `[]`, and an error message when the API is stopped",
+          "learnLinks": [
+            {
+              "label": "react.dev: Conditional rendering",
+              "url": "https://react.dev/learn/conditional-rendering"
+            },
+            {
+              "label": "React: Synchronizing with Effects",
+              "url": "https://react.dev/learn/synchronizing-with-effects"
+            }
+          ]
         },
         {
           "week": 3,
@@ -11661,8 +11701,17 @@
           "lane": "api",
           "learn": "ProblemDetails and global exception handling",
           "title": "Exception handler returning ProblemDetails for unexpected errors and not-found",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "An unhandled exception returns a 500 `application/problem+json` body with a `traceId` and no stack trace, and an unknown id returns a 404 ProblemDetails body",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Handle errors in ASP.NET Core APIs",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling-api"
+            },
+            {
+              "label": "Microsoft Learn: Handle errors in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling"
+            }
+          ]
         },
         {
           "week": 3,
@@ -11673,8 +11722,17 @@
           "lane": "web",
           "learn": "Parsing ProblemDetails into a friendly error message",
           "title": "ApiError carries the parsed ProblemDetails and the page shows its title",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Stopping the API or requesting an unknown id shows the ProblemDetails `title` (or a friendly fallback) on the page instead of a generic message",
+          "learnLinks": [
+            {
+              "label": "MDN: HTTP response status codes",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"
+            },
+            {
+              "label": "TypeScript: Narrowing",
+              "url": "https://www.typescriptlang.org/docs/handbook/2/narrowing.html"
+            }
+          ]
         },
         {
           "week": 3,
@@ -11685,8 +11743,17 @@
           "lane": "api",
           "learn": "The Options pattern with validation on start-up",
           "title": "Validated JobHuntOptions bound from configuration",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "CORS and the health display name read from a validated `JobHuntOptions`, and the API refuses to start with a clear message when `JobHunt:AllowedOrigins` is empty",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Options pattern in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options"
+            },
+            {
+              "label": "Microsoft Learn: Configuration in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/"
+            }
+          ]
         },
         {
           "week": 3,
@@ -11697,8 +11764,13 @@
           "lane": "web",
           "learn": "Environment variables in Vite",
           "title": "API base URL from a Vite env variable with a typed config module",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`api.ts` reads its base URL from `config.ts`, which reads a typed `VITE_API_BASE_URL`, and no API URL is hard-coded anywhere under `web/src`",
+          "learnLinks": [
+            {
+              "label": "Vite: Env variables and modes",
+              "url": "https://vite.dev/guide/env-and-mode"
+            }
+          ]
         },
         {
           "week": 3,
@@ -11709,8 +11781,17 @@
           "lane": "api",
           "learn": "Route groups and endpoint organisation in minimal APIs",
           "title": "Applications endpoints moved into a route group in their own file",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`Program.cs` calls one `MapApplicationsEndpoints()` line, both routes live in `ApplicationsEndpoints.cs` under one `MapGroup(\"/api/applications\")`, and the `.http` tests still pass",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Route handlers in Minimal API apps",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/route-handlers"
+            },
+            {
+              "label": "Microsoft Learn: Minimal APIs overview",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis"
+            }
+          ]
         },
         {
           "week": 3,
@@ -11721,8 +11802,17 @@
           "lane": "web",
           "learn": "The Vite dev proxy",
           "title": "Vite proxy so the web app calls /api without CORS in development",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The web app calls relative `/api` and `/health` URLs through the Vite proxy with no CORS preflight in the Network tab, and PR \"Applications list\" is merged",
+          "learnLinks": [
+            {
+              "label": "Vite: Server options",
+              "url": "https://vite.dev/config/server-options"
+            },
+            {
+              "label": "Vite: Env variables and modes",
+              "url": "https://vite.dev/guide/env-and-mode"
+            }
+          ]
         },
         {
           "week": 3,
@@ -11732,7 +11822,7 @@
           "kind": "checkpoint",
           "lane": null,
           "learn": null,
-          "title": "Draw the request from the browser to the controller and back, naming every layer, the DI lifetime of each service and the status codes",
+          "title": "Draw the request from the browser to the endpoint handler and back, naming every layer, the DI lifetime of each service and the status codes",
           "doneWhen": null,
           "learnLinks": []
         },
@@ -11745,8 +11835,21 @@
           "lane": "api",
           "learn": "EF Core: DbContext and Fluent entity configuration",
           "title": "JobHuntDbContext with configuration classes for every entity",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`JobHuntDbContext` builds, every entity has an `IEntityTypeConfiguration` class, and `dotnet ef dbcontext info` runs without errors",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: DbContext lifetime, configuration and initialization",
+              "url": "https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/"
+            },
+            {
+              "label": "Microsoft Learn: Creating and configuring a model",
+              "url": "https://learn.microsoft.com/en-us/ef/core/modeling/"
+            },
+            {
+              "label": "Microsoft Learn: Value conversions",
+              "url": "https://learn.microsoft.com/en-us/ef/core/modeling/value-conversions"
+            }
+          ]
         },
         {
           "week": 4,
@@ -11757,8 +11860,17 @@
           "lane": "web",
           "learn": "React Router: routes, links and a shared layout",
           "title": "Router with /applications and a shared layout",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Clicking the Applications nav link renders `ApplicationsPage` inside `AppLayout` at `/applications`, `/` redirects there, and the header stays on screen with no full page reload",
+          "learnLinks": [
+            {
+              "label": "React Router: Picking a mode",
+              "url": "https://reactrouter.com/start/modes"
+            },
+            {
+              "label": "React Router: Routing (data mode)",
+              "url": "https://reactrouter.com/start/data/routing"
+            }
+          ]
         },
         {
           "week": 4,
@@ -11769,8 +11881,17 @@
           "lane": "api",
           "learn": "Migrations: add, apply, roll back",
           "title": "Initial migration applied to a local SQL Server database",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`dotnet ef database update` creates the JobHunt tables, `database update 0` removes them, and applying again works",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Migrations overview",
+              "url": "https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/"
+            },
+            {
+              "label": "Microsoft Learn: Applying migrations",
+              "url": "https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying"
+            }
+          ]
         },
         {
           "week": 4,
@@ -11781,8 +11902,17 @@
           "lane": "web",
           "learn": "URL params and useParams",
           "title": "Route /applications/:id with a detail page shell",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Each card title links to `/applications/<id>`, the detail page shell shows the id from `useParams`, and Back returns to the list",
+          "learnLinks": [
+            {
+              "label": "React Router: Routing (data mode)",
+              "url": "https://reactrouter.com/start/data/routing"
+            },
+            {
+              "label": "React Router: useParams",
+              "url": "https://reactrouter.com/api/hooks/useParams"
+            }
+          ]
         },
         {
           "week": 4,
@@ -11793,8 +11923,17 @@
           "lane": "api",
           "learn": "Seeding data and switching implementations through DI",
           "title": "Seed data, and the repository switched from in-memory to EF Core",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The in-memory repository is deleted, `GET /api/applications` returns seed rows from SQL Server, and running the seed twice does not duplicate rows",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Data seeding",
+              "url": "https://learn.microsoft.com/en-us/ef/core/modeling/data-seeding"
+            },
+            {
+              "label": "Microsoft Learn: Dependency injection in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection"
+            }
+          ]
         },
         {
           "week": 4,
@@ -11805,8 +11944,17 @@
           "lane": "web",
           "learn": "Loading data for a route: loaders in data mode",
           "title": "Detail page loading one application by id",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`/applications/<real id>` renders the record from the API through a route `loader` and `useLoaderData`, with no `useEffect` in the detail page",
+          "learnLinks": [
+            {
+              "label": "React Router: Data loading",
+              "url": "https://reactrouter.com/start/data/data-loading"
+            },
+            {
+              "label": "React Router: Route object",
+              "url": "https://reactrouter.com/start/data/route-object"
+            }
+          ]
         },
         {
           "week": 4,
@@ -11817,8 +11965,17 @@
           "lane": "api",
           "learn": "AsNoTracking and projecting to DTOs with Select",
           "title": "Read queries projected straight to DTOs with AsNoTracking",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "List and detail endpoints read through `IApplicationQueries` using `AsNoTracking` and `Select` into DTOs, with no `Include` in read code, and the detail DTO includes its interviews",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Tracking vs. no-tracking queries",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/tracking"
+            },
+            {
+              "label": "Microsoft Learn: Efficient querying",
+              "url": "https://learn.microsoft.com/en-us/ef/core/performance/efficient-querying"
+            }
+          ]
         },
         {
           "week": 4,
@@ -11829,8 +11986,17 @@
           "lane": "web",
           "learn": "Error and not-found routes",
           "title": "Not-found screen for unknown ids and an error element for the route",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A random Guid shows \"Application not found\", `abc` shows the same screen without calling the API, an unknown URL shows a not-found page inside the layout, and a stopped API shows a different error message",
+          "learnLinks": [
+            {
+              "label": "React Router: Error boundaries",
+              "url": "https://reactrouter.com/how-to/error-boundary"
+            },
+            {
+              "label": "React Router: Data loading",
+              "url": "https://reactrouter.com/start/data/data-loading"
+            }
+          ]
         },
         {
           "week": 4,
@@ -11841,8 +12007,21 @@
           "lane": "api",
           "learn": "Reading the SQL EF Core generates",
           "title": "Logged SQL for the list and detail queries, checked for over-fetching",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The SQL for the list and detail queries is logged in Development, pasted into the PR description, and each selected column is used by the DTO",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Logging in .NET and ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging/"
+            },
+            {
+              "label": "Microsoft Learn: Simple logging",
+              "url": "https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/simple-logging"
+            },
+            {
+              "label": "Microsoft Learn: How queries work (EF Core)",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/how-query-works"
+            }
+          ]
         },
         {
           "week": 4,
@@ -11853,8 +12032,17 @@
           "lane": "web",
           "learn": "Navigation: active links, back navigation, breadcrumbs",
           "title": "Active nav link and a breadcrumb back to the list from the detail page",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The nav link for Applications is styled active on list and detail pages, the detail page shows an \"Applications / <role>\" breadcrumb that links back, and PR \"Persistence + routing\" is merged",
+          "learnLinks": [
+            {
+              "label": "React Router: NavLink",
+              "url": "https://reactrouter.com/api/components/NavLink"
+            },
+            {
+              "label": "MDN: ARIA",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA"
+            }
+          ]
         },
         {
           "week": 4,
@@ -11877,8 +12065,21 @@
           "lane": "api",
           "learn": "IQueryable and deferred execution",
           "title": "Filters for status, company and date range composed on IQueryable",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`GET /api/applications?status=Interviewing&company=acme&from=2026-01-01` returns only matching rows, and the logged SQL is one query whose WHERE contains only the supplied filters as parameters",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Deferred execution and lazy evaluation",
+              "url": "https://learn.microsoft.com/en-us/dotnet/standard/linq/deferred-execution-lazy-evaluation"
+            },
+            {
+              "label": "Microsoft Learn: How queries work (EF Core)",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/how-query-works"
+            },
+            {
+              "label": "Microsoft Learn: Parameter binding in Minimal API apps",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/parameter-binding"
+            }
+          ]
         },
         {
           "week": 5,
@@ -11889,8 +12090,21 @@
           "lane": "web",
           "learn": "TanStack Query: queries, query keys and caching",
           "title": "Applications list moved to useQuery with a query key per filter set",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The list loads through `useQuery`, and TanStack Query Devtools shows one cache entry per status you click, with a revisited status rendering instantly",
+          "learnLinks": [
+            {
+              "label": "TanStack Query: Overview",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/overview"
+            },
+            {
+              "label": "TanStack Query: Query keys",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-keys"
+            },
+            {
+              "label": "TanStack Query: Important defaults",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/important-defaults"
+            }
+          ]
         },
         {
           "week": 5,
@@ -11901,8 +12115,17 @@
           "lane": "api",
           "learn": "Sorting safely from user input",
           "title": "Sort parameter with an allow-list of sortable fields",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`sort` accepts only `appliedOn`, `-appliedOn`, `roleTitle`, `-roleTitle`, `company` and `-company`, every order has an `Id` tie-breaker, and any other value never reaches the query",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Complex query operators",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/complex-query-operators"
+            },
+            {
+              "label": "Microsoft Learn: Web API design best practices",
+              "url": "https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design"
+            }
+          ]
         },
         {
           "week": 5,
@@ -11913,8 +12136,17 @@
           "lane": "web",
           "learn": "URL search params as state",
           "title": "Filter bar (status, company, sort) kept in the URL",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Changing status, company or sort updates the URL, reloading restores the same filters and results, and Back returns to the previous filter",
+          "learnLinks": [
+            {
+              "label": "React Router: useSearchParams",
+              "url": "https://reactrouter.com/api/hooks/useSearchParams"
+            },
+            {
+              "label": "MDN: URLSearchParams",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams"
+            }
+          ]
         },
         {
           "week": 5,
@@ -11925,8 +12157,17 @@
           "lane": "api",
           "learn": "Pagination: offset vs keyset; stable ordering",
           "title": "Paged response { items, page, pageSize, total }",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The list endpoint returns `{ items, page, pageSize, total }`, `total` counts the filtered rows, and walking every page with `pageSize=3` returns each row exactly once",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Pagination in EF Core",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/pagination"
+            },
+            {
+              "label": "Microsoft Learn: Web API design best practices",
+              "url": "https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design"
+            }
+          ]
         },
         {
           "week": 5,
@@ -11937,8 +12178,17 @@
           "lane": "web",
           "learn": "Controlled inputs and resetting the page when filters change",
           "title": "Changing a filter resets to page 1 and updates the URL once",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Changing any filter sets `page` to 1 in the same URL update (one history entry), and typing in the company box does not add a history entry per keystroke",
+          "learnLinks": [
+            {
+              "label": "React Router: useSearchParams",
+              "url": "https://reactrouter.com/api/hooks/useSearchParams"
+            },
+            {
+              "label": "react.dev: Reacting to input with state",
+              "url": "https://react.dev/learn/reacting-to-input-with-state"
+            }
+          ]
         },
         {
           "week": 5,
@@ -11949,8 +12199,17 @@
           "lane": "api",
           "learn": "Indexes for filters and sorts",
           "title": "Indexes for status, company and applied date, checked with the query plan",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A migration adds indexes for status, company and applied date, and the actual execution plan for a filtered, sorted list query shows an index seek instead of a table scan",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Indexes",
+              "url": "https://learn.microsoft.com/en-us/ef/core/modeling/indexes"
+            },
+            {
+              "label": "Microsoft Learn: Display an actual execution plan",
+              "url": "https://learn.microsoft.com/en-us/sql/relational-databases/performance/display-an-actual-execution-plan"
+            }
+          ]
         },
         {
           "week": 5,
@@ -11961,8 +12220,17 @@
           "lane": "web",
           "learn": "placeholderData: keepPreviousData; isPlaceholderData",
           "title": "Pager that keeps the current page visible while the next loads",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "With the network throttled, clicking Next keeps the current page visible and dimmed until the next page arrives, Next is disabled while `isPlaceholderData` is true, and the pager shows \"Page X of Y\"",
+          "learnLinks": [
+            {
+              "label": "TanStack Query: Paginated queries",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/paginated-queries"
+            },
+            {
+              "label": "TanStack Query: useQuery",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/reference/useQuery"
+            }
+          ]
         },
         {
           "week": 5,
@@ -11973,8 +12241,21 @@
           "lane": "api",
           "learn": "Validating query parameters",
           "title": "400 ProblemDetails for bad page size, unknown sort or reversed dates",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`pageSize=0`, `pageSize=500`, `page=0`, `sort=salary` and `from` after `to` each return 400 ProblemDetails with an `errors` entry naming the bad parameter",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Create responses in Minimal API applications",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses"
+            },
+            {
+              "label": "Microsoft Learn: Parameter binding in Minimal API apps",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/parameter-binding"
+            },
+            {
+              "label": "Microsoft Learn: Handle errors in ASP.NET Core APIs",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling-api"
+            }
+          ]
         },
         {
           "week": 5,
@@ -11985,8 +12266,17 @@
           "lane": "web",
           "learn": "Showing filter errors and an empty filtered result",
           "title": "Clear-filters button and a helpful 'no matches' state",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A filter with no results shows \"No applications match these filters\" with a Clear filters button that resets the URL, a 400 from the API shows its message, and PR \"Search + paging\" is merged",
+          "learnLinks": [
+            {
+              "label": "react.dev: Conditional rendering",
+              "url": "https://react.dev/learn/conditional-rendering"
+            },
+            {
+              "label": "TanStack Query: Query retries",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-retries"
+            }
+          ]
         },
         {
           "week": 5,
@@ -12009,8 +12299,17 @@
           "lane": "api",
           "learn": "POST semantics; 201 Created with a Location header",
           "title": "POST /api/applications",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`POST /api/applications` returns 201 with the created DTO and a `Location` header that resolves to the new item with a GET",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Create responses in Minimal API applications",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses"
+            },
+            {
+              "label": "MDN: HTTP request methods",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods"
+            }
+          ]
         },
         {
           "week": 6,
@@ -12021,8 +12320,17 @@
           "lane": "web",
           "learn": "React Hook Form basics: register, handleSubmit, errors",
           "title": "Create application form with React Hook Form",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`/applications/new` renders a form whose empty submit shows \"required\" messages under company and role title, and a valid submit logs typed values to the console",
+          "learnLinks": [
+            {
+              "label": "React Hook Form: Get started",
+              "url": "https://react-hook-form.com/get-started"
+            },
+            {
+              "label": "React Hook Form: useForm",
+              "url": "https://react-hook-form.com/docs/useform"
+            }
+          ]
         },
         {
           "week": 6,
@@ -12033,8 +12341,21 @@
           "lane": "api",
           "learn": "FluentValidation and validation ProblemDetails",
           "title": "Validator for create with field-level errors in the 400 response",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Posting an empty role title returns 400 `application/problem+json` with an `errors` object keyed by field name, and the command service is never called",
+          "learnLinks": [
+            {
+              "label": "FluentValidation: Creating your first validator",
+              "url": "https://docs.fluentvalidation.net/en/latest/start.html"
+            },
+            {
+              "label": "FluentValidation: ASP.NET Core",
+              "url": "https://docs.fluentvalidation.net/en/latest/aspnet.html"
+            },
+            {
+              "label": "Microsoft Learn: Filters in minimal API apps",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/min-api-filters"
+            }
+          ]
         },
         {
           "week": 6,
@@ -12045,8 +12366,17 @@
           "lane": "web",
           "learn": "Zod schemas and the resolver; sharing one schema",
           "title": "Zod schema for the form, mirroring the API rules",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The form validates with a Zod schema through `zodResolver`, its values type comes from `z.infer`, and an empty or invalid submit shows the Zod messages with no network request",
+          "learnLinks": [
+            {
+              "label": "Zod: Defining schemas",
+              "url": "https://zod.dev/api"
+            },
+            {
+              "label": "React Hook Form: useForm",
+              "url": "https://react-hook-form.com/docs/useform"
+            }
+          ]
         },
         {
           "week": 6,
@@ -12057,8 +12387,17 @@
           "lane": "api",
           "learn": "PUT vs PATCH; updating safely",
           "title": "PUT /api/applications/{id} with its own validator",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`PUT /api/applications/{id}` returns 200 with the DTO for a known id, 404 for an unknown one, 400 with field errors from its own validator, and sending the same PUT twice leaves the same state",
+          "learnLinks": [
+            {
+              "label": "MDN: PATCH",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/PATCH"
+            },
+            {
+              "label": "Microsoft Learn: Web API design best practices",
+              "url": "https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design"
+            }
+          ]
         },
         {
           "week": 6,
@@ -12069,8 +12408,17 @@
           "lane": "web",
           "learn": "useMutation and cache invalidation",
           "title": "Create and edit mutations that invalidate the list and detail queries",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Creating an application lands on its detail page, editing one at `/applications/:id/edit` saves through PUT, and the list shows both changes without a page reload",
+          "learnLinks": [
+            {
+              "label": "TanStack Query: Mutations",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/mutations"
+            },
+            {
+              "label": "TanStack Query: Query invalidation",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation"
+            }
+          ]
         },
         {
           "week": 6,
@@ -12081,8 +12429,17 @@
           "lane": "api",
           "learn": "Mapping domain rules to responses",
           "title": "Domain rule violations returned as 422 with a clear message",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Editing a Rejected application returns 422 ProblemDetails with a clear `title` and `detail`, while bad input still returns 400",
+          "learnLinks": [
+            {
+              "label": "MDN: 422 Unprocessable Content",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/422"
+            },
+            {
+              "label": "Microsoft Learn: Handle errors in ASP.NET Core APIs",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling-api"
+            }
+          ]
         },
         {
           "week": 6,
@@ -12093,8 +12450,17 @@
           "lane": "web",
           "learn": "Showing server field errors on inputs",
           "title": "API field errors mapped onto the matching form inputs",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A server 400 shows each message under the matching input, and a 422 shows its title in one form-level message above the submit button",
+          "learnLinks": [
+            {
+              "label": "React Hook Form: setError",
+              "url": "https://react-hook-form.com/docs/useform/seterror"
+            },
+            {
+              "label": "TanStack Query: Mutations",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/mutations"
+            }
+          ]
         },
         {
           "week": 6,
@@ -12105,8 +12471,17 @@
           "lane": "api",
           "learn": "DELETE and soft delete with a global query filter",
           "title": "Soft delete endpoint hidden from every query",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`DELETE /api/applications/{id}` returns 204, the item disappears from list and detail through a global query filter, and `POST /api/applications/{id}/restore` brings it back",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Global query filters",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/filters"
+            },
+            {
+              "label": "MDN: DELETE",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/DELETE"
+            }
+          ]
         },
         {
           "week": 6,
@@ -12117,8 +12492,17 @@
           "lane": "web",
           "learn": "Confirm dialogs and undo",
           "title": "Delete with a confirm dialog and an undo toast",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Delete asks for confirmation in a native `<dialog>`, the item disappears from the list, a toast offers Undo for about 5 seconds and Undo restores it; PR \"Create + edit\" is merged",
+          "learnLinks": [
+            {
+              "label": "MDN: The dialog element",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog"
+            },
+            {
+              "label": "react.dev: Passing data deeply with context",
+              "url": "https://react.dev/learn/passing-data-deeply-with-context"
+            }
+          ]
         },
         {
           "week": 6,
@@ -12141,8 +12525,21 @@
           "lane": "api",
           "learn": "Authentication vs authorization; ASP.NET Core Identity",
           "title": "Identity with an AppUser and POST /api/auth/register",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`POST /api/auth/register` creates a user with a hashed password in the Identity tables, and a duplicate email or weak password returns 400 ProblemDetails with field errors",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Introduction to Identity on ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity"
+            },
+            {
+              "label": "Microsoft Learn: Overview of ASP.NET Core authentication",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/"
+            },
+            {
+              "label": "Microsoft Learn: Introduction to authorization in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/introduction"
+            }
+          ]
         },
         {
           "week": 7,
@@ -12153,8 +12550,17 @@
           "lane": "web",
           "learn": "React Context for app-wide state",
           "title": "AuthProvider holding the current user and its status",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`AuthProvider` wraps the router, the header reads `status` and `user` through `useAuth()`, and calling `useAuth()` outside the provider throws a clear error",
+          "learnLinks": [
+            {
+              "label": "react.dev: Passing data deeply with context",
+              "url": "https://react.dev/learn/passing-data-deeply-with-context"
+            },
+            {
+              "label": "react.dev: createContext",
+              "url": "https://react.dev/reference/react/createContext"
+            }
+          ]
         },
         {
           "week": 7,
@@ -12165,8 +12571,17 @@
           "lane": "api",
           "learn": "JWT structure, signing and expiry; JwtBearer",
           "title": "POST /api/auth/login issuing a signed JWT",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`POST /api/auth/login` returns `{ accessToken, expiresAt }` with a JWT signed by a key from user-secrets, and a wrong email or password returns the same generic 401",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Configure JWT bearer authentication",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/configure-jwt-bearer-authentication"
+            },
+            {
+              "label": "Microsoft Learn: Safe storage of app secrets in development",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets"
+            }
+          ]
         },
         {
           "week": 7,
@@ -12177,8 +12592,17 @@
           "lane": "web",
           "learn": "Login and register forms reusing the week 6 form pattern",
           "title": "Login and register pages wired to the auth endpoints",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Registering at `/register` logs the user in automatically, logging in at `/login` fills `AuthProvider` with the user, and a wrong password shows one generic form error",
+          "learnLinks": [
+            {
+              "label": "React Hook Form: useForm",
+              "url": "https://react-hook-form.com/docs/useform"
+            },
+            {
+              "label": "Zod: Defining schemas",
+              "url": "https://zod.dev/api"
+            }
+          ]
         },
         {
           "week": 7,
@@ -12189,8 +12613,21 @@
           "lane": "api",
           "learn": "Protecting endpoints with RequireAuthorization",
           "title": "Every applications endpoint requires an authenticated user",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`GET /api/applications` returns 401 without a token and 200 with `Authorization: Bearer <token>`, while `/health` and `/api/auth/*` stay anonymous",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Introduction to authorization in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/introduction"
+            },
+            {
+              "label": "Microsoft Learn: Configure JWT bearer authentication",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/configure-jwt-bearer-authentication"
+            },
+            {
+              "label": "MDN: 401 Unauthorized",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/401"
+            }
+          ]
         },
         {
           "week": 7,
@@ -12201,8 +12638,17 @@
           "lane": "web",
           "learn": "Protected routes and redirects",
           "title": "ProtectedRoute that sends anonymous users to /login and back afterwards",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Visiting `/applications` while signed out redirects to `/login`, and after login the user lands back on the page they first asked for",
+          "learnLinks": [
+            {
+              "label": "React Router: Routing (data mode)",
+              "url": "https://reactrouter.com/start/data/routing"
+            },
+            {
+              "label": "React Router: Data loading",
+              "url": "https://reactrouter.com/start/data/data-loading"
+            }
+          ]
         },
         {
           "week": 7,
@@ -12213,8 +12659,17 @@
           "lane": "api",
           "learn": "Claims and the current user",
           "title": "Applications scoped to the logged-in user through the user id claim",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Two users each see only their own applications, and requesting another user's application id returns 404 for GET, PUT and DELETE",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Claims-based authorization",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/claims"
+            },
+            {
+              "label": "Microsoft Learn: Global query filters",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/filters"
+            }
+          ]
         },
         {
           "week": 7,
@@ -12225,8 +12680,17 @@
           "lane": "web",
           "learn": "Attaching the bearer token in the API client",
           "title": "api.ts sends the token; a 401 logs the user out",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Every API call sends `Authorization: Bearer <token>`, the applications list loads again after login, and an expired token logs the user out once and shows the login page",
+          "learnLinks": [
+            {
+              "label": "MDN: Authorization header",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Authorization"
+            },
+            {
+              "label": "React Router: Data loading",
+              "url": "https://reactrouter.com/start/data/data-loading"
+            }
+          ]
         },
         {
           "week": 7,
@@ -12237,8 +12701,17 @@
           "lane": "api",
           "learn": "GET /me and what to put in a token",
           "title": "GET /api/auth/me returning the profile from claims",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`GET /api/auth/me` returns `{ id, email }` read from the caller's claims with no database call, returns 401 without a token, and the token contains no data beyond `sub`, `email`, `jti` and the standard claims",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Claims-based authorization",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/claims"
+            },
+            {
+              "label": "Microsoft Learn: Configure JWT bearer authentication",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/configure-jwt-bearer-authentication"
+            }
+          ]
         },
         {
           "week": 7,
@@ -12249,8 +12722,17 @@
           "lane": "web",
           "learn": "Where tokens live and why it matters",
           "title": "Header with the user's email and a working logout",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The header shows the user's email and a Logout button, reloading keeps the user signed in by restoring the token and calling `/api/auth/me`, Logout clears token and cache, and PR \"Auth\" is merged",
+          "learnLinks": [
+            {
+              "label": "MDN: Using HTTP cookies",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies"
+            },
+            {
+              "label": "MDN: Content Security Policy",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP"
+            }
+          ]
         },
         {
           "week": 7,
@@ -12273,8 +12755,21 @@
           "lane": "api",
           "learn": "Resource-based authorization; 401 vs 403 vs 404",
           "title": "Ownership checks so a user can never read another user's application",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Logged in as user B, GET, PUT, DELETE and restore on user A's application id all return 404 through one ownership handler, and the same calls without a token return 401",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Resource-based authorization",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/resourcebased"
+            },
+            {
+              "label": "OWASP: API Security Top 10 2023",
+              "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+            },
+            {
+              "label": "MDN: 403 Forbidden",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/403"
+            }
+          ]
         },
         {
           "week": 8,
@@ -12285,8 +12780,21 @@
           "lane": "web",
           "learn": "Handling 403 and 404 from the API in the UI",
           "title": "Friendly 'not found' for applications that are missing or not yours",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Opening another user's application id, a random Guid or its edit URL shows the same friendly \"Application not found\" screen, a 403 shows a separate \"no access\" screen, and neither status is retried by TanStack Query",
+          "learnLinks": [
+            {
+              "label": "React Router: Error boundaries",
+              "url": "https://reactrouter.com/how-to/error-boundary"
+            },
+            {
+              "label": "TanStack Query: Query retries",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-retries"
+            },
+            {
+              "label": "MDN: HTTP response status codes",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"
+            }
+          ]
         },
         {
           "week": 8,
@@ -12297,8 +12805,17 @@
           "lane": "api",
           "learn": "Roles and policy-based authorization",
           "title": "Admin role and a policy-protected GET /api/admin/stats",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`GET /api/admin/stats` returns 401 without a token, 403 for a normal user and 200 with cross-user totals for a user in the `Admin` role",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Policy-based authorization",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies"
+            },
+            {
+              "label": "Microsoft Learn: Role-based authorization",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/roles"
+            }
+          ]
         },
         {
           "week": 8,
@@ -12309,8 +12826,17 @@
           "lane": "web",
           "learn": "Role-aware UI",
           "title": "Admin-only nav item and admin page",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Only an admin sees the Admin nav item and can open `/admin` with live stats, while a normal user typing `/admin` is redirected to `/applications`",
+          "learnLinks": [
+            {
+              "label": "React Router: Routing (data mode)",
+              "url": "https://reactrouter.com/start/data/routing"
+            },
+            {
+              "label": "TanStack Query: useQuery",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/reference/useQuery"
+            }
+          ]
         },
         {
           "week": 8,
@@ -12321,8 +12847,17 @@
           "lane": "api",
           "learn": "Refresh tokens: rotation, hashing, reuse detection",
           "title": "POST /api/auth/refresh with rotating refresh tokens in an httpOnly cookie",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Login sets an httpOnly refresh cookie, `POST /api/auth/refresh` returns a new access token and rotates the cookie, and replaying an old refresh token returns 401 and revokes its whole family",
+          "learnLinks": [
+            {
+              "label": "OWASP: Session management cheat sheet",
+              "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+            },
+            {
+              "label": "MDN: Set-Cookie",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie"
+            }
+          ]
         },
         {
           "week": 8,
@@ -12333,8 +12868,17 @@
           "lane": "web",
           "learn": "Keeping the access token in memory only",
           "title": "Access token moved to memory; session restored on page load through refresh",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "No token is in `sessionStorage` or `localStorage`, reloading any page restores the session through one `POST /api/auth/refresh` followed by `/api/auth/me`, and a user with no cookie lands on `/login` without a flash",
+          "learnLinks": [
+            {
+              "label": "MDN: Using HTTP cookies",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies"
+            },
+            {
+              "label": "React: Synchronizing with Effects",
+              "url": "https://react.dev/learn/synchronizing-with-effects"
+            }
+          ]
         },
         {
           "week": 8,
@@ -12345,8 +12889,17 @@
           "lane": "api",
           "learn": "Revocation and logout everywhere",
           "title": "Logout revokes the refresh token; logout everywhere revokes all of them",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`POST /api/auth/logout` revokes the current refresh token family and deletes the cookie, and `POST /api/auth/logout-all` revokes every refresh token of the user so another browser fails its next refresh with 401",
+          "learnLinks": [
+            {
+              "label": "OWASP: Session management cheat sheet",
+              "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+            },
+            {
+              "label": "MDN: Set-Cookie",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie"
+            }
+          ]
         },
         {
           "week": 8,
@@ -12357,8 +12910,17 @@
           "lane": "web",
           "learn": "Refresh-and-retry: one shared refresh for concurrent requests",
           "title": "API client that refreshes once on 401 and retries the original request",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "With a 1 minute access token, the app keeps working after expiry: three parallel requests that get 401 trigger exactly one refresh and are each retried once, and a failed refresh logs the user out once",
+          "learnLinks": [
+            {
+              "label": "MDN: Using the Fetch API",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch"
+            },
+            {
+              "label": "MDN: 401 Unauthorized",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/401"
+            }
+          ]
         },
         {
           "week": 8,
@@ -12369,8 +12931,17 @@
           "lane": "api",
           "learn": "Security review of the auth flow",
           "title": "Auth integration checklist: expiry, clock skew, cookie flags",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Every item of the auth checklist (token lifetimes, explicit clock skew, signing key length, cookie flags, refresh expiry, no tokens in logs) is verified by a request or a config value and recorded in the PR \"Authorization + refresh\" description",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Configure JWT bearer authentication",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/configure-jwt-bearer-authentication"
+            },
+            {
+              "label": "OWASP: Session management cheat sheet",
+              "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+            }
+          ]
         },
         {
           "week": 8,
@@ -12381,8 +12952,17 @@
           "lane": "web",
           "learn": "Syncing logout across tabs",
           "title": "Logout in one tab logs out the others (BroadcastChannel)",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Logging out in one tab logs out every other open tab within a second, Logout and Log out everywhere call the API and always clear the token and query cache, and PR \"Authorization + refresh\" is merged",
+          "learnLinks": [
+            {
+              "label": "MDN: Broadcast Channel API",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API"
+            },
+            {
+              "label": "TanStack Query: QueryClient",
+              "url": "https://tanstack.com/query/latest/docs/reference/QueryClient"
+            }
+          ]
         },
         {
           "week": 8,
@@ -12405,8 +12985,17 @@
           "lane": "api",
           "learn": "EF Core one-to-many relationships and cascades",
           "title": "Interview gets kind and outcome; new Note entity, both with migrations",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Migration `AddNotes` is applied, deleting a `JobApplication` row in SQL removes its interviews and notes, and deleting a `Company` that still has applications is refused",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Relationships",
+              "url": "https://learn.microsoft.com/en-us/ef/core/modeling/relationships"
+            },
+            {
+              "label": "Microsoft Learn: Cascade delete",
+              "url": "https://learn.microsoft.com/en-us/ef/core/saving/cascade-delete"
+            }
+          ]
         },
         {
           "week": 9,
@@ -12417,8 +13006,17 @@
           "lane": "web",
           "learn": "Tabs with nested routes",
           "title": "Detail page with Overview, Interviews and Notes tabs",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`/applications/:id`, `/applications/:id/interviews` and `/applications/:id/notes` render one shared header with tabs, the active tab is highlighted, and each tab is deep-linkable and survives a reload",
+          "learnLinks": [
+            {
+              "label": "React Router: Routing (data mode)",
+              "url": "https://reactrouter.com/start/data/routing"
+            },
+            {
+              "label": "React Router: NavLink",
+              "url": "https://reactrouter.com/api/components/NavLink"
+            }
+          ]
         },
         {
           "week": 9,
@@ -12429,8 +13027,17 @@
           "lane": "api",
           "learn": "Nested resource routes",
           "title": "GET/POST /api/applications/{id}/interviews",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`POST /api/applications/{id}/interviews` returns 201 with a working `Location`, `GET` returns only that application's interviews in time order, and another user's application id returns 404 on both",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Route handlers in Minimal API apps",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/route-handlers"
+            },
+            {
+              "label": "Microsoft Learn: Loading related data",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/related-data/"
+            }
+          ]
         },
         {
           "week": 9,
@@ -12441,8 +13048,17 @@
           "lane": "web",
           "learn": "Lists inside a detail page; query per tab",
           "title": "Interviews tab listing rounds with its own query",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The Interviews tab lists upcoming and past rounds from `GET /api/applications/{id}/interviews` with its own query key, shows loading, empty and error states, and does not refetch when switching back within the stale time",
+          "learnLinks": [
+            {
+              "label": "TanStack Query: Query keys",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-keys"
+            },
+            {
+              "label": "TanStack Query: useQuery",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/reference/useQuery"
+            }
+          ]
         },
         {
           "week": 9,
@@ -12453,8 +13069,17 @@
           "lane": "api",
           "learn": "DateTimeOffset, UTC storage and time zones",
           "title": "Interview times stored in UTC and validated in the future",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "An interview sent as local time with an offset is stored as UTC, returned as ISO 8601, and a time more than a day in the past returns 400 with a field error, with \"now\" coming from an injected `TimeProvider`",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Choose between DateTime, DateOnly, DateTimeOffset",
+              "url": "https://learn.microsoft.com/en-us/dotnet/standard/datetime/choosing-between-datetime"
+            },
+            {
+              "label": "FluentValidation: Creating your first validator",
+              "url": "https://docs.fluentvalidation.net/en/latest/start.html"
+            }
+          ]
         },
         {
           "week": 9,
@@ -12465,8 +13090,17 @@
           "lane": "web",
           "learn": "Formatting dates and times in the user's time zone",
           "title": "Schedule-an-interview form with local time display",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "An interview scheduled for 14:30 in the form is stored as UTC, displayed as 14:30 with the time zone name, and switching the browser time zone in DevTools changes the displayed time while the stored value stays the same",
+          "learnLinks": [
+            {
+              "label": "MDN: Intl.DateTimeFormat",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat"
+            },
+            {
+              "label": "React Hook Form: useForm",
+              "url": "https://react-hook-form.com/docs/useform"
+            }
+          ]
         },
         {
           "week": 9,
@@ -12477,8 +13111,17 @@
           "lane": "api",
           "learn": "Include vs projection for related data",
           "title": "GET/POST /api/applications/{id}/notes with a projected summary",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`GET /api/applications/{id}/notes` returns a projected summary (id, preview, created time, interview label) newest first, `POST` returns 201 with a working `Location`, and you can show the logged SQL for the projection and for an `Include`",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Loading related data",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/related-data/"
+            },
+            {
+              "label": "Microsoft Learn: Single vs. split queries",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries"
+            }
+          ]
         },
         {
           "week": 9,
@@ -12489,8 +13132,17 @@
           "lane": "web",
           "learn": "Optimistic updates: onMutate, rollback, settle",
           "title": "Add a note instantly with optimistic update and rollback on error",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "With the network throttled, a new note appears in the list instantly and dimmed, and when the API fails it disappears with an error message and the typed text restored",
+          "learnLinks": [
+            {
+              "label": "TanStack Query: Optimistic updates",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates"
+            },
+            {
+              "label": "TanStack Query: useMutation",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/reference/useMutation"
+            }
+          ]
         },
         {
           "week": 9,
@@ -12501,8 +13153,17 @@
           "lane": "api",
           "learn": "Deleting related data safely",
           "title": "Delete interview and note endpoints with ownership checks",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`DELETE` for an interview and a note return 204 for the owner and 404 for another user, deleting an interview keeps its notes with `InterviewId` cleared, and `PUT /api/applications/{id}/notes/{noteId}` updates a note body",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Cascade delete",
+              "url": "https://learn.microsoft.com/en-us/ef/core/saving/cascade-delete"
+            },
+            {
+              "label": "MDN: DELETE",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/DELETE"
+            }
+          ]
         },
         {
           "week": 9,
@@ -12513,8 +13174,17 @@
           "lane": "web",
           "learn": "Inline edit and delete for list items",
           "title": "Edit and delete notes inline with optimistic updates",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Each note can be edited inline (Enter saves, Escape cancels) and deleted, both update the list instantly and roll back on error, and PR \"Interviews + notes\" is merged",
+          "learnLinks": [
+            {
+              "label": "TanStack Query: Optimistic updates",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates"
+            },
+            {
+              "label": "react.dev: Choosing the state structure",
+              "url": "https://react.dev/learn/choosing-the-state-structure"
+            }
+          ]
         },
         {
           "week": 9,
@@ -12537,8 +13207,21 @@
           "lane": "api",
           "learn": "PATCH for state transitions",
           "title": "PATCH /api/applications/{id}/status using the domain transition rules (422 when not allowed)",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`PATCH /api/applications/{id}/status` moves `Applied` to `Interviewing` with 200 and the updated DTO, returns 422 ProblemDetails with `from` and `to` for `Offer` to `Applied`, and repeating the same PATCH returns 200 with no change",
+          "learnLinks": [
+            {
+              "label": "MDN: PATCH",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/PATCH"
+            },
+            {
+              "label": "Microsoft Learn: Handle errors in ASP.NET Core APIs",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling-api"
+            },
+            {
+              "label": "MDN: 422 Unprocessable Content",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/422"
+            }
+          ]
         },
         {
           "week": 10,
@@ -12549,8 +13232,21 @@
           "lane": "web",
           "learn": "dnd-kit basics: draggable, droppable, sensors",
           "title": "Board page with one column per status",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`/board` shows one column per status with every application as a card and a count, and dragging a card with the mouse logs the source and target status in `onDragEnd` while clicking a card still opens its detail page",
+          "learnLinks": [
+            {
+              "label": "dnd kit: Draggable (legacy docs for @dnd-kit/core)",
+              "url": "https://dndkit.com/legacy/api-documentation/draggable/"
+            },
+            {
+              "label": "dnd kit: Droppable (legacy docs for @dnd-kit/core)",
+              "url": "https://dndkit.com/legacy/api-documentation/droppable/"
+            },
+            {
+              "label": "dnd kit: Sensors (legacy docs for @dnd-kit/core)",
+              "url": "https://dndkit.com/legacy/api-documentation/sensors/"
+            }
+          ]
         },
         {
           "week": 10,
@@ -12561,8 +13257,17 @@
           "lane": "api",
           "learn": "Optimistic concurrency with rowversion",
           "title": "RowVersion on JobApplication; stale updates return 409",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Every application DTO includes a `version` string, PUT and PATCH require it, and two `.http` requests sending the same old version produce one 200 and one 409 ProblemDetails",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Handling concurrency conflicts",
+              "url": "https://learn.microsoft.com/en-us/ef/core/saving/concurrency"
+            },
+            {
+              "label": "MDN: 409 Conflict",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/409"
+            }
+          ]
         },
         {
           "week": 10,
@@ -12573,8 +13278,17 @@
           "lane": "web",
           "learn": "Moving cards between columns",
           "title": "Drag a card to another column to change its status",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Dropping a card on another column calls `PATCH /status` with the card's version and the board shows the new status after the response, and the edit form sends `version` again so saving still works",
+          "learnLinks": [
+            {
+              "label": "TanStack Query: useMutation",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/reference/useMutation"
+            },
+            {
+              "label": "TanStack Query: Query invalidation",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation"
+            }
+          ]
         },
         {
           "week": 10,
@@ -12585,8 +13299,17 @@
           "lane": "api",
           "learn": "Returning the new state and version after a change",
           "title": "Status endpoint returns the updated DTO with the new version",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`PATCH /status` and `PUT` return the updated DTO with a new `version`, and sending a second PATCH with the version from the first response succeeds while reusing the old one returns 409",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Handling concurrency conflicts",
+              "url": "https://learn.microsoft.com/en-us/ef/core/saving/concurrency"
+            },
+            {
+              "label": "Microsoft Learn: Create responses in Minimal API applications",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses"
+            }
+          ]
         },
         {
           "week": 10,
@@ -12597,8 +13320,17 @@
           "lane": "web",
           "learn": "Optimistic moves with rollback",
           "title": "Card moves instantly and snaps back if the API refuses",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "With the network throttled, a dropped card moves instantly, a 422 or 409 snaps it back to its column, illegal target columns look disabled while dragging, and two moves in a row succeed because the cache holds the returned version",
+          "learnLinks": [
+            {
+              "label": "TanStack Query: Optimistic updates",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates"
+            },
+            {
+              "label": "TanStack Query: Updates from mutation responses",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/updates-from-mutation-responses"
+            }
+          ]
         },
         {
           "week": 10,
@@ -12609,8 +13341,17 @@
           "lane": "api",
           "learn": "Testing concurrency conflicts",
           "title": "Test that two updates with the same version produce one 409",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`dotnet test` runs a test in which two independent `DbContext` instances update the same application with the same version, and exactly one save succeeds while the other throws `ConcurrencyConflictException`",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Testing against your production database system",
+              "url": "https://learn.microsoft.com/en-us/ef/core/testing/testing-with-the-database"
+            },
+            {
+              "label": "Microsoft Learn: Handling concurrency conflicts",
+              "url": "https://learn.microsoft.com/en-us/ef/core/saving/concurrency"
+            }
+          ]
         },
         {
           "week": 10,
@@ -12621,8 +13362,17 @@
           "lane": "web",
           "learn": "Explaining conflicts to the user",
           "title": "409 shows 'changed elsewhere' and reloads the card",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Moving the same card from two tabs shows \"This application was changed somewhere else\" in the stale tab and reloads the card, the edit form shows the same message on a 409 with a Reload button, and a 422 shows a different message",
+          "learnLinks": [
+            {
+              "label": "MDN: 409 Conflict",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/409"
+            },
+            {
+              "label": "TanStack Query: Query invalidation",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation"
+            }
+          ]
         },
         {
           "week": 10,
@@ -12633,8 +13383,17 @@
           "lane": "api",
           "learn": "Ordering within a column",
           "title": "Position field so cards keep their order inside a column",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Applications have a `Position`, the board query returns each column ordered by it, a new application goes to the end of its column, and `PATCH /status` accepts an optional position so a moved card keeps the place it was dropped",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Indexes",
+              "url": "https://learn.microsoft.com/en-us/ef/core/modeling/indexes"
+            },
+            {
+              "label": "Microsoft Learn: Efficient querying",
+              "url": "https://learn.microsoft.com/en-us/ef/core/performance/efficient-querying"
+            }
+          ]
         },
         {
           "week": 10,
@@ -12645,8 +13404,17 @@
           "lane": "web",
           "learn": "Keyboard drag and drop and screen reader announcements",
           "title": "Keyboard-accessible moves with live announcements",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "With the mouse unplugged, you can pick up a card with Space, move it to another column with the arrow keys and drop it, names are announced instead of ids, every move is also possible through a Move to menu, and PR \"Kanban\" is merged",
+          "learnLinks": [
+            {
+              "label": "dnd kit: Accessibility (legacy docs for @dnd-kit/core)",
+              "url": "https://dndkit.com/legacy/guides/accessibility/"
+            },
+            {
+              "label": "MDN: ARIA",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA"
+            }
+          ]
         },
         {
           "week": 10,
@@ -12669,8 +13437,17 @@
           "lane": "api",
           "learn": "WebApplicationFactory integration tests",
           "title": "Api.Tests project hitting the real pipeline for list, create and 404",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`dotnet test` runs `JobHunt.Api.Tests` green with three tests through `WebApplicationFactory<Program>`: the list returns 200, create returns 201 with a `Location` that resolves, and an unknown id returns 404",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Integration tests in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests"
+            },
+            {
+              "label": "xUnit.net: Shared context between tests",
+              "url": "https://xunit.net/docs/shared-context"
+            }
+          ]
         },
         {
           "week": 11,
@@ -12681,8 +13458,21 @@
           "lane": "web",
           "learn": "Vitest + React Testing Library: queries by role",
           "title": "Component test for ApplicationCard and the list states",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`npm test` in `/web` runs Vitest with jsdom, and tests find `ApplicationCard`'s role, company and status by role or text, and prove `ApplicationList` renders its empty message and one card per item",
+          "learnLinks": [
+            {
+              "label": "Vitest: Getting started",
+              "url": "https://vitest.dev/guide/"
+            },
+            {
+              "label": "Testing Library: React Testing Library",
+              "url": "https://testing-library.com/docs/react-testing-library/intro/"
+            },
+            {
+              "label": "Testing Library: ByRole",
+              "url": "https://testing-library.com/docs/queries/byrole/"
+            }
+          ]
         },
         {
           "week": 11,
@@ -12693,8 +13483,17 @@
           "lane": "api",
           "learn": "A test authentication handler",
           "title": "Tests for authenticated and anonymous requests (401) using a test auth handler",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A `TestAuthHandler` reading an `X-Test-User` header is the default scheme in tests, and the suite proves a request without the header gets 401, a request with it gets 200, and user B's list never contains user A's applications",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Integration tests in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests"
+            },
+            {
+              "label": "Microsoft Learn: Overview of ASP.NET Core authentication",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/"
+            }
+          ]
         },
         {
           "week": 11,
@@ -12705,8 +13504,17 @@
           "lane": "web",
           "learn": "user-event and testing forms",
           "title": "Form test: validation errors appear and submit is blocked",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A test types into the create form with `user-event`, proves an empty submit shows the required errors with `aria-invalid` and never calls `onSubmit`, and a valid submit calls `onSubmit` once with typed values",
+          "learnLinks": [
+            {
+              "label": "Testing Library: user-event",
+              "url": "https://testing-library.com/docs/user-event/intro"
+            },
+            {
+              "label": "Testing Library: About queries",
+              "url": "https://testing-library.com/docs/queries/about"
+            }
+          ]
         },
         {
           "week": 11,
@@ -12717,8 +13525,21 @@
           "lane": "api",
           "learn": "Testcontainers: a real SQL Server per run",
           "title": "Integration tests running against a containerised SQL Server",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "With Docker running and no local SQL Server needed, `dotnet test` starts one pinned SQL Server container, migrates it once, and the whole API suite is green against it",
+          "learnLinks": [
+            {
+              "label": "Testcontainers for .NET: MSSQL module",
+              "url": "https://dotnet.testcontainers.org/modules/mssql/"
+            },
+            {
+              "label": "Testcontainers for .NET: Home",
+              "url": "https://dotnet.testcontainers.org/"
+            },
+            {
+              "label": "Microsoft Learn: Testing against your production database system",
+              "url": "https://learn.microsoft.com/en-us/ef/core/testing/testing-with-the-database"
+            }
+          ]
         },
         {
           "week": 11,
@@ -12729,8 +13550,17 @@
           "lane": "web",
           "learn": "MSW: mocking the API at the network level",
           "title": "MSW handlers so page tests exercise the real fetching code",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`ApplicationsPage` tests pass for loading then data, empty list and a 500 ProblemDetails error, using MSW handlers with the real `api.ts` and query hooks, and an unhandled request fails the test",
+          "learnLinks": [
+            {
+              "label": "MSW: Quick start",
+              "url": "https://mswjs.io/docs/quick-start"
+            },
+            {
+              "label": "MSW: Documentation",
+              "url": "https://mswjs.io/docs/"
+            }
+          ]
         },
         {
           "week": 11,
@@ -12741,8 +13571,17 @@
           "lane": "api",
           "learn": "Resetting data between tests; test fixtures",
           "title": "Clean database per test class and a 403/404 ownership test",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Each API test class starts from an empty database through one reset helper, and tests prove user B gets 404 for user A's application on GET, PUT and DELETE while a normal user gets 403 and an admin 200 on `/api/admin/stats`",
+          "learnLinks": [
+            {
+              "label": "xUnit.net: Shared context between tests",
+              "url": "https://xunit.net/docs/shared-context"
+            },
+            {
+              "label": "Microsoft Learn: Resource-based authorization in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/resourcebased"
+            }
+          ]
         },
         {
           "week": 11,
@@ -12753,8 +13592,17 @@
           "lane": "web",
           "learn": "Testing the refresh-and-retry wrapper",
           "title": "Test that two parallel 401s trigger exactly one refresh",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "An `api.test.ts` test fires two requests together with an expired token, and asserts that MSW saw exactly one refresh call and both original requests succeeded on their single retry",
+          "learnLinks": [
+            {
+              "label": "MSW: Documentation",
+              "url": "https://mswjs.io/docs/"
+            },
+            {
+              "label": "Vitest: Mocking",
+              "url": "https://vitest.dev/guide/mocking"
+            }
+          ]
         },
         {
           "week": 11,
@@ -12765,8 +13613,17 @@
           "lane": "api",
           "learn": "Coverage and what to test where",
           "title": "API coverage report and the slow vs fast test split",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`npm run test:api:fast` runs only the tests that need no Docker in seconds, `npm run coverage:api` produces one merged HTML report for all API test projects with migrations excluded, and the PR \"Tests\" description lists two tests you added because of the report",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Code coverage for unit testing",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-code-coverage"
+            },
+            {
+              "label": "Microsoft Learn: Run selected unit tests",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests"
+            }
+          ]
         },
         {
           "week": 11,
@@ -12777,8 +13634,17 @@
           "lane": "web",
           "learn": "Coverage and the testing pyramid",
           "title": "Web coverage report and a TESTING.md for both apps",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`npm test` at the repo root runs the API and web suites and fails if either fails, the web coverage report counts every file under `src`, `TESTING.md` explains the strategy for both apps, and PR \"Tests\" is merged",
+          "learnLinks": [
+            {
+              "label": "Vitest: Coverage",
+              "url": "https://vitest.dev/guide/coverage"
+            },
+            {
+              "label": "Testing Library: Guiding principles",
+              "url": "https://testing-library.com/docs/guiding-principles"
+            }
+          ]
         },
         {
           "week": 11,
@@ -12801,8 +13667,17 @@
           "lane": "api",
           "learn": "Aggregate queries with GroupBy",
           "title": "GET /api/stats: applications per status and response rate",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`GET /api/stats` returns the total, a count for each of the four statuses (zeros included) and a response rate for the current user only, built from one `GROUP BY` query you have read in the SQL log",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Complex query operators",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/complex-query-operators"
+            },
+            {
+              "label": "Microsoft Learn: Simple logging",
+              "url": "https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/simple-logging"
+            }
+          ]
         },
         {
           "week": 12,
@@ -12813,8 +13688,17 @@
           "lane": "web",
           "learn": "Charts in React",
           "title": "Dashboard page with a status breakdown chart",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`/dashboard` (in the nav) shows stat tiles for total, response rate as a percent and offers, plus an SVG bar chart with one labelled bar per status whose widths match the counts, each bar linking to the filtered list",
+          "learnLinks": [
+            {
+              "label": "MDN: SVG",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/SVG"
+            },
+            {
+              "label": "MDN: Intl.NumberFormat",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat"
+            }
+          ]
         },
         {
           "week": 12,
@@ -12825,8 +13709,17 @@
           "lane": "api",
           "learn": "Time-bucketed statistics",
           "title": "Weekly activity series in the stats endpoint",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`GET /api/stats` also returns `WeeklyActivity`: exactly 12 entries (weeks starting Monday, oldest first, empty weeks as zeros) with applications sent and interviews scheduled, computed from at most two extra SQL queries",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Complex query operators",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/complex-query-operators"
+            },
+            {
+              "label": "Microsoft Learn: Use TimeProvider",
+              "url": "https://learn.microsoft.com/en-us/dotnet/standard/datetime/timeprovider-overview"
+            }
+          ]
         },
         {
           "week": 12,
@@ -12837,8 +13730,21 @@
           "lane": "web",
           "learn": "Accessible data visualisation",
           "title": "Weekly activity chart with a table fallback and labels",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The dashboard shows a 12 week activity chart whose SVG has `role=\"img\"`, a title and a one-sentence summary, and a \"Show as table\" toggle renders the same data in a `<table>` with a caption and header cells; the status chart gets the same treatment",
+          "learnLinks": [
+            {
+              "label": "W3C WAI: Complex images",
+              "url": "https://www.w3.org/WAI/tutorials/images/complex/"
+            },
+            {
+              "label": "MDN: The table element",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/table"
+            },
+            {
+              "label": "MDN: ARIA",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA"
+            }
+          ]
         },
         {
           "week": 12,
@@ -12849,8 +13755,17 @@
           "lane": "api",
           "learn": "The N+1 problem",
           "title": "Find and fix one N+1 query, proven with the SQL log",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The SQL log shows the applications list going from 1 + N queries to a single query after your fix, with the before and after query counts for one page written in the PR notes",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Efficient querying",
+              "url": "https://learn.microsoft.com/en-us/ef/core/performance/efficient-querying"
+            },
+            {
+              "label": "Microsoft Learn: Simple logging",
+              "url": "https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/simple-logging"
+            }
+          ]
         },
         {
           "week": 12,
@@ -12861,8 +13776,17 @@
           "lane": "web",
           "learn": "Finding slow renders with the React Profiler",
           "title": "Profile the board and the dashboard; record the slowest render",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The PR notes hold two React Profiler recordings, a drag on the board with about 100 cards and the dashboard table toggle, naming the slowest commit, its duration and the components that rendered in it",
+          "learnLinks": [
+            {
+              "label": "react.dev: React Developer Tools",
+              "url": "https://react.dev/learn/react-developer-tools"
+            },
+            {
+              "label": "react.dev: Profiler",
+              "url": "https://react.dev/reference/react/Profiler"
+            }
+          ]
         },
         {
           "week": 12,
@@ -12873,8 +13797,17 @@
           "lane": "api",
           "learn": "Execution plans and indexes for aggregates",
           "title": "Index for the stats query, verified with the execution plan",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "With 50,000 seeded applications, the actual execution plan for the stats queries shows an index seek with no key lookups after your migration, and the logical reads before and after (from `SET STATISTICS IO ON`) are in the PR notes",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Indexes",
+              "url": "https://learn.microsoft.com/en-us/ef/core/modeling/indexes"
+            },
+            {
+              "label": "Microsoft Learn: Display an actual execution plan",
+              "url": "https://learn.microsoft.com/en-us/sql/relational-databases/performance/display-an-actual-execution-plan"
+            }
+          ]
         },
         {
           "week": 12,
@@ -12885,8 +13818,21 @@
           "lane": "web",
           "learn": "memo, useMemo and useCallback: when they help",
           "title": "Fix the measured slow render and prove it with the profiler",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A new Profiler recording of the same board drag shows only the dragged card and the affected columns rendering after your fix, the before and after commit durations are in the PR notes, and memoisation that changed nothing has been removed",
+          "learnLinks": [
+            {
+              "label": "react.dev: memo",
+              "url": "https://react.dev/reference/react/memo"
+            },
+            {
+              "label": "react.dev: useMemo",
+              "url": "https://react.dev/reference/react/useMemo"
+            },
+            {
+              "label": "react.dev: useCallback",
+              "url": "https://react.dev/reference/react/useCallback"
+            }
+          ]
         },
         {
           "week": 12,
@@ -12897,8 +13843,17 @@
           "lane": "api",
           "learn": "Compiled queries and split queries",
           "title": "Compare a split query with a single query for the detail page",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The PR notes compare the detail query as one query and as a split query (SQL statements, rows returned and time with interviews and notes seeded), name the one you kept and why, and the PR \"Dashboard\" is open",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Single vs. split queries",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries"
+            },
+            {
+              "label": "Microsoft Learn: Advanced performance topics",
+              "url": "https://learn.microsoft.com/en-us/ef/core/performance/advanced-performance-topics"
+            }
+          ]
         },
         {
           "week": 12,
@@ -12909,8 +13864,21 @@
           "lane": "web",
           "learn": "Code splitting with lazy and Suspense",
           "title": "Lazy-load the dashboard and board routes and compare bundle sizes",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`vite build` shows the dashboard and board in their own chunks, the main chunk is smaller by an amount recorded in the PR, both routes load with a pending indicator on a throttled network, and PR \"Dashboard\" is merged",
+          "learnLinks": [
+            {
+              "label": "react.dev: lazy",
+              "url": "https://react.dev/reference/react/lazy"
+            },
+            {
+              "label": "React Router: Route object",
+              "url": "https://reactrouter.com/start/data/route-object"
+            },
+            {
+              "label": "Vite: Building for production",
+              "url": "https://vite.dev/guide/build"
+            }
+          ]
         },
         {
           "week": 12,
@@ -12933,8 +13901,17 @@
           "lane": "api",
           "learn": "Output caching and keys that vary by user",
           "title": "Output caching on stats, varying by user",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The second `GET /api/stats` for a user within a minute is served from the output cache with no SQL in the log, a second user gets their own numbers, and an integration test proves user B never receives user A's cached stats",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Output caching middleware",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/caching/output"
+            },
+            {
+              "label": "Microsoft Learn: Caching overview",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/caching/overview"
+            }
+          ]
         },
         {
           "week": 13,
@@ -12945,8 +13922,21 @@
           "lane": "web",
           "learn": "staleTime and gcTime in TanStack Query",
           "title": "Tune staleTime per query and explain each choice",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Every query gets its `staleTime` from a shared `queryOptions` factory, a comment table in `queries.ts` gives each query's value and reason, and switching tabs back to the dashboard within the stats `staleTime` sends no request",
+          "learnLinks": [
+            {
+              "label": "TanStack Query: Important defaults",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/important-defaults"
+            },
+            {
+              "label": "TanStack Query: Caching examples",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/caching"
+            },
+            {
+              "label": "TanStack Query: Query options",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-options"
+            }
+          ]
         },
         {
           "week": 13,
@@ -12957,8 +13947,13 @@
           "lane": "api",
           "learn": "Cache invalidation with tags",
           "title": "Evict a user's cached stats when their applications change",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Creating, editing, moving, deleting or restoring an application evicts only that user's cached stats, so their next `GET /api/stats` hits SQL while another user's stays cached, proven by an integration test",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Output caching middleware",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/caching/output"
+            }
+          ]
         },
         {
           "week": 13,
@@ -12969,8 +13964,17 @@
           "lane": "web",
           "learn": "Debouncing input",
           "title": "useDebounce hook for the company search box",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A `useDebounce<T>(value, delay)` hook has a Vitest test with fake timers proving it returns the new value only after the delay, and the company search box shows the debounced term changing once per pause, not per keystroke",
+          "learnLinks": [
+            {
+              "label": "react.dev: Reusing logic with custom Hooks",
+              "url": "https://react.dev/learn/reusing-logic-with-custom-hooks"
+            },
+            {
+              "label": "Vitest: Fake timers",
+              "url": "https://vitest.dev/guide/mocking/timers"
+            }
+          ]
         },
         {
           "week": 13,
@@ -12981,8 +13985,21 @@
           "lane": "api",
           "learn": "IDistributedCache and Redis: cache-aside",
           "title": "Redis cache for each user's company list with a database fallback",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`GET /api/companies?search=ac` serves the user's company list from Redis on the second call (seen with `redis-cli MONITOR` and no SQL in the log), creating a company removes the key, and with the Redis container stopped the endpoint still answers from the database",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Distributed caching",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/caching/distributed"
+            },
+            {
+              "label": "Redis: Docs",
+              "url": "https://redis.io/docs/latest/"
+            },
+            {
+              "label": "Microsoft Learn: HybridCache library",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/caching/hybrid"
+            }
+          ]
         },
         {
           "week": 13,
@@ -12993,8 +14010,17 @@
           "lane": "web",
           "learn": "Cancelling stale requests with AbortController",
           "title": "Search requests cancelled when the user keeps typing",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Typing \"acme\" quickly into the company box sends one search request after the pause, an earlier slow request shows as cancelled in the Network tab, and an MSW test proves fast typing sends a single request",
+          "learnLinks": [
+            {
+              "label": "MDN: AbortController",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController"
+            },
+            {
+              "label": "TanStack Query: Query cancellation",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-cancellation"
+            }
+          ]
         },
         {
           "week": 13,
@@ -13005,8 +14031,21 @@
           "lane": "api",
           "learn": "Rate limiting: fixed window, sliding window, token bucket",
           "title": "Rate limits on the auth endpoints with 429 and Retry-After",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The sixth login within a minute from one IP returns 429 ProblemDetails with a `Retry-After` header, refresh allows a small burst, an integration test covers the login limit, and a TODO next to the partition key mentions forwarded headers",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Rate limiting middleware",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/rate-limit"
+            },
+            {
+              "label": "MDN: 429 Too Many Requests",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/429"
+            },
+            {
+              "label": "MDN: Retry-After",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Retry-After"
+            }
+          ]
         },
         {
           "week": 13,
@@ -13017,8 +14056,17 @@
           "lane": "web",
           "learn": "Handling 429 in the client",
           "title": "Friendly 'slow down' message using Retry-After",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Six fast login attempts show \"Too many attempts. Try again in N seconds.\" with a live countdown and a disabled submit button, `ApiError` carries `retryAfterSeconds`, and TanStack Query does not retry a 429",
+          "learnLinks": [
+            {
+              "label": "MDN: Retry-After",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Retry-After"
+            },
+            {
+              "label": "TanStack Query: Query retries",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-retries"
+            }
+          ]
         },
         {
           "week": 13,
@@ -13029,8 +14077,21 @@
           "lane": "api",
           "learn": "Measuring cache hit rates",
           "title": "Log cache hits and misses and check them under a small load",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Output cache and Redis hits and misses are logged with structured fields and counted with a metric, a 200-request load script shows a hit rate you write in the PR notes, and the PR \"Caching + search\" is open",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Compile-time logging source generation",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/logger-message-generator"
+            },
+            {
+              "label": "Microsoft Learn: Creating metrics",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics-instrumentation"
+            },
+            {
+              "label": "Microsoft Learn: dotnet-counters",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/dotnet-counters"
+            }
+          ]
         },
         {
           "week": 13,
@@ -13041,8 +14102,17 @@
           "lane": "web",
           "learn": "Prefetching on hover",
           "title": "Prefetch application details when hovering a row",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Hovering or focusing an application row for about 100 ms prefetches its detail, clicking it then shows the page with no new detail request in the Network tab, and PR \"Caching + search\" is merged",
+          "learnLinks": [
+            {
+              "label": "TanStack Query: Prefetching",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/prefetching"
+            },
+            {
+              "label": "React Router: Route object",
+              "url": "https://reactrouter.com/start/data/route-object"
+            }
+          ]
         },
         {
           "week": 13,
@@ -13065,8 +14135,21 @@
           "lane": "api",
           "learn": "File uploads: IFormFile, limits, storage outside the database",
           "title": "POST /api/applications/{id}/files with size and type validation",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Uploading a 1 MB PDF to `POST /api/applications/{id}/files` returns 201 and the file lands outside the web root under a generated name, while a renamed `.exe` or a 10 MB file returns 400 ProblemDetails with a `file` field error",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Upload files in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads"
+            },
+            {
+              "label": "OWASP: File upload cheat sheet",
+              "url": "https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html"
+            },
+            {
+              "label": "Microsoft Learn: Parameter binding in Minimal API apps",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/parameter-binding"
+            }
+          ]
         },
         {
           "week": 14,
@@ -13077,8 +14160,17 @@
           "lane": "web",
           "learn": "FormData uploads with progress",
           "title": "Attachment uploader with a progress bar",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The application detail has a Files tab where choosing a PDF uploads it to the API with a `<progress>` bar that moves from 0 to 100, a Cancel button aborts the request, and a 400 from the server shows its ProblemDetails message",
+          "learnLinks": [
+            {
+              "label": "MDN: Using FormData objects",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects"
+            },
+            {
+              "label": "MDN: XMLHttpRequest upload",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/upload"
+            }
+          ]
         },
         {
           "week": 14,
@@ -13089,8 +14181,21 @@
           "lane": "api",
           "learn": "Authorised file downloads",
           "title": "Download endpoint that checks ownership and sets content headers",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`GET /api/applications/{id}/files` lists attachments and `GET .../files/{fileId}` returns the file with its stored content type, a `Content-Disposition: attachment` download name and `X-Content-Type-Options: nosniff`, while another user gets 404 for both",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Create responses in Minimal API applications",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses"
+            },
+            {
+              "label": "MDN: Content-Disposition",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Disposition"
+            },
+            {
+              "label": "MDN: X-Content-Type-Options",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Content-Type-Options"
+            }
+          ]
         },
         {
           "week": 14,
@@ -13101,8 +14206,17 @@
           "lane": "web",
           "learn": "Drag and drop file input; file type errors",
           "title": "Drop zone with clear errors for wrong type or size",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Dropping or picking a file shows a highlighted drop zone, a wrong type or a file over 5 MB is rejected before any request with a message naming the file and the rule, and the drop zone works with the keyboard through its file input",
+          "learnLinks": [
+            {
+              "label": "MDN: HTML Drag and Drop API",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API"
+            },
+            {
+              "label": "MDN: input type file",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/file"
+            }
+          ]
         },
         {
           "week": 14,
@@ -13113,8 +14227,21 @@
           "lane": "api",
           "learn": "Background work: hosted services vs Hangfire",
           "title": "Hangfire with SQL Server storage and its dashboard behind admin auth",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The API starts Hangfire with SQL Server storage (not in `Testing`), a daily refresh-token cleanup job appears under Recurring Jobs, and `/hangfire` opens for an admin through the Admin page while anyone else gets 401 or 403",
+          "learnLinks": [
+            {
+              "label": "Hangfire: Documentation",
+              "url": "https://docs.hangfire.io/en/latest/"
+            },
+            {
+              "label": "Hangfire: Using Dashboard",
+              "url": "https://docs.hangfire.io/en/latest/configuration/using-dashboard.html"
+            },
+            {
+              "label": "Microsoft Learn: Background tasks with hosted services",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services"
+            }
+          ]
         },
         {
           "week": 14,
@@ -13125,8 +14252,17 @@
           "lane": "web",
           "learn": "Listing and deleting attachments",
           "title": "Attachments list with download and delete",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The Files tab lists attachments with name, formatted size and date, Download saves the file with the in-memory token attached, and Delete (with confirm) removes it from the list and from the server",
+          "learnLinks": [
+            {
+              "label": "MDN: URL.createObjectURL()",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL_static"
+            },
+            {
+              "label": "TanStack Query: useMutation",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/reference/useMutation"
+            }
+          ]
         },
         {
           "week": 14,
@@ -13137,8 +14273,17 @@
           "lane": "api",
           "learn": "Scheduled, idempotent jobs",
           "title": "Follow-up reminder job for applications with no response after X days",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "An application in `Applied` for longer than the configured days gets exactly one follow-up reminder, and an integration test that runs `FollowUpReminderJob` twice with a fake clock still finds one reminder",
+          "learnLinks": [
+            {
+              "label": "Hangfire: Recurring tasks",
+              "url": "https://docs.hangfire.io/en/latest/background-methods/performing-recurrent-tasks.html"
+            },
+            {
+              "label": "Hangfire: Best practices",
+              "url": "https://docs.hangfire.io/en/latest/best-practices.html"
+            }
+          ]
         },
         {
           "week": 14,
@@ -13149,8 +14294,17 @@
           "lane": "web",
           "learn": "Notification UI: badge, read and unread",
           "title": "Reminders panel with an unread count",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The header shows a bell with an unread badge (hidden at 0, \"9+\" above 9) whose accessible name includes the count, and it opens a panel listing reminders that link to their applications, all working against MSW handlers until Friday's endpoints exist",
+          "learnLinks": [
+            {
+              "label": "MDN: Popover API",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/Popover_API"
+            },
+            {
+              "label": "W3C WAI: Disclosure pattern",
+              "url": "https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/"
+            }
+          ]
         },
         {
           "week": 14,
@@ -13161,8 +14315,17 @@
           "lane": "api",
           "learn": "Reminder endpoints",
           "title": "GET reminders and POST mark-as-read",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`GET /api/reminders` returns the current user's reminders newest first with `unreadCount`, `POST /api/reminders/{id}/read` and `POST /api/reminders/read-all` return 204 and are idempotent, another user's reminder gives 404, and the PR \"Files + reminders\" is open",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Create responses in Minimal API applications",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses"
+            },
+            {
+              "label": "Microsoft Learn: ExecuteUpdate and ExecuteDelete",
+              "url": "https://learn.microsoft.com/en-us/ef/core/saving/execute-insert-update-delete"
+            }
+          ]
         },
         {
           "week": 14,
@@ -13173,8 +14336,17 @@
           "lane": "web",
           "learn": "Polling with refetchInterval (until week 15 makes it real-time)",
           "title": "Reminders refresh every minute and mark-as-read updates the badge",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "With the real endpoints, reminders refetch every minute only while the tab is visible, marking one or all as read updates the badge instantly and survives a reload, a failed request rolls the badge back, and PR \"Files + reminders\" is merged",
+          "learnLinks": [
+            {
+              "label": "TanStack Query: useQuery",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/reference/useQuery"
+            },
+            {
+              "label": "TanStack Query: Optimistic updates",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates"
+            }
+          ]
         },
         {
           "week": 14,
@@ -13197,8 +14369,21 @@
           "lane": "api",
           "learn": "SignalR hubs, groups and connection lifetime",
           "title": "NotificationsHub with a group per user",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "An integration test connects to `/hubs/notifications` with the .NET SignalR client over long polling as users A and B, and a message sent to A's `user:{id}` group through `IHubContext` reaches A's connection but not B's",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Overview of ASP.NET Core SignalR",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/introduction"
+            },
+            {
+              "label": "Microsoft Learn: Manage users and groups in SignalR",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/groups"
+            },
+            {
+              "label": "Microsoft Learn: Use hubs in SignalR",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/hubs"
+            }
+          ]
         },
         {
           "week": 15,
@@ -13209,8 +14394,17 @@
           "lane": "web",
           "learn": "The SignalR JavaScript client",
           "title": "useSignalR hook that connects and shows connection status",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A `RealtimeProvider` inside the protected layout opens one connection to `/hubs/notifications`, the header shows its status in text (Connecting, Live, Reconnecting, Offline), and stopping and restarting the API moves through those states",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: ASP.NET Core SignalR JavaScript client",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/javascript-client"
+            },
+            {
+              "label": "react.dev: Synchronizing with Effects",
+              "url": "https://react.dev/learn/synchronizing-with-effects"
+            }
+          ]
         },
         {
           "week": 15,
@@ -13221,8 +14415,17 @@
           "lane": "api",
           "learn": "Authenticating SignalR connections with JWT",
           "title": "Hub requires auth; the token is read for WebSocket connections",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The browser's connection to `/hubs/notifications` uses WebSockets with the token from the `access_token` query string (only for `/hubs` paths), an anonymous connection gets 401, and request logs never show that query string",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Authentication and authorization in SignalR",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/authn-and-authz"
+            },
+            {
+              "label": "Microsoft Learn: Overview of ASP.NET Core SignalR",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/introduction"
+            }
+          ]
         },
         {
           "week": 15,
@@ -13233,8 +14436,17 @@
           "lane": "web",
           "learn": "accessTokenFactory through the refresh wrapper",
           "title": "Connection gets a fresh token through the week 8 refresh helper",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "With a 1 minute access token, a reconnect after expiry makes exactly one `POST /api/auth/refresh` before negotiating, even when failing queries need a refresh at the same moment, and a failed refresh logs the user out once",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: ASP.NET Core SignalR JavaScript client",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/javascript-client"
+            },
+            {
+              "label": "MSW: Documentation",
+              "url": "https://mswjs.io/docs/"
+            }
+          ]
         },
         {
           "week": 15,
@@ -13245,8 +14457,17 @@
           "lane": "api",
           "learn": "Publishing from application code with IHubContext",
           "title": "Reminder job and status changes push events to the user's group",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A test with a recording fake publisher proves `FollowUpReminderJob` publishes once per new reminder and nothing on a second run, and a status change publishes `ApplicationChanged` only after the save succeeds",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Send messages from outside a hub",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/hubcontext"
+            },
+            {
+              "label": "Microsoft Learn: Use hubs in SignalR",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/hubs"
+            }
+          ]
         },
         {
           "week": 15,
@@ -13257,8 +14478,21 @@
           "lane": "web",
           "learn": "Updating the TanStack Query cache from pushed events",
           "title": "Board and list update live when another tab changes an application",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "With the board open in two tabs, moving a card in tab A moves it in tab B within a second without a 409, a new reminder updates the badge in every tab, and Vitest tests cover the event-to-cache function",
+          "learnLinks": [
+            {
+              "label": "TanStack Query: Updates from mutation responses",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/updates-from-mutation-responses"
+            },
+            {
+              "label": "TanStack Query: Query invalidation",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation"
+            },
+            {
+              "label": "TanStack Query: QueryClient",
+              "url": "https://tanstack.com/query/latest/docs/reference/QueryClient"
+            }
+          ]
         },
         {
           "week": 15,
@@ -13269,8 +14503,17 @@
           "lane": "api",
           "learn": "Reconnects and missed messages",
           "title": "Events carry ids so clients can detect gaps",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Every pushed event is wrapped in an envelope with a unique `id`, a per-user `seq` that grows by one and a server `epoch`, and a test proves two events for one user arrive with consecutive numbers while another user's sequence is independent",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Send messages from outside a hub",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/hubcontext"
+            },
+            {
+              "label": "Microsoft Learn: ASP.NET Core SignalR configuration",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/configuration"
+            }
+          ]
         },
         {
           "week": 15,
@@ -13281,8 +14524,17 @@
           "lane": "web",
           "learn": "Automatic reconnect and refetch after reconnect",
           "title": "Invalidate queries after reconnect; remove the week 14 polling",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "After a reconnect, a detected sequence gap or a new epoch, the client invalidates reminders, lists, the board and stats; `refetchInterval` is gone from `useReminders()`; and the Network tab shows no reminder polling",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: ASP.NET Core SignalR JavaScript client",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/javascript-client"
+            },
+            {
+              "label": "TanStack Query: Query invalidation",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation"
+            }
+          ]
         },
         {
           "week": 15,
@@ -13293,8 +14545,17 @@
           "lane": "api",
           "learn": "Per-user notification preferences",
           "title": "UserPreferences with a quiet mode stored per user",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`GET` and `PUT /api/me/preferences` read and save `quietMode` for the current user in a `UserPreferences` table (defaulting to false when no row exists), with validation and an integration test, and the PR \"Real-time\" is open",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Basic SaveChanges",
+              "url": "https://learn.microsoft.com/en-us/ef/core/saving/basic"
+            },
+            {
+              "label": "Microsoft Learn: Create responses in Minimal API applications",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses"
+            }
+          ]
         },
         {
           "week": 15,
@@ -13305,8 +14566,21 @@
           "lane": "web",
           "learn": "Toasts and attention",
           "title": "Toast notifications for reminders that respect quiet mode",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A new reminder shows one polite toast with an Open action (bursts collapse into \"3 new reminders\"), quiet mode in the user menu stops toasts but keeps the badge counting, the setting survives a reload on another browser, and PR \"Real-time\" is merged",
+          "learnLinks": [
+            {
+              "label": "W3C WAI: Alert pattern",
+              "url": "https://www.w3.org/WAI/ARIA/apg/patterns/alert/"
+            },
+            {
+              "label": "MDN: ARIA live regions",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Guides/Live_regions"
+            },
+            {
+              "label": "MDN: Page Visibility API",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API"
+            }
+          ]
         },
         {
           "week": 15,
@@ -13329,8 +14603,17 @@
           "lane": "api",
           "learn": "Typed HttpClient and IHttpClientFactory",
           "title": "Company info enrichment through a typed client (public API or a stub)",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`GET /api/companies/{id}/info` returns domain, industry and size fetched through a typed `ICompanyInfoClient` from a local stub, returns 404 for an unknown company, and 503 ProblemDetails when the stub is stopped",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: IHttpClientFactory with .NET",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/httpclient-factory"
+            },
+            {
+              "label": "Microsoft Learn: Make HTTP requests using IHttpClientFactory in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests"
+            }
+          ]
         },
         {
           "week": 16,
@@ -13341,8 +14624,17 @@
           "lane": "web",
           "learn": "Error boundaries",
           "title": "Error boundary per route with a retry button",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Throwing on purpose inside the board route shows that route's error screen with a Try again button while the header and nav still work, and Try again re-renders the route successfully once the throw is removed",
+          "learnLinks": [
+            {
+              "label": "React Router: Error boundaries",
+              "url": "https://reactrouter.com/how-to/error-boundary"
+            },
+            {
+              "label": "react.dev: Catching rendering errors with an error boundary",
+              "url": "https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary"
+            }
+          ]
         },
         {
           "week": 16,
@@ -13353,8 +14645,17 @@
           "lane": "api",
           "learn": "Resilience: retry, timeout, circuit breaker",
           "title": "Standard resilience handler with timeouts and a circuit breaker",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "With the stub failing half its requests most info calls still succeed and retries show in the log, with the stub down calls fail in under 50 ms once the circuit opens and return 503 with `Retry-After`, and a 5 second stub delay is cut by the attempt timeout",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Build resilient HTTP apps",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/resilience/http-resilience"
+            },
+            {
+              "label": "Microsoft Learn: Introduction to resilient app development",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/resilience/"
+            }
+          ]
         },
         {
           "week": 16,
@@ -13365,8 +14666,17 @@
           "lane": "web",
           "learn": "Graceful degradation in the UI",
           "title": "Company info shown as optional; the page works when enrichment fails",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The Overview tab shows a `CompanyInfoCard` with its own loading and error states; with the stub stopped the card says \"Company info is temporarily unavailable\" while the rest of the page works, and the client does not retry a 503",
+          "learnLinks": [
+            {
+              "label": "TanStack Query: Query retries",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-retries"
+            },
+            {
+              "label": "MDN: 503 Service Unavailable",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/503"
+            }
+          ]
         },
         {
           "week": 16,
@@ -13377,8 +14687,17 @@
           "lane": "api",
           "learn": "Structured logging with Serilog",
           "title": "Serilog with request logging and enrichers",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Every request writes one structured Serilog line with method, path, status, elapsed time and user id, start-up failures are logged by a bootstrap logger, and no token, password or `/hubs` query string appears in any log",
+          "learnLinks": [
+            {
+              "label": "Serilog: Home",
+              "url": "https://serilog.net/"
+            },
+            {
+              "label": "Microsoft Learn: Logging in .NET and ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging/"
+            }
+          ]
         },
         {
           "week": 16,
@@ -13389,8 +14708,17 @@
           "lane": "web",
           "learn": "Sending a correlation id from the client",
           "title": "api.ts sends X-Correlation-Id and keeps it on ApiError",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Every request from `api.ts` sends an `X-Correlation-Id` from `crypto.randomUUID()`, `ApiError` keeps the id (from the response header when present, else the one sent), and error states show \"Reference: \" with that id",
+          "learnLinks": [
+            {
+              "label": "MDN: Crypto.randomUUID()",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID"
+            },
+            {
+              "label": "MDN: HTTP headers",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers"
+            }
+          ]
         },
         {
           "week": 16,
@@ -13401,8 +14729,17 @@
           "lane": "api",
           "learn": "Correlation ids end to end",
           "title": "Correlation id in logs, ProblemDetails and response headers",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A valid incoming `X-Correlation-Id` is reused (otherwise the trace id), it appears on every log line of the request, in ProblemDetails as `correlationId` and in the response header even on a 500, and `POST /api/client-errors` logs a validated report with it",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Handle errors in ASP.NET Core APIs",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling-api"
+            },
+            {
+              "label": "Serilog: Home",
+              "url": "https://serilog.net/"
+            }
+          ]
         },
         {
           "week": 16,
@@ -13413,8 +14750,17 @@
           "lane": "web",
           "learn": "Reporting client errors",
           "title": "POST /api/client-errors from the error boundary with the correlation id",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A render error in a route shows the error screen and sends one `POST /api/client-errors` with message, trimmed stack, URL and the last correlation id, uncaught errors and unhandled rejections are reported too, and a render loop cannot send more than five reports per session",
+          "learnLinks": [
+            {
+              "label": "react.dev: createRoot",
+              "url": "https://react.dev/reference/react-dom/client/createRoot"
+            },
+            {
+              "label": "MDN: Navigator.sendBeacon()",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/Navigator/sendBeacon"
+            }
+          ]
         },
         {
           "week": 16,
@@ -13425,8 +14771,21 @@
           "lane": "api",
           "learn": "OpenTelemetry traces and spans",
           "title": "Traces for HTTP, EF Core and the external call, viewed locally",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "One call to `GET /api/companies/{id}/info` appears in a local trace viewer as a single trace with the ASP.NET Core span, the SQL span and one outbound HTTP span per attempt, the reminder job has its own trace with a custom span, and the PR \"Resilience + observability\" is open",
+          "learnLinks": [
+            {
+              "label": "OpenTelemetry: .NET",
+              "url": "https://opentelemetry.io/docs/languages/dotnet/"
+            },
+            {
+              "label": "Microsoft Learn: .NET observability with OpenTelemetry",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/observability-with-otel"
+            },
+            {
+              "label": "OpenTelemetry: Traces",
+              "url": "https://opentelemetry.io/docs/concepts/signals/traces/"
+            }
+          ]
         },
         {
           "week": 16,
@@ -13437,8 +14796,21 @@
           "lane": "web",
           "learn": "Web Vitals and performance marks",
           "title": "Report Core Web Vitals for the main pages to the API",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The `web-vitals` library reports LCP, INP and CLS for the list, board and dashboard to a small `POST /api/web-vitals` endpoint, values show in the API log with the route name, one custom `performance.mark` measures board render time, and PR \"Resilience + observability\" is merged",
+          "learnLinks": [
+            {
+              "label": "web.dev: Web Vitals",
+              "url": "https://web.dev/articles/vitals"
+            },
+            {
+              "label": "web.dev: Interaction to Next Paint",
+              "url": "https://web.dev/articles/inp"
+            },
+            {
+              "label": "MDN: Performance.mark()",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/Performance/mark"
+            }
+          ]
         },
         {
           "week": 16,
@@ -13461,8 +14833,17 @@
           "lane": "api",
           "learn": "Domain events; why publishing in the transaction is not enough",
           "title": "ApplicationStatusChanged raised by the domain and saved to an outbox table",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A status change writes the application update and one `OutboxMessages` row in the same transaction, an illegal transition writes no row, and a test that makes the save fail finds neither the change nor the outbox row",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Domain events design and implementation",
+              "url": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/domain-events-design-implementation"
+            },
+            {
+              "label": "Microsoft Learn: EF Core interceptors",
+              "url": "https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/interceptors"
+            }
+          ]
         },
         {
           "week": 17,
@@ -13473,8 +14854,17 @@
           "lane": "web",
           "learn": "Designing an activity feed",
           "title": "Activity feed page shell with event types and icons",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`/activity` (lazy-loaded, in the nav) renders a typed list of sample activity entries where each kind (status changed, interview scheduled, note added, reminder) has its own icon, text and accessible label, with empty and loading states",
+          "learnLinks": [
+            {
+              "label": "TypeScript: Narrowing",
+              "url": "https://www.typescriptlang.org/docs/handbook/2/narrowing.html"
+            },
+            {
+              "label": "react.dev: Rendering lists",
+              "url": "https://react.dev/learn/rendering-lists"
+            }
+          ]
         },
         {
           "week": 17,
@@ -13485,8 +14875,21 @@
           "lane": "api",
           "learn": "RabbitMQ: exchanges, queues, acknowledgements",
           "title": "Outbox publisher background service sending events to RabbitMQ",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A status change produces a persistent message in a debug queue in the RabbitMQ management UI whose message id equals the outbox row id, and with RabbitMQ stopped two status changes stay unprocessed and are published within seconds of it restarting",
+          "learnLinks": [
+            {
+              "label": "RabbitMQ: Tutorials",
+              "url": "https://www.rabbitmq.com/tutorials"
+            },
+            {
+              "label": "RabbitMQ: .NET client API guide",
+              "url": "https://www.rabbitmq.com/client-libraries/dotnet-api-guide"
+            },
+            {
+              "label": "RabbitMQ: Consumer acknowledgements and publisher confirms",
+              "url": "https://www.rabbitmq.com/docs/confirms"
+            }
+          ]
         },
         {
           "week": 17,
@@ -13497,8 +14900,17 @@
           "lane": "web",
           "learn": "Cursor pagination in the client",
           "title": "Feed loads pages with a cursor",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`useActivityFeed()` uses `useInfiniteQuery` with a cursor: against MSW handlers that serve 45 entries in pages of 20, a test proves three pages load in order with no duplicates and `hasNextPage` turns false at the end",
+          "learnLinks": [
+            {
+              "label": "TanStack Query: Infinite queries",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/infinite-queries"
+            },
+            {
+              "label": "MSW: Documentation",
+              "url": "https://mswjs.io/docs/"
+            }
+          ]
         },
         {
           "week": 17,
@@ -13509,8 +14921,21 @@
           "lane": "api",
           "learn": "Idempotent consumers and at-least-once delivery",
           "title": "Consumer that writes activity entries once per event id",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Delivering the same event twice (a test, or republishing from the management UI) produces exactly one activity entry, and a malformed message ends up in a dead-letter queue instead of being redelivered forever",
+          "learnLinks": [
+            {
+              "label": "RabbitMQ: Reliability guide",
+              "url": "https://www.rabbitmq.com/docs/reliability"
+            },
+            {
+              "label": "RabbitMQ: Dead letter exchanges",
+              "url": "https://www.rabbitmq.com/docs/dlx"
+            },
+            {
+              "label": "RabbitMQ: Consumer acknowledgements and publisher confirms",
+              "url": "https://www.rabbitmq.com/docs/confirms"
+            }
+          ]
         },
         {
           "week": 17,
@@ -13521,8 +14946,17 @@
           "lane": "web",
           "learn": "Infinite scroll with an intersection observer",
           "title": "Load more when the end of the feed is visible, with a button fallback",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Scrolling near the end of the feed loads the next page automatically through an `IntersectionObserver`, a visible Load more button does the same with the keyboard alone, and \"You're all caught up\" shows at the end",
+          "learnLinks": [
+            {
+              "label": "MDN: Intersection Observer API",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API"
+            },
+            {
+              "label": "TanStack Query: Infinite queries",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/guides/infinite-queries"
+            }
+          ]
         },
         {
           "week": 17,
@@ -13533,8 +14967,17 @@
           "lane": "api",
           "learn": "Activity endpoint with cursor paging",
           "title": "GET /api/activity with a stable cursor",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`GET /api/activity?cursor=&limit=` returns `{ items, nextCursor }` for the current user ordered newest first, a test proves no duplicates or gaps across a page boundary that falls on equal timestamps, a malformed cursor gives 400, and the consumer pushes `ActivityAdded` after each insert",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Pagination in EF Core",
+              "url": "https://learn.microsoft.com/en-us/ef/core/querying/pagination"
+            },
+            {
+              "label": "Microsoft Learn: Indexes",
+              "url": "https://learn.microsoft.com/en-us/ef/core/modeling/indexes"
+            }
+          ]
         },
         {
           "week": 17,
@@ -13545,8 +14988,17 @@
           "lane": "web",
           "learn": "Live feed updates through the week 15 connection",
           "title": "New activity appears at the top without a reload",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "With the feed open, a status change in another tab makes the new entry appear at the top within a second without a reload, without duplicating it on the next page load, and a \"New activity\" button appears instead if the user has scrolled down",
+          "learnLinks": [
+            {
+              "label": "TanStack Query: QueryClient",
+              "url": "https://tanstack.com/query/latest/docs/reference/QueryClient"
+            },
+            {
+              "label": "Microsoft Learn: ASP.NET Core SignalR JavaScript client",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/javascript-client"
+            }
+          ]
         },
         {
           "week": 17,
@@ -13557,8 +15009,17 @@
           "lane": "api",
           "learn": "Scheduled digests and email in development",
           "title": "Weekly digest email sent to a local SMTP catcher",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Triggering `WeeklyDigestJob` puts one email per opted-in user whose digest day is today into the local SMTP catcher, running it again sends nothing new, opted-out users get nothing, and the PR \"Events\" is open",
+          "learnLinks": [
+            {
+              "label": "Hangfire: Recurring tasks",
+              "url": "https://docs.hangfire.io/en/latest/background-methods/performing-recurrent-tasks.html"
+            },
+            {
+              "label": "Microsoft Learn: SmtpClient class",
+              "url": "https://learn.microsoft.com/en-us/dotnet/api/system.net.mail.smtpclient"
+            }
+          ]
         },
         {
           "week": 17,
@@ -13569,8 +15030,21 @@
           "lane": "web",
           "learn": "Settings forms",
           "title": "Digest on/off and day of week in the preferences page",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A Settings page (React Hook Form + Zod) shows quiet mode, digest on/off and a digest day select loaded from `/api/me/preferences`, the day select is disabled while the digest is off, saving shows a confirmation and survives a reload, and PR \"Events\" is merged",
+          "learnLinks": [
+            {
+              "label": "React Hook Form: useForm",
+              "url": "https://react-hook-form.com/docs/useform"
+            },
+            {
+              "label": "React Hook Form: reset",
+              "url": "https://react-hook-form.com/docs/useform/reset"
+            },
+            {
+              "label": "Zod: Defining schemas",
+              "url": "https://zod.dev/api"
+            }
+          ]
         },
         {
           "week": 17,
@@ -13593,8 +15067,17 @@
           "lane": "api",
           "learn": "OWASP API Security Top 10",
           "title": "Audit every endpoint against the OWASP API Top 10 and fix findings",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`SECURITY.md` has a row for each of the ten OWASP API risks saying where JobHunt guards against it, at least three findings are fixed with tests, and a Theory test proves user B gets 404 on every endpoint that takes one of user A's ids",
+          "learnLinks": [
+            {
+              "label": "OWASP: API Security Top 10 2023",
+              "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+            },
+            {
+              "label": "OWASP: API Security Project",
+              "url": "https://owasp.org/API-Security/"
+            }
+          ]
         },
         {
           "week": 18,
@@ -13605,8 +15088,17 @@
           "lane": "web",
           "learn": "XSS in React: what JSX escapes and what it does not",
           "title": "Review every place user text is rendered; remove unsafe HTML",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A written list in the PR covers every place user text is rendered (notes, company, role, URLs, reminders, activity, toasts) with its data source and how it is escaped, `dangerouslySetInnerHTML` appears nowhere, and an ESLint rule fails the build if it is added",
+          "learnLinks": [
+            {
+              "label": "OWASP: Cross site scripting prevention cheat sheet",
+              "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+            },
+            {
+              "label": "react.dev: Dangerously setting the inner HTML",
+              "url": "https://react.dev/reference/react-dom/components/common#dangerously-setting-the-inner-html"
+            }
+          ]
         },
         {
           "week": 18,
@@ -13617,8 +15109,21 @@
           "lane": "api",
           "learn": "Secrets: user-secrets, environment variables, Key Vault",
           "title": "No secrets in the repo; Key Vault provider ready for production",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`git grep` finds no signing key, password or credentialed connection string in the repo, a fresh clone stops at start-up with a clear options error until user-secrets are set, and `Program.cs` adds the Key Vault provider only when a vault URI is configured",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Safe storage of app secrets in development",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets"
+            },
+            {
+              "label": "Microsoft Learn: Azure Key Vault configuration provider",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/key-vault-configuration"
+            },
+            {
+              "label": "OWASP: Secrets management cheat sheet",
+              "url": "https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html"
+            }
+          ]
         },
         {
           "week": 18,
@@ -13629,8 +15134,17 @@
           "lane": "web",
           "learn": "Sanitising Markdown safely",
           "title": "Notes rendered as sanitised Markdown",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Notes render as Markdown through one `SafeMarkdown` component, and a Vitest test proves `<img src=x onerror=alert(1)>`, a `<script>` tag and a `[link](javascript:alert(1))` render harmlessly while bold, lists and an `https` link still work",
+          "learnLinks": [
+            {
+              "label": "OWASP: Cross site scripting prevention cheat sheet",
+              "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+            },
+            {
+              "label": "react.dev: Dangerously setting the inner HTML",
+              "url": "https://react.dev/reference/react-dom/components/common#dangerously-setting-the-inner-html"
+            }
+          ]
         },
         {
           "week": 18,
@@ -13641,8 +15155,21 @@
           "lane": "api",
           "learn": "Security headers, HTTPS, HSTS, strict CORS",
           "title": "Security headers middleware and production CORS for the real origin",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "API responses carry `nosniff`, `Referrer-Policy: no-referrer`, frame blocking and a JSON-only CSP (plus HSTS and HTTPS redirection outside Development), auth responses are `no-store`, and a request from an unlisted origin gets no CORS headers",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Enforce HTTPS in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl"
+            },
+            {
+              "label": "OWASP: HTTP headers cheat sheet",
+              "url": "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html"
+            },
+            {
+              "label": "Microsoft Learn: Enable CORS in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/cors"
+            }
+          ]
         },
         {
           "week": 18,
@@ -13653,8 +15180,21 @@
           "lane": "web",
           "learn": "Content Security Policy",
           "title": "CSP for the web app, tested with vite preview",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The production build served by `vite preview` sends an enforced Content Security Policy header, and using the list, board, files, notes and live updates shows zero CSP violations in the console",
+          "learnLinks": [
+            {
+              "label": "MDN: Content Security Policy",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP"
+            },
+            {
+              "label": "OWASP: Content security policy cheat sheet",
+              "url": "https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html"
+            },
+            {
+              "label": "Vite: Preview options",
+              "url": "https://vite.dev/config/preview-options"
+            }
+          ]
         },
         {
           "week": 18,
@@ -13665,8 +15205,17 @@
           "lane": "api",
           "learn": "Forwarded headers behind a proxy",
           "title": "Forwarded headers so rate limiting sees real client IPs",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "With loopback configured as a trusted proxy, a `.http` request with `X-Forwarded-For: 203.0.113.7` is rate limited under that IP (seen in the log), the same header is ignored once loopback is removed from the list, and the week 13 TODO is deleted",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Configure ASP.NET Core to work with proxy servers and load balancers",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer"
+            },
+            {
+              "label": "Microsoft Learn: Rate limiting middleware",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/rate-limit"
+            }
+          ]
         },
         {
           "week": 18,
@@ -13677,8 +15226,17 @@
           "lane": "web",
           "learn": "Secure handling of tokens and links",
           "title": "Safe external links and no tokens in URLs or logs",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Every external link in the app has `target=\"_blank\"` with `rel=\"noopener noreferrer\"` and passes `safeUrl`, a search of the code and the browser history shows no token in any URL, and error reports and logs from the client never include the access token or a full URL query string",
+          "learnLinks": [
+            {
+              "label": "MDN: rel=noopener",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/noopener"
+            },
+            {
+              "label": "MDN: Referrer-Policy",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Referrer-Policy"
+            }
+          ]
         },
         {
           "week": 18,
@@ -13689,8 +15247,17 @@
           "lane": "api",
           "learn": "Vulnerable packages in .NET",
           "title": "dotnet list package --vulnerable clean, Dependabot for NuGet",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`dotnet list package --vulnerable --include-transitive` in `/api` shows no high or critical finding left unexplained, NuGet audit warnings appear during restore, `.github/dependabot.yml` has a weekly grouped `nuget` entry for `/api`, and the PR \"Security\" is open",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Auditing package dependencies for security vulnerabilities",
+              "url": "https://learn.microsoft.com/en-us/nuget/concepts/auditing-packages"
+            },
+            {
+              "label": "GitHub Docs: Dependabot options reference",
+              "url": "https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference"
+            }
+          ]
         },
         {
           "week": 18,
@@ -13701,8 +15268,17 @@
           "lane": "web",
           "learn": "npm audit and dependency hygiene",
           "title": "npm audit clean, Dependabot for npm",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`npm audit` and `npm audit --omit=dev` in `/web` show no high or critical finding left unexplained, `dependabot.yml` also has weekly grouped `npm` and `github-actions` entries, a root `audit` script runs both apps' checks, and PR \"Security\" is merged",
+          "learnLinks": [
+            {
+              "label": "OWASP: Vulnerable dependency management cheat sheet",
+              "url": "https://cheatsheetseries.owasp.org/cheatsheets/Vulnerable_Dependency_Management_Cheat_Sheet.html"
+            },
+            {
+              "label": "GitHub Docs: Dependabot options reference",
+              "url": "https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference"
+            }
+          ]
         },
         {
           "week": 18,
@@ -13725,8 +15301,21 @@
           "lane": "api",
           "learn": "API contracts: OpenAPI documents",
           "title": "OpenAPI document published with examples for every endpoint",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`/openapi/v1.json` describes every endpoint with a summary, its request and response types, its ProblemDetails error codes and at least one example body, the document is generated in every environment, and the UI for it is mapped only in Development",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Generate OpenAPI documents",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/aspnetcore-openapi"
+            },
+            {
+              "label": "Microsoft Learn: Include OpenAPI metadata",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/include-metadata"
+            },
+            {
+              "label": "Microsoft Learn: Customize OpenAPI documents",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/customize-openapi"
+            }
+          ]
         },
         {
           "week": 19,
@@ -13737,8 +15326,21 @@
           "lane": "web",
           "learn": "Accessibility basics: semantics, labels, focus",
           "title": "axe audit and fixes for every finding",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The axe browser extension reports zero violations on login, list, detail tabs, board, dashboard, activity and settings, every main task works with the keyboard alone with a visible focus ring, and each route sets its own document title",
+          "learnLinks": [
+            {
+              "label": "W3C WAI: WCAG 2.2 quick reference",
+              "url": "https://www.w3.org/WAI/WCAG22/quickref/"
+            },
+            {
+              "label": "MDN: Accessibility",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility"
+            },
+            {
+              "label": "web.dev: Learn accessibility",
+              "url": "https://web.dev/learn/accessibility"
+            }
+          ]
         },
         {
           "week": 19,
@@ -13749,8 +15351,17 @@
           "lane": "api",
           "learn": "Seeding realistic demo data",
           "title": "Demo data seeder for E2E and screenshots",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`dotnet run --project ... -- seed-demo` (or a Development-only endpoint) creates a demo user with about 25 realistic applications across all statuses, interviews, notes, reminders and activity, and running it twice leaves the same data, not double",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Data seeding",
+              "url": "https://learn.microsoft.com/en-us/ef/core/modeling/data-seeding"
+            },
+            {
+              "label": "Microsoft Learn: Use multiple environments in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/environments"
+            }
+          ]
         },
         {
           "week": 19,
@@ -13761,8 +15372,21 @@
           "lane": "web",
           "learn": "Responsive layout with CSS grid and container queries",
           "title": "Board, list and dashboard usable from 360px to wide screens",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "At 360px wide no page scrolls horizontally (except the board's own column scroller), `ApplicationCard` switches layout between a narrow board column and the wide list because of a container query, and the dashboard charts reflow without overflow",
+          "learnLinks": [
+            {
+              "label": "web.dev: Learn CSS grid",
+              "url": "https://web.dev/learn/css/grid"
+            },
+            {
+              "label": "web.dev: Learn CSS container queries",
+              "url": "https://web.dev/learn/css/container-queries"
+            },
+            {
+              "label": "MDN: Container queries",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries"
+            }
+          ]
         },
         {
           "week": 19,
@@ -13773,8 +15397,17 @@
           "lane": "api",
           "learn": "A test environment for end-to-end runs",
           "title": "Test profile with its own database, reset before each E2E run",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Running the API with `ASPNETCORE_ENVIRONMENT=E2E` uses its own `JobHunt_E2E` database, raised rate limits and no background workers, and one command drops, migrates and seeds that database before an E2E run",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Use multiple environments in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/environments"
+            },
+            {
+              "label": "Microsoft Learn: Testing against your production database system",
+              "url": "https://learn.microsoft.com/en-us/ef/core/testing/testing-with-the-database"
+            }
+          ]
         },
         {
           "week": 19,
@@ -13785,8 +15418,17 @@
           "lane": "web",
           "learn": "Skeletons, empty states and microcopy",
           "title": "Skeleton loaders and helpful empty states on every page",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Every page shows a skeleton matching its final layout after a short delay, first-run and no-results empty states differ and each offers a useful action, and with Slow 3G throttling no page is ever blank or jumps when data arrives",
+          "learnLinks": [
+            {
+              "label": "web.dev: Cumulative Layout Shift",
+              "url": "https://web.dev/articles/cls"
+            },
+            {
+              "label": "React Router: Pending UI",
+              "url": "https://reactrouter.com/start/data/pending-ui"
+            }
+          ]
         },
         {
           "week": 19,
@@ -13797,8 +15439,13 @@
           "lane": "api",
           "learn": "Health checks for dependencies",
           "title": "Health checks for SQL Server, Redis and RabbitMQ",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`/health/live` answers 200 without touching dependencies, `/health/ready` reports SQL Server, Redis and RabbitMQ separately as JSON, stopping Redis makes it `Degraded` while stopping SQL Server makes it `Unhealthy` with 503, and the week 1 `/health` still works",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Health checks in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks"
+            }
+          ]
         },
         {
           "week": 19,
@@ -13809,8 +15456,21 @@
           "lane": "web",
           "learn": "Playwright: locators, fixtures, fresh login per test",
           "title": "E2E: register, add an application, move it on the board, add an interview",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`npx playwright test` in `/e2e` resets the E2E database, starts the API and web app, and passes a journey test (register, add an application, move it on the board, add an interview) in Chromium and Firefox, with every test logging in fresh",
+          "learnLinks": [
+            {
+              "label": "Playwright: Writing tests",
+              "url": "https://playwright.dev/docs/writing-tests"
+            },
+            {
+              "label": "Playwright: Locators",
+              "url": "https://playwright.dev/docs/locators"
+            },
+            {
+              "label": "Playwright: Web server",
+              "url": "https://playwright.dev/docs/test-webserver"
+            }
+          ]
         },
         {
           "week": 19,
@@ -13821,8 +15481,17 @@
           "lane": "api",
           "learn": "Smoke tests after deploy",
           "title": "A smoke test script hitting health and one read endpoint",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`scripts/smoke.sh` (or `.ps1`) takes a base URL, checks `/health/ready`, logs in as a smoke user from environment variables and reads `/api/applications`, exits non-zero on any failure, runs green against the local stack, and the PR \"Polish + E2E\" is open",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Health checks in ASP.NET Core",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks"
+            },
+            {
+              "label": "Playwright: API testing",
+              "url": "https://playwright.dev/docs/api-testing"
+            }
+          ]
         },
         {
           "week": 19,
@@ -13833,8 +15502,21 @@
           "lane": "web",
           "learn": "Flaky tests: waiting correctly, traces, retries",
           "title": "Run E2E three times green; fix flakiness with traces",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`npx playwright test --repeat-each=3` passes with zero retries, a live-update test with two pages in one context passes, every flake you met is explained in the PR with the trace that showed it, and PR \"Polish + E2E\" is merged",
+          "learnLinks": [
+            {
+              "label": "Playwright: Trace viewer",
+              "url": "https://playwright.dev/docs/trace-viewer-intro"
+            },
+            {
+              "label": "Playwright: Best practices",
+              "url": "https://playwright.dev/docs/best-practices"
+            },
+            {
+              "label": "Playwright: Retries",
+              "url": "https://playwright.dev/docs/test-retries"
+            }
+          ]
         },
         {
           "week": 19,
@@ -13857,8 +15539,21 @@
           "lane": "api",
           "learn": "Multi-stage Dockerfiles, small images, non-root users",
           "title": "Dockerfile for the API",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`docker build` produces an API image that runs as a non-root user, answers `/health` on port 8080 with every setting from environment variables, and a second build after changing one `.cs` file restores packages from cache",
+          "learnLinks": [
+            {
+              "label": "Docker Docs: Multi-stage builds",
+              "url": "https://docs.docker.com/build/building/multi-stage/"
+            },
+            {
+              "label": "Microsoft Learn: Containerize a .NET app",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/docker/build-container"
+            },
+            {
+              "label": "Docker Docs: Building best practices",
+              "url": "https://docs.docker.com/build/building/best-practices/"
+            }
+          ]
         },
         {
           "week": 20,
@@ -13869,8 +15564,17 @@
           "lane": "web",
           "learn": "Serving a SPA from nginx",
           "title": "Dockerfile for the web app served by nginx with SPA fallback",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The web image builds the app with Node and serves `dist` from an unprivileged nginx, a deep link such as `/applications/<id>/notes` reloads without a 404, hashed assets are cached long and `index.html` is not, and the week 18 CSP arrives as a header",
+          "learnLinks": [
+            {
+              "label": "nginx: Module ngx_http_core_module",
+              "url": "https://nginx.org/en/docs/http/ngx_http_core_module.html"
+            },
+            {
+              "label": "Docker Docs: Multi-stage builds",
+              "url": "https://docs.docker.com/build/building/multi-stage/"
+            }
+          ]
         },
         {
           "week": 20,
@@ -13881,8 +15585,21 @@
           "lane": "api",
           "learn": "docker compose: services, health checks, volumes",
           "title": "compose runs the API with SQL Server, Redis and RabbitMQ",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`docker compose up` starts SQL Server, Redis, RabbitMQ, the SMTP catcher and the API in order using health checks, the API answers `/health/ready` healthy, and `docker compose down -v` followed by `up` works from scratch with only `.env` filled in",
+          "learnLinks": [
+            {
+              "label": "Docker Docs: Docker Compose",
+              "url": "https://docs.docker.com/compose/"
+            },
+            {
+              "label": "Docker Docs: Control startup order",
+              "url": "https://docs.docker.com/compose/how-tos/startup-order/"
+            },
+            {
+              "label": "Docker Docs: Environment variables in Compose",
+              "url": "https://docs.docker.com/compose/how-tos/environment-variables/"
+            }
+          ]
         },
         {
           "week": 20,
@@ -13893,8 +15610,17 @@
           "lane": "web",
           "learn": "nginx as a reverse proxy, including WebSockets",
           "title": "nginx routes /api and /hubs to the API (replacing the Vite proxy)",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "With `web` and `api` in Compose, the app works at one URL through nginx: `/api` calls, login refresh with the httpOnly cookie, live updates over a WebSocket on `/hubs`, and a 5 MB upload, while the API sees real client IPs through forwarded headers from nginx only",
+          "learnLinks": [
+            {
+              "label": "nginx: Module ngx_http_proxy_module",
+              "url": "https://nginx.org/en/docs/http/ngx_http_proxy_module.html"
+            },
+            {
+              "label": "nginx: WebSocket proxying",
+              "url": "https://nginx.org/en/docs/http/websocket.html"
+            }
+          ]
         },
         {
           "week": 20,
@@ -13905,8 +15631,17 @@
           "lane": "api",
           "learn": "Migrations on deploy: bundles and expand/contract",
           "title": "EF migration bundle run as a step before the new version starts",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A `migrator` build target produces an EF Core migrations bundle, a `migrator` Compose service runs it against SQL Server and exits, the API starts only after it completes successfully, and the PR notes describe one expand and contract change",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Applying migrations",
+              "url": "https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying"
+            },
+            {
+              "label": "Docker Docs: Control startup order",
+              "url": "https://docs.docker.com/compose/how-tos/startup-order/"
+            }
+          ]
         },
         {
           "week": 20,
@@ -13917,8 +15652,17 @@
           "lane": "web",
           "learn": "Build-time vs run-time configuration for a SPA",
           "title": "Runtime config file so one image works in every environment",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The web container writes `/config.json` from environment variables at start-up, the app loads it before rendering and shows the environment name in the footer, and the same image shows \"Staging\" or \"Production\" depending only on the environment it runs with",
+          "learnLinks": [
+            {
+              "label": "Vite: Env variables and modes",
+              "url": "https://vite.dev/guide/env-and-mode"
+            },
+            {
+              "label": "Docker Docs: Environment variables in Compose",
+              "url": "https://docs.docker.com/compose/how-tos/environment-variables/"
+            }
+          ]
         },
         {
           "week": 20,
@@ -13929,8 +15673,21 @@
           "lane": "api",
           "learn": "Scaling out statelessly: backplanes, shared keys, file storage",
           "title": "Checklist for two instances: SignalR backplane, Data Protection keys, blob storage",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`SCALING.md` lists every piece of in-process state with its fix, and with `docker compose up --scale api=2` a card moved in a tab connected to one instance updates a tab on the other, stats eviction reaches both, the dashboard cookie works on either, and uploads land in Azurite",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: SignalR hosting and scaling",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/scale"
+            },
+            {
+              "label": "Microsoft Learn: Redis backplane for SignalR",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/redis-backplane"
+            },
+            {
+              "label": "Microsoft Learn: Configure Data Protection",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview"
+            }
+          ]
         },
         {
           "week": 20,
@@ -13941,8 +15698,21 @@
           "lane": "web",
           "learn": "GitHub Actions: jobs, caching, test reports",
           "title": "CI for the web app: lint, type check, tests, build",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Every pull request runs a GitHub Actions job for `/web` that installs with an npm cache, lints, type-checks, runs Vitest with a test report, and builds, and a pull request that breaks a test shows a red check",
+          "learnLinks": [
+            {
+              "label": "GitHub Docs: GitHub Actions",
+              "url": "https://docs.github.com/en/actions"
+            },
+            {
+              "label": "GitHub Docs: Building and testing Node.js",
+              "url": "https://docs.github.com/en/actions/tutorials/build-and-test-code/nodejs"
+            },
+            {
+              "label": "GitHub Docs: Dependency caching",
+              "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching"
+            }
+          ]
         },
         {
           "week": 20,
@@ -13953,8 +15723,21 @@
           "lane": "api",
           "learn": "Deploying containers to the cloud",
           "title": "CD to Azure Container Apps (or App Service) with secrets from Key Vault",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Merging to main builds and pushes both images, runs the migrations bundle, rolls out new revisions with secrets read from Key Vault through a managed identity, runs the week 19 smoke test against the live URL, and the PR \"Ship it\" is open",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Azure Container Apps overview",
+              "url": "https://learn.microsoft.com/en-us/azure/container-apps/overview"
+            },
+            {
+              "label": "Microsoft Learn: Manage secrets in Azure Container Apps",
+              "url": "https://learn.microsoft.com/en-us/azure/container-apps/manage-secrets"
+            },
+            {
+              "label": "GitHub Docs: OpenID Connect in Azure",
+              "url": "https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-azure"
+            }
+          ]
         },
         {
           "week": 20,
@@ -13965,8 +15748,21 @@
           "lane": "web",
           "learn": "Required checks and coverage thresholds",
           "title": "CI for the API with coverage thresholds, both required on pull requests",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The CI workflow also has an `api` job running `dotnet test` with Testcontainers and a merged coverage threshold, Vitest fails below its own thresholds, a ruleset on main requires both checks and a pull request, and PR \"Ship it\" is merged",
+          "learnLinks": [
+            {
+              "label": "GitHub Docs: Building and testing .NET",
+              "url": "https://docs.github.com/en/actions/tutorials/build-and-test-code/net"
+            },
+            {
+              "label": "GitHub Docs: About rulesets",
+              "url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets"
+            },
+            {
+              "label": "Vitest: Coverage",
+              "url": "https://vitest.dev/guide/coverage"
+            }
+          ]
         },
         {
           "week": 20,
@@ -13989,8 +15785,17 @@
           "lane": "api",
           "learn": "Architecture documentation: C4 and decision records",
           "title": "C4 diagram for the API side and ADRs for its biggest decisions",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`docs/architecture.md` shows a C4 level 1 and level 2 diagram in Mermaid that render on GitHub, and `docs/adr/` holds at least four API ADRs, each with context, decision, alternatives and consequences",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Architecture decision record",
+              "url": "https://learn.microsoft.com/en-us/azure/well-architected/architect-role/architecture-decision-record"
+            },
+            {
+              "label": "GitHub Docs: Creating diagrams",
+              "url": "https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams"
+            }
+          ]
         },
         {
           "week": 21,
@@ -14001,8 +15806,21 @@
           "lane": "web",
           "learn": "Documenting a front end architecture",
           "title": "Front end architecture notes: routing, state, data fetching, auth",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`docs/frontend.md` explains, in under two pages, how routing (data mode, loaders, lazy routes), server state (TanStack Query, keys, invalidation, push updates), client state, forms and auth (token in memory, shared refresh, cross-tab logout) work, with one diagram of the auth flow",
+          "learnLinks": [
+            {
+              "label": "React Router: Picking a mode",
+              "url": "https://reactrouter.com/start/modes"
+            },
+            {
+              "label": "TanStack Query: Overview",
+              "url": "https://tanstack.com/query/latest/docs/framework/react/overview"
+            },
+            {
+              "label": "react.dev: Thinking in React",
+              "url": "https://react.dev/learn/thinking-in-react"
+            }
+          ]
         },
         {
           "week": 21,
@@ -14013,8 +15831,17 @@
           "lane": "api",
           "learn": "Latency budgets and load testing basics",
           "title": "Measure p95 latency for the main endpoints and fix the worst one",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`PERFORMANCE.md` records p95 latency for list, detail, stats and status change under a small concurrent load against the production build, each next to a written budget, and the worst endpoint is fixed with before and after numbers",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: ASP.NET Core built-in metrics",
+              "url": "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/built-in-metrics-aspnetcore"
+            },
+            {
+              "label": "Microsoft Learn: ASP.NET Core best practices",
+              "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/best-practices"
+            }
+          ]
         },
         {
           "week": 21,
@@ -14025,8 +15852,17 @@
           "lane": "web",
           "learn": "Lighthouse and performance budgets",
           "title": "Lighthouse pass on the main pages and fix the two worst findings",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "Lighthouse (mobile, incognito, production build) scores for the applications list and dashboard are recorded before and after in `PERFORMANCE.md` next to written budgets, and the two worst findings are fixed with measured gains",
+          "learnLinks": [
+            {
+              "label": "web.dev: Web Vitals",
+              "url": "https://web.dev/articles/vitals"
+            },
+            {
+              "label": "web.dev: Performance budgets 101",
+              "url": "https://web.dev/articles/performance-budgets-101"
+            }
+          ]
         },
         {
           "week": 21,
@@ -14037,8 +15873,17 @@
           "lane": "api",
           "learn": "Code review checklist for the API",
           "title": "Self review of the API with a checklist; fix the top issues",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`docs/code-review.md` holds an API checklist of at least 12 items, the API builds in Release with analyzers on and zero warnings, `dotnet format --verify-no-changes` passes, and the top five findings are fixed in small commits with all tests green after each",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Code analysis in .NET",
+              "url": "https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview"
+            },
+            {
+              "label": "GitHub Docs: About pull request reviews",
+              "url": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/about-pull-request-reviews"
+            }
+          ]
         },
         {
           "week": 21,
@@ -14049,8 +15894,17 @@
           "lane": "web",
           "learn": "Code review checklist for the web app",
           "title": "Self review of the web app with a checklist; fix the top issues",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`docs/code-review.md` also holds a web checklist of at least 12 items, ESLint and `tsc --noEmit` report zero warnings, and the top five web findings are fixed in small commits with all tests green after each",
+          "learnLinks": [
+            {
+              "label": "react.dev: You might not need an Effect",
+              "url": "https://react.dev/learn/you-might-not-need-an-effect"
+            },
+            {
+              "label": "TypeScript: TSConfig reference",
+              "url": "https://www.typescriptlang.org/tsconfig/"
+            }
+          ]
         },
         {
           "week": 21,
@@ -14061,8 +15915,13 @@
           "lane": "api",
           "learn": "A README recruiters read",
           "title": "README: problem, features, stack, how to run, how to test",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The root `README.md` states the problem, features grouped by user value, the stack, how to run with `docker compose up` and how to test, and you (or a friend) went from a fresh clone in a new folder to a running app using only the README",
+          "learnLinks": [
+            {
+              "label": "GitHub Docs: About READMEs",
+              "url": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes"
+            }
+          ]
         },
         {
           "week": 21,
@@ -14073,8 +15932,17 @@
           "lane": "web",
           "learn": "Screenshots and a live demo link",
           "title": "Screenshots and a live link in the README",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "The README shows the live link and CI badge at the top, three to five screenshots with real demo data and meaningful alt text (board, live update across two tabs, dashboard, mobile view), stored in `docs/images` at a sensible size",
+          "learnLinks": [
+            {
+              "label": "GitHub Docs: About READMEs",
+              "url": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes"
+            },
+            {
+              "label": "W3C WAI: Images tutorial",
+              "url": "https://www.w3.org/WAI/tutorials/images/"
+            }
+          ]
         },
         {
           "week": 21,
@@ -14085,8 +15953,17 @@
           "lane": "api",
           "learn": "Telling the backend story in interviews",
           "title": "Interview story sheet: trade-offs, failures, what you would change (API)",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "`docs/story-sheet.md` fits on one page with four backend stories (trade-off, failure, measured fix, what you would change) in situation, task, action, result form plus a next-steps list, each story practised aloud in under two minutes, ready for Release v1.0",
+          "learnLinks": [
+            {
+              "label": "Microsoft Learn: Architecture decision record",
+              "url": "https://learn.microsoft.com/en-us/azure/well-architected/architect-role/architecture-decision-record"
+            },
+            {
+              "label": "GitHub Docs: About releases",
+              "url": "https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases"
+            }
+          ]
         },
         {
           "week": 21,
@@ -14097,8 +15974,17 @@
           "lane": "web",
           "learn": "Telling the front end story and recording a demo",
           "title": "2-minute demo video of the full app",
-          "doneWhen": null,
-          "learnLinks": []
+          "doneWhen": "A captioned 2-minute demo video of the full app is linked from the README, tag `v1.0.0` is on main with a GitHub release whose notes are grouped by feature, and the release links the video, the live app and the docs",
+          "learnLinks": [
+            {
+              "label": "GitHub Docs: About releases",
+              "url": "https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases"
+            },
+            {
+              "label": "W3C WAI: Making audio and video media accessible",
+              "url": "https://www.w3.org/WAI/media/av/"
+            }
+          ]
         },
         {
           "week": 21,
