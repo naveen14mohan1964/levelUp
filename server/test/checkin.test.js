@@ -142,6 +142,8 @@ describe('engine (test database)', () => {
   test('a perfect week earns a shield on Sunday night; the bank holds at most 2', async () => {
     const met = JSON.stringify({ dsa: { status: 'met' }, learning: { status: 'met' }, project: { status: 'off' }, workout: { status: 'met' }, nutrition: { status: 'met' } });
     const days = ['2026-11-02', '2026-11-03', '2026-11-04', '2026-11-05', '2026-11-06', '2026-11-07', '2026-11-08'];
+    // the catch-up test above may already have evaluated these (now past) days: start the week clean
+    await sqlQuery(`DELETE FROM dbo.mentor_evaluations WHERE eval_date BETWEEN '${days[0]}' AND '${days[6]}'`);
     for (const d of days) await sqlQuery(`INSERT INTO dbo.mentor_evaluations (eval_date, results, misses, level, final, evaluated_ms) VALUES ('${d}', '${met}', '{}', 0, 1, 0)`);
     const s = await data.mentorSettings();
     assert.equal(await data.maybeEarnShield(pool, '2026-11-08', s), true);

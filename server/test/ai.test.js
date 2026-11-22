@@ -48,7 +48,7 @@ describe('AI: mentor behaves like a mentor', opts, () => {
   before(async () => {
     await startServer();
     twoSum = (await api('GET', '/problems')).body.find((p) => p.lc_number === 1);
-    lesson = (await api('GET', '/projects/dotnet')).body[0].weeks[2].tasks[1]; // week 9, Tue: JWT bearer auth
+    lesson = (await api('GET', '/projects/fullstack')).body[0].weeks[6].tasks.find((t) => t.lane === 'api' && t.day_index === 1); // week 7, day 2 (.NET): JWT login
   });
   after(stopServer);
 

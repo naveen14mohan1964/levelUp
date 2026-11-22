@@ -1,0 +1,116 @@
+{
+  "week": 19,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "learn": "Accessibility basics: semantic HTML, labels, focus management, contrast",
+      "title": "Accessibility audit with axe and fixes for every finding",
+      "doneWhen": "axe reports zero violations on login, applications list, detail tabs, board, dashboard, activity and settings, every page can be completed with the keyboard alone with a visible focus ring, and each route sets its own document title",
+      "learnLinks": [
+        {
+          "label": "MDN: Accessibility",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility"
+        },
+        {
+          "label": "W3C WAI: WCAG 2.2 quick reference",
+          "url": "https://www.w3.org/WAI/WCAG22/quickref/"
+        },
+        {
+          "label": "web.dev: Learn accessibility",
+          "url": "https://web.dev/learn/accessibility"
+        }
+      ],
+      "brief": "### Why this matters\nYou have added accessibility piece by piece: labelled forms, the keyboard board in week 10, chart tables in week 12, live regions in week 15. An audit checks the whole app the way a user who cannot see or use a mouse would meet it. Many product companies have legal duties here, and an engineer who can run an audit and fix the findings stands out in front-end interviews.\n\n### What you'll build\nOn a new branch `feature/polish-e2e`:\n- An audit table in the PR: page, tool or manual check, finding, WCAG criterion, fix\n- Automated checks with the axe browser extension on every page, logged in and logged out\n- `vitest-axe` (or a similar matcher) on three component tests: the application form, the reminders panel and the toast region\n- A skip link to the main content as the first focusable element\n- Focus management on route changes: move focus to the page `<h1>` after navigation\n- A document title per route (React 19 hoists a `<title>` rendered inside a component into the head)\n- A visible `:focus-visible` style that meets contrast against every background\n- Fixes for every finding, smallest first\n\n### Step by step\n1. Run axe on each page and record every violation. Automated tools catch roughly a third of issues, so keep going.\n2. Unplug the mouse. Complete these tasks: log in, add an application, move it on the board, add a note, upload a file, mark a reminder read, log out.\n3. Note every place focus got lost, trapped or invisible.\n4. Check colour contrast for text (4.5:1) and UI parts such as borders and focus rings (3:1).\n5. Check headings: one `<h1>` per page and no skipped levels.\n6. Add the skip link, focus on navigation and page titles.\n7. Turn on a screen reader (Narrator or NVDA on Windows) for the login form and the board announcements.\n\n### Acceptance criteria\n- [ ] Zero axe violations on every page\n- [ ] Every task can be finished with the keyboard alone\n- [ ] Focus is always visible and never lost after navigation or closing a dialog\n- [ ] Every page has a unique, descriptive title\n- [ ] Component tests include automated accessibility checks\n\n### Hints\n- Native elements (`button`, `a`, `dialog`, `label`) give you most behaviour for free. ARIA patches what HTML cannot do.\n- Moving focus to the heading needs `tabIndex={-1}` on it, so it can receive focus without joining the tab order.\n- Error messages linked with `aria-describedby` and `aria-invalid` were week 6 work; check they still hold.\n\n```tsx\nconst ref = useRef<HTMLHeadingElement>(null);\nuseEffect(() => { ref.current?.focus(); }, [location.pathname]);\n// TODO: <h1 tabIndex={-1} ref={ref}>\n```\n\n### Common mistakes\n- `outline: none` with no replacement focus style.\n- Clickable `div`s instead of buttons.\n- Trusting a green automated score without testing by keyboard.\n\n### Stretch (optional)\n- Respect `prefers-reduced-motion` for every animation, including drag feedback.\n\n### Check your understanding\n- What can automated tools not find?\n- Why move focus after a client-side navigation?\n- When is ARIA the wrong answer?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "learn": "Responsive layout with CSS grid and container queries",
+      "title": "Board, list and dashboard usable from 360px to wide screens",
+      "doneWhen": "At 360px wide no page scrolls horizontally (except the board's own column scroller), the same `ApplicationCard` changes layout between a narrow board column and the wide list because of its container, and the dashboard charts reflow without overflow",
+      "learnLinks": [
+        {
+          "label": "web.dev: Learn CSS grid",
+          "url": "https://web.dev/learn/css/grid"
+        },
+        {
+          "label": "web.dev: Learn CSS container queries",
+          "url": "https://web.dev/learn/css/container-queries"
+        }
+      ],
+      "brief": "### Why this matters\nRecruiters open portfolio links on their phones. Media queries ask \"how wide is the screen?\", but a card does not care about the screen; it cares about the space it is given. Container queries let components adapt to their container, so the same card works in a narrow board column and a wide list. CSS grid layouts that reflow on their own are a standard front-end interview task, and this week's checkpoint.\n\n### What you'll build\n- App shell: header and main content with grid; navigation collapses into a menu button below a breakpoint\n- Applications list: `grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr))`, no breakpoints needed\n- `ApplicationCard` wrapped in an element with `container-type: inline-size`, and `@container` rules that move from a stacked layout to a row layout when wide enough\n- Board: on narrow screens columns scroll horizontally with `scroll-snap`, each column at most the viewport width; the keyboard moves from week 10 still work\n- Dashboard: tiles and charts reflowing; charts sized from their container, not fixed pixels\n- Fluid type and spacing with `clamp()`\n- Touch: dnd-kit's pointer or touch sensor with an activation constraint, so scrolling does not start drags\n\n### Step by step\n1. Open DevTools device mode at 360, 768 and 1280 pixels. Screenshot each page and list what breaks.\n2. Fix the shell first; everything else sits inside it.\n3. Convert the list to the auto-fill grid and delete old breakpoints.\n4. Add the container and `@container` rules to the card. Check it in both the board and the list.\n5. Make the board scroll and snap on narrow screens.\n6. Make the charts responsive and check their table views (week 12) on mobile.\n7. Test with a real phone over your local network if you can.\n\n### Acceptance criteria\n- [ ] No horizontal page scroll from 360px up\n- [ ] The card adapts to its container, not the viewport\n- [ ] Board columns are usable on a phone, by touch and keyboard\n- [ ] Charts never overflow\n- [ ] Tap targets are at least 24 by 24 CSS pixels\n\n### Hints\n- `minmax(0, 1fr)` stops long words from blowing out grid tracks.\n- Container query units such as `cqi` size things relative to the container.\n- `overflow-x: auto` on the board alone keeps the rest of the page still.\n\n```css\n.card-wrap { container-type: inline-size; }\n@container (min-width: 32rem) {\n  .card { /* TODO: row layout */ }\n}\n```\n\n### Common mistakes\n- Fixed pixel widths on cards and charts.\n- Hiding content on mobile instead of reorganising it.\n- Breaking drag on touch so the board cannot be scrolled.\n\n### Stretch (optional)\n- A mobile board mode that shows one column at a time with a status switcher.\n\n### Check your understanding\n- Media query or container query: how do you choose?\n- What does `auto-fill` with `minmax` do?\n- Why does `minmax(0, 1fr)` matter?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "learn": "Empty states, skeletons and microcopy",
+      "title": "Skeleton loaders and helpful empty states on every page",
+      "doneWhen": "Every page shows a skeleton that matches its final layout (Lighthouse CLS near 0), first-run and no-results empty states differ and each offers a useful action, and with Slow 3G throttling no page is ever blank",
+      "learnLinks": [
+        {
+          "label": "web.dev: Cumulative Layout Shift",
+          "url": "https://web.dev/articles/cls"
+        },
+        {
+          "label": "React Router: Pending UI",
+          "url": "https://reactrouter.com/start/data/pending-ui"
+        }
+      ],
+      "brief": "### Why this matters\nPerceived speed is a design decision. A blank screen feels broken; a spinner feels slow; a skeleton shaped like the content feels fast and does not shift the layout when data arrives. Empty states are the first screen every new user sees, so they are onboarding. Microcopy (button labels, errors, empty text) is where many apps feel either human or robotic.\n\n### What you'll build\n- `Skeleton` primitives (line, block, card) and page skeletons for list, detail, board, dashboard and activity, sized like the real content\n- A short delay (about 200 ms) before skeletons appear, so fast loads do not flash\n- `aria-busy` on the loading region and a visually hidden \"Loading applications\" text\n- A thin global progress bar driven by React Router's `useNavigation().state` for loader navigations\n- Empty states: first run (\"Add your first application\"), no results for filters (\"Clear filters\"), and errors with Try again and the week 16 reference\n- A microcopy pass: verbs on buttons (\"Save application\", not \"Submit\"), calm specific errors, no blame\n- Shimmer animation disabled under `prefers-reduced-motion`\n- RTL tests for the first-run and no-results states\n\n### Step by step\n1. Throttle to Slow 3G and click through every page. Note blank screens, spinners and jumps.\n2. Build the primitives, then one page skeleton at a time. Match heights to the real components.\n3. Add the delay with a small hook or CSS animation delay.\n4. Wire the progress bar to navigation state in the root layout.\n5. Design the two kinds of empty list. The list query knows whether filters are active (week 5).\n6. Rewrite button and error text across the app. Read each screen aloud.\n7. Run Lighthouse on the list page and check CLS.\n\n### Acceptance criteria\n- [ ] No page is blank while loading\n- [ ] Content replaces skeletons without layout shift\n- [ ] First run and filtered empty states are different\n- [ ] Loading is announced to screen readers\n- [ ] Motion respects user preferences\n\n### Hints\n- TanStack Query's `isPending` is true only when there is no data yet; with cached data, show the data, not a skeleton.\n- `placeholderData` from week 5 already avoids skeletons when paging.\n- Empty states should say what the page is for and offer the next step.\n\n```tsx\nif (query.isPending) return <ApplicationsSkeleton />;\nif (query.data.items.length === 0)\n  return hasFilters ? <NoResults onClear={clearFilters} /> : <FirstRun />;\n```\n\n### Common mistakes\n- Skeletons that look nothing like the content, so the page jumps anyway.\n- Showing a skeleton during background refetches.\n- \"No data\" as the only empty state.\n\n### Stretch (optional)\n- Add a sample data button on first run that creates three demo applications.\n\n### Check your understanding\n- Why is a skeleton better than a spinner here?\n- What is CLS and how do skeletons help?\n- Why two different empty states?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "learn": "Playwright: locators, fixtures, auth state, test isolation",
+      "title": "Playwright E2E for the main journey against the real API and a test database",
+      "doneWhen": "`npx playwright test` in `/e2e` starts the API and web app, runs register, add application, move it on the board and add an interview against a freshly migrated E2E database, and passes in Chromium and Firefox",
+      "learnLinks": [
+        {
+          "label": "Playwright: Writing tests",
+          "url": "https://playwright.dev/docs/writing-tests"
+        },
+        {
+          "label": "Playwright: Authentication",
+          "url": "https://playwright.dev/docs/auth"
+        },
+        {
+          "label": "Playwright: Web server",
+          "url": "https://playwright.dev/docs/test-webserver"
+        }
+      ],
+      "brief": "### Why this matters\nWeek 11's `TESTING.md` promised end-to-end tests \"later in the course\". Unit, integration and component tests each mock something; only an E2E test proves a real browser, the real API and a real database work together. Playwright is the current favourite: auto-waiting, role-based locators and isolated browser contexts. Interviewers ask how you keep E2E tests few, fast and reliable.\n\n### What you'll build\n- An `e2e/` folder at the repo root with its own `package.json`, created with `npm init playwright@latest`\n- `playwright.config.ts` with `webServer` entries starting the API (environment `E2E`) and the web app, `baseURL`, and Chromium and Firefox projects\n- An `E2E` environment for the API: its own database name, raised rate limits (week 13), and Hangfire, the outbox publisher and the consumer turned off\n- A global setup that drops and migrates the E2E database before the run (SQL Server in Docker, the same image as Testcontainers)\n- A fixture `loggedInPage`: registers a unique user through `page.request` (so the refresh cookie lands in that browser context), then opens the app\n- `journey.spec.ts`: register, add an application, move it on the board, add an interview, all with `getByRole` and `getByLabel`\n\n### Step by step\n1. Read the locators page. Plan every step of the journey with a role-based locator.\n2. Set up the folder, config and two web servers. Reuse running servers locally, never in CI.\n3. Write the global setup for the database.\n4. Write the fixture with a fresh email per test (`crypto.randomUUID()`), so tests never share data.\n5. Move the card with the week 10 keyboard controls; they are deterministic, unlike mouse drags.\n6. Assert what the user sees with web-first assertions such as `toBeVisible` and `toHaveText`.\n7. Add a root `test:e2e` script and update `TESTING.md`.\n\n### Acceptance criteria\n- [ ] One command runs the journey from a clean database\n- [ ] Every test creates its own user\n- [ ] Locators use roles and labels, not CSS classes\n- [ ] No fixed sleeps anywhere\n- [ ] Both browsers pass\n\n### Hints\n- Saving `storageState` once and sharing it is the usual auth advice, but week 8's rotation would flag the second use of the same refresh token as reuse and revoke the family. A per-test login avoids that; write this in `TESTING.md`.\n- Registering through the API is faster than the form. Test the register form once, then use the API in fixtures.\n- Playwright's codegen can suggest locators; still read and clean what it writes.\n\n```ts\nexport const test = base.extend<{ loggedInPage: Page }>({\n  loggedInPage: async ({ page }, use) => {\n    // TODO: register and log in via page.request, goto(\"/applications\")\n    await use(page);\n  },\n});\n```\n\n### Common mistakes\n- Sharing one user across tests, so order matters.\n- Locating by CSS classes that change with styling.\n- `waitForTimeout` \"to be safe\".\n\n### Stretch (optional)\n- Add an axe scan inside the journey with Playwright's accessibility testing support.\n\n### Check your understanding\n- What does an E2E test catch that your other tests cannot?\n- Why a fresh user per test?\n- Why does a shared `storageState` break with rotating refresh tokens?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "learn": "Flaky tests: waiting correctly, traces, retries",
+      "title": "Run E2E three times in a row green; fix any flakiness with traces",
+      "doneWhen": "`npx playwright test --repeat-each=3` passes with zero retries, a live-update test with two pages passes, every flake you met is explained in the PR with the trace that showed it, and PR \"Polish + E2E\" is merged",
+      "learnLinks": [
+        {
+          "label": "Playwright: Trace viewer",
+          "url": "https://playwright.dev/docs/trace-viewer-intro"
+        },
+        {
+          "label": "Playwright: Best practices",
+          "url": "https://playwright.dev/docs/best-practices"
+        },
+        {
+          "label": "Playwright: Retries",
+          "url": "https://playwright.dev/docs/test-retries"
+        }
+      ],
+      "brief": "### Why this matters\nA flaky test is worse than no test: people learn to ignore red builds, and then real failures slip through. Most flakiness comes from waiting wrongly: fixed sleeps, asserting before the app is ready, or tests that depend on each other. Playwright's traces show exactly what the page looked like at each step, so you can fix the cause instead of adding retries. \"How do you deal with flaky tests?\" is a common senior-leaning question.\n\n### What you'll build\n- `trace: \"on-first-retry\"`, screenshots on failure, and `retries` of 2 in CI and 0 locally\n- A second spec, `realtime.spec.ts`: two pages for the same user, move a card in one, assert it moves in the other (week 15)\n- A spec for the 409 path (week 10) if you can make it deterministic, or a note on why it stays an integration test\n- `--repeat-each=3` runs locally until green with no retries\n- A short flake log in the PR: symptom, trace evidence, cause, fix\n- `TESTING.md` updated with the E2E layer: what it covers, how to run, how to debug\n- PR \"Polish + E2E\" merged\n\n### Step by step\n1. Run the suite with `--repeat-each=3`. Note any failure, even a single one.\n2. Open the trace with `npx playwright show-trace` and step through: actions, DOM snapshots, network, console.\n3. Typical causes: an assertion that ran before a refetch finished, a toast covering a button, a test using another test's data. Fix the cause.\n4. Replace any manual waiting with web-first assertions, `expect.poll` or waiting for a specific response.\n5. Write the realtime spec with two pages in one browser context, so they share the refresh cookie like two tabs.\n6. Run the full suite three times in a row. All green, no retries.\n7. Run all builds and tests, push, open PR \"Polish + E2E\", review and merge.\n\n### Acceptance criteria\n- [ ] Three consecutive green runs with zero retries\n- [ ] No `waitForTimeout` in the code\n- [ ] The realtime behaviour is covered end to end\n- [ ] Each fixed flake is explained with evidence\n- [ ] PR \"Polish + E2E\" is merged\n\n### Hints\n- Retries hide flakiness; Playwright reports tests that passed only on retry as flaky. Treat that as a failure to investigate.\n- Two pages in one context share cookies, like two tabs; two contexts are like two browsers.\n- Test isolation by unique users also lets tests run in parallel safely.\n\n```ts\ntest(\"board updates in another tab\", async ({ loggedInPage: a, context }) => {\n  const b = await context.newPage();\n  // TODO: open the board in both, move in a, expect the card in b's new column\n});\n```\n\n### Common mistakes\n- Raising retries until the build is green.\n- Tests that pass alone and fail in parallel.\n- Asserting on timing-dependent text like \"just now\".\n\n### Stretch (optional)\n- Run the suite with the CPU throttled and see what breaks first.\n\n### Check your understanding\n- What are the three most common causes of flaky UI tests?\n- What does a Playwright trace contain?\n- Why are retries not a fix?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "learn": null,
+      "title": "Build a two-column to one-column responsive layout with CSS grid from memory, and write one Playwright test from scratch",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nBuild a two-column to one-column responsive layout with CSS grid from memory, and write one Playwright test from scratch, in 30 minutes.\n\n### Rules\n- Part 1 (about 12 minutes): new empty folder outside the JobHunt repo with a single HTML file and CSS.\n- Part 2 (about 18 minutes): in the same folder, `npm init playwright@latest`, then test your page served by any static server.\n- The outline says from memory for the layout: keep docs closed for the first attempt and note every lookup. Docs are allowed for Playwright, but try without first.\n- No AI assistants, and no copying from JobHunt.\n\n### Must include\n- Part 1: a header, a sidebar and a main area in two columns on wide screens, one column below a breakpoint, using `grid-template-areas` or explicit columns\n- Part 1: a card list inside main using `repeat(auto-fill, minmax(...))`\n- Part 1: one container query on the card\n- Part 2: a test that sets a 360px viewport and asserts the sidebar is below the main content (compare bounding boxes)\n- Part 2: role-based locators and web-first assertions only\n- Part 2: no fixed waits\n\n### Self-check\n- [ ] Finished within 30 minutes\n- [ ] The layout switches at the breakpoint with no horizontal scroll at 360px\n- [ ] The grid needed no media query for the card list\n- [ ] The test passed three times in a row\n- [ ] You needed zero lookups, or you know exactly which ones to review\n\n### If you got stuck\n- Accessibility audit and focus: redo Monday.\n- Grid and container queries: redo Tuesday.\n- Skeletons and empty states: redo Wednesday.\n- Playwright setup, locators and fixtures: redo Thursday.\n- Flakiness and traces: redo Friday."
+    }
+  ]
+}

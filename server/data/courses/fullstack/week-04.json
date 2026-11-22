@@ -1,0 +1,213 @@
+{
+  "week": 4,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "api",
+      "learn": "EF Core: DbContext and Fluent entity configuration",
+      "title": "JobHuntDbContext with configuration classes for every entity",
+      "doneWhen": "`JobHuntDbContext` builds, every entity has an `IEntityTypeConfiguration` class, and `dotnet ef dbcontext info` runs without errors",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: DbContext lifetime, configuration and initialization",
+          "url": "https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/"
+        },
+        {
+          "label": "Microsoft Learn: Creating and configuring a model",
+          "url": "https://learn.microsoft.com/en-us/ef/core/modeling/"
+        },
+        {
+          "label": "Microsoft Learn: Value conversions",
+          "url": "https://learn.microsoft.com/en-us/ef/core/modeling/value-conversions"
+        }
+      ],
+      "brief": "### Why this matters\nMany developers only ever add a property to an existing DbContext. Configuring a model from scratch, with explicit lengths, keys, relationships and conversions, stops surprises like `nvarchar(max)` everywhere or enums stored as numbers, and keeps your domain free of database attributes.\n\n### What you'll build\nOn a branch `feature/persistence-routing`:\n- `Microsoft.EntityFrameworkCore.SqlServer` in Infrastructure, `Microsoft.EntityFrameworkCore.Design` in Api\n- `JobHuntDbContext` in `Infrastructure/Persistence` with `DbSet`s for the three entities\n- One `IEntityTypeConfiguration<T>` per entity, applied with `ApplyConfigurationsFromAssembly`\n- `Status` stored as a string; `WebUrl` and `EmailAddress` stored with value conversions\n- `ConnectionStrings:JobHunt` in `appsettings.Development.json` (LocalDB or a SQL Server container) and `AddDbContext` inside `AddInfrastructure`\n\n### Step by step\n1. Install the tool with `dotnet tool install --global dotnet-ef` and pick your SQL Server.\n2. Add the packages and create the context with a `DbContextOptions<JobHuntDbContext>` constructor.\n3. Write the three configuration classes: `HasKey`, `IsRequired`, `HasMaxLength`, `HasOne/WithMany/HasForeignKey`.\n4. Map `Status` with `HasConversion<string>()` and the value objects with a conversion to and from their `Value`.\n5. Give each entity a private parameterless constructor for EF.\n6. Register the context and run `dotnet ef dbcontext info --project <Infrastructure> --startup-project <Api>`.\n\n```csharp\npublic void Configure(EntityTypeBuilder<JobApplication> b)\n{\n    // TODO: key, RoleTitle length, Status conversion, relationships\n}\n```\n\n### Acceptance criteria\n- [ ] No EF attributes or packages in Domain\n- [ ] Every string column has a max length\n- [ ] Relationships are configured explicitly\n- [ ] The connection string is not in the base `appsettings.json`\n\n### Hints\n- EF maps `Interviews` to the `_interviews` field by convention when the names match.\n- `AddDbContext` registers the context as scoped. That matters on Wednesday.\n\n### Common mistakes\n- `[MaxLength]` and `[Key]` on domain classes, pulling EF into Domain.\n- Forgetting `--startup-project`.\n\n### Check your understanding\n- Why is the context scoped, not singleton?\n- What does a value conversion do at read time and at write time?\n- Why keep mapping in Infrastructure instead of attributes?"
+    },
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "web",
+      "learn": "React Router: routes, links and a shared layout",
+      "title": "Router with /applications and a shared layout",
+      "doneWhen": "Clicking the Applications nav link renders `ApplicationsPage` inside `AppLayout` at `/applications`, `/` redirects there, and the header stays on screen with no full page reload",
+      "learnLinks": [
+        {
+          "label": "React Router: Picking a mode",
+          "url": "https://reactrouter.com/start/modes"
+        },
+        {
+          "label": "React Router: Routing (data mode)",
+          "url": "https://reactrouter.com/start/data/routing"
+        }
+      ],
+      "brief": "### Why this matters\nURLs are part of your UX: they can be bookmarked, shared and opened in a new tab. This course uses React Router's data mode (`createBrowserRouter` with `RouterProvider`) because it gives you loaders and route error elements later this week. Nested layouts share navigation without repeating it.\n\n### What you'll build\n- `react-router` installed and `web/src/router.tsx` creating the router with `createBrowserRouter`\n- `main.tsx` rendering `RouterProvider` instead of `App`\n- `AppLayout`: the week 1 layout turned into a route, with an `<Outlet />` instead of `children`\n- Child routes: an index route that redirects to `applications`, and `applications` rendering `ApplicationsPage`\n- A header nav with a link to Applications\n\n### Step by step\n1. Read \"Picking a mode\" and write two lines on declarative vs data mode.\n2. Install `react-router` (one package in v7) and follow the data mode routing page for imports.\n3. Change `Layout` to render `<Outlet />` and rename it `AppLayout`.\n4. Define the routes: `{ path: \"/\", Component: AppLayout, children: [...] }`.\n5. Use `<Navigate to=\"applications\" replace />` for the index route.\n6. Render `<RouterProvider router={router} />` in `main.tsx` and delete `App.tsx` if it is empty.\n7. Watch the Network tab while clicking the nav link: no document reload.\n\n```tsx\nexport const router = createBrowserRouter([\n  { path: \"/\", Component: AppLayout, children: [ /* TODO */ ] },\n]);\n```\n\n### Acceptance criteria\n- [ ] Routes are defined once in `router.tsx`\n- [ ] The header appears on every route\n- [ ] Internal navigation uses `Link`, never `<a href>`\n- [ ] `/` redirects to `/applications`\n\n### Hints\n- Child paths without a leading slash are relative to the parent.\n- The Vite dev server falls back to `index.html` for unknown paths, so deep links work in dev.\n\n### Common mistakes\n- Mixing `<BrowserRouter>` and `createBrowserRouter` in one app.\n- Forgetting `<Outlet />`, so child routes never render.\n\n### Check your understanding\n- What is the difference between declarative and data mode?\n- What does `<Outlet />` do?\n- Why use `replace` on the index redirect?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Migrations: add, apply, roll back",
+      "title": "Initial migration applied to a local SQL Server database",
+      "doneWhen": "`dotnet ef database update` creates the JobHunt tables, `database update 0` removes them, and applying again works",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Migrations overview",
+          "url": "https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/"
+        },
+        {
+          "label": "Microsoft Learn: Applying migrations",
+          "url": "https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying"
+        }
+      ],
+      "brief": "### Why this matters\nMigrations are your schema as code: reviewed in PRs, applied the same way everywhere, and reversible. \"How do you change a production schema safely?\" starts with knowing what a migration file contains.\n\n### What you'll build\n- A migration `InitialCreate` in `Infrastructure/Persistence/Migrations`\n- The database created on your local SQL Server\n- A rehearsal: apply, roll back to empty, apply again\n- A generated SQL script you have read once\n\n### Step by step\n1. Run `dotnet ef migrations add InitialCreate` with `--project`, `--startup-project` and `--output-dir Persistence/Migrations`.\n2. Read the `Up` and `Down` methods. Check column types, lengths, foreign keys and the string `Status` column.\n3. Open the model snapshot and note what it is for.\n4. Run `dotnet ef database update` and look at the tables in SQL Server Object Explorer, Azure Data Studio or `sqlcmd`.\n5. Run `dotnet ef database update 0` and confirm the tables are gone; apply again.\n6. Run `dotnet ef migrations script` and skim the SQL a DBA would review.\n7. If you find a mistake, roll back, `migrations remove`, fix the configuration and add again.\n\n### Acceptance criteria\n- [ ] Migration files and the snapshot are committed\n- [ ] Column lengths and types match your configuration\n- [ ] Roll back and re-apply both work\n- [ ] No migration was edited after being applied anywhere shared\n\n### Hints\n- Keep the long `dotnet ef` commands in the root `package.json` as scripts so you do not retype them.\n- `migrations remove` only works for a migration that is not applied; roll back first.\n\n### Common mistakes\n- Editing a migration that has already been applied elsewhere.\n- Forgetting to commit the snapshot, so the next migration contains everything again.\n\n### Stretch (optional)\n- Add a small second migration (an index on `Company.Name`) and roll back to see `Down` run.\n\n### Check your understanding\n- What is the model snapshot for?\n- What happens when two developers add migrations on different branches?\n- Why should production apply migrations as a deploy step?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "web",
+      "learn": "URL params and useParams",
+      "title": "Route /applications/:id with a detail page shell",
+      "doneWhen": "Each card title links to `/applications/<id>`, the detail page shell shows the id from `useParams`, and Back returns to the list",
+      "learnLinks": [
+        {
+          "label": "React Router: Routing (data mode)",
+          "url": "https://reactrouter.com/start/data/routing"
+        },
+        {
+          "label": "React Router: useParams",
+          "url": "https://reactrouter.com/api/hooks/useParams"
+        }
+      ],
+      "brief": "### Why this matters\nDetail pages are driven by the URL, not by state passed from the list. That is what makes them shareable and refresh-safe. Reading params correctly, and typing them honestly as possibly missing, is a small but real interview signal.\n\n### What you'll build\n- A child route `applications/:id` rendering `ApplicationDetailPage`\n- `ApplicationCard` titles as `<Link>`s to the detail route\n- `ApplicationDetailPage` reading `id` with `useParams()` and showing a shell: heading, the id, a placeholder for details\n- A back link to `/applications`\n\n### Step by step\n1. Add the child route next to `applications` (not inside its element).\n2. In `ApplicationCard`, wrap the role title in a `Link` built with a template string from the id.\n3. Create `ApplicationDetailPage`; call `useParams()` and handle `id` being `undefined`.\n4. Render the shell with the id and a back link.\n5. Refresh the browser on a detail URL to confirm deep links work.\n6. Try `/applications/anything`: today it renders the shell; Thursday adds the not-found screen.\n\n### Acceptance criteria\n- [ ] The route is declared in `router.tsx`, not inside a component\n- [ ] Refreshing a detail URL works\n- [ ] `id` is treated as `string | undefined`\n- [ ] Links are real `Link`s, so middle-click opens a new tab\n\n### Hints\n- `useParams()` returns strings only. Convert or validate yourself.\n- Do not pass the whole application through navigation state; the detail page must work from the URL alone.\n\n### Common mistakes\n- Nesting the detail route under `applications` and forgetting an `<Outlet />` in the list page, so the detail never shows.\n- Using `onClick` with `navigate()` on a `div` instead of a link, which breaks keyboard and new-tab behaviour.\n\n### Check your understanding\n- Why should the detail page not rely on state from the list?\n- What type does `useParams()` return, and why?\n- Where would you validate that `id` looks like a Guid?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Seeding data and switching implementations through DI",
+      "title": "Seed data, and the repository switched from in-memory to EF Core",
+      "doneWhen": "The in-memory repository is deleted, `GET /api/applications` returns seed rows from SQL Server, and running the seed twice does not duplicate rows",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Data seeding",
+          "url": "https://learn.microsoft.com/en-us/ef/core/modeling/data-seeding"
+        },
+        {
+          "label": "Microsoft Learn: Dependency injection in ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection"
+        }
+      ],
+      "brief": "### Why this matters\nToday is the payoff of the week 3 interface: you replace the whole storage layer and the endpoints and React code do not change. Seeding gives every developer the same starting data with one command. The React part today loads one record from this database.\n\n### What you'll build\n- Development seed data: four or five companies and about ten applications across all statuses\n- Idempotent seeding: insert only when there are no companies\n- `EfApplicationRepository` implementing `IApplicationRepository` with the context\n- The registration changed to scoped and `InMemoryApplicationRepository` deleted\n\n### Step by step\n1. Read the data seeding page. Choose between `UseSeeding`/`UseAsyncSeeding` (your own code, runs on migrate) and `HasData` (fixed data in migrations). Write down why.\n2. Build the seed through the domain constructors and methods, so the status rules still apply.\n3. Guard the seed with an \"any companies?\" check.\n4. Write `EfApplicationRepository`. `ListAsync` includes `Company` so `ToDto()` can read its name.\n5. Register it as scoped in `AddInfrastructure`, delete the in-memory class and its registration.\n6. Run `database update`, start both apps and check the list. Run the seed again and count rows.\n\n```csharp\noptions.UseSqlServer(connectionString)\n       .UseAsyncSeeding(async (context, _, ct) =>\n       {\n           // TODO: if no companies, add seed data and save\n       });\n```\n\n### Acceptance criteria\n- [ ] Endpoints and React code did not change\n- [ ] The repository is scoped, matching the context\n- [ ] Seeding twice adds nothing\n- [ ] Seed only runs in Development\n\n### Hints\n- A repository can live as long as the context or shorter, never longer.\n- Seeding with `HasData` needs fixed keys; changing them later produces confusing migrations.\n\n### Common mistakes\n- Registering the EF repository as singleton, which captures one scoped context forever.\n- Seeding by inserting rows with raw SQL and skipping the domain rules.\n\n### Check your understanding\n- Why did nothing outside Infrastructure need to change?\n- Why must the repository lifetime be scoped here?\n- When is `HasData` the right choice?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Loading data for a route: loaders in data mode",
+      "title": "Detail page loading one application by id",
+      "doneWhen": "`/applications/<real id>` renders the record from the API through a route `loader` and `useLoaderData`, with no `useEffect` in the detail page",
+      "learnLinks": [
+        {
+          "label": "React Router: Data loading",
+          "url": "https://reactrouter.com/start/data/data-loading"
+        },
+        {
+          "label": "React Router: Route object",
+          "url": "https://reactrouter.com/start/data/route-object"
+        }
+      ],
+      "brief": "### Why this matters\nLoaders fetch data before the route renders, so the page never shows half-loaded content and the router can cancel the request when the user navigates away. This is the data mode feature you chose the router for. The loader calls the detail endpoint, now backed by SQL Server from today's .NET part.\n\n### What you'll build\n- `getApplication(id, signal?)` in `api.ts`\n- A `loader` on the `applications/:id` route that reads `params.id` and passes `request.signal`\n- `ApplicationDetailPage` reading data with `useLoaderData<typeof loader>()`\n- The detail rendered: role, company, status pill, applied date\n\n### Step by step\n1. Add `getApplication` to `api.ts` using `request<T>`.\n2. Write the loader in the detail page file (or a sibling file) and export it.\n3. Attach it to the route object with `loader`.\n4. Replace the `useParams` shell with `useLoaderData<typeof loader>()`.\n5. Render the fields, reusing `StatusPill`.\n6. Open the Network tab and click quickly between two cards: the first request is cancelled.\n\n```tsx\nexport async function loader({ params, request }: LoaderFunctionArgs) {\n  // TODO: call getApplication with params.id and request.signal\n}\n```\n\n### Acceptance criteria\n- [ ] No `useEffect` and no loading `useState` in the detail page\n- [ ] The loader passes `request.signal` to `fetch`\n- [ ] `useLoaderData` is typed from the loader, no `any`\n- [ ] A real id shows real data\n\n### Hints\n- `useLoaderData<typeof loader>()` infers the return type for you.\n- A missing `params.id` is possible in the type system; decide what to throw (Thursday handles it properly).\n\n### Common mistakes\n- Fetching in the loader and again in `useEffect`.\n- Forgetting to attach the loader to the route, so `useLoaderData` returns `undefined`.\n\n### Stretch (optional)\n- Show a pending indicator in the layout with `useNavigation()`.\n\n### Check your understanding\n- When does a loader run compared with the component render?\n- Why pass `request.signal`?\n- What does the user see while a loader is running?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "api",
+      "learn": "AsNoTracking and projecting to DTOs with Select",
+      "title": "Read queries projected straight to DTOs with AsNoTracking",
+      "doneWhen": "List and detail endpoints read through `IApplicationQueries` using `AsNoTracking` and `Select` into DTOs, with no `Include` in read code, and the detail DTO includes its interviews",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Tracking vs. no-tracking queries",
+          "url": "https://learn.microsoft.com/en-us/ef/core/querying/tracking"
+        },
+        {
+          "label": "Microsoft Learn: Efficient querying",
+          "url": "https://learn.microsoft.com/en-us/ef/core/performance/efficient-querying"
+        }
+      ],
+      "brief": "### Why this matters\nLoading full entities and mapping them in memory is the most common EF performance mistake: every column, every object tracked, often extra queries. Projecting in the query returns only what the screen needs. \"What does AsNoTracking do, and when would you not use it?\" is a standard interview question.\n\n### What you'll build\n- `IApplicationQueries` in `Application/Applications` with `ListAsync` and `GetDetailAsync(id)` returning DTOs\n- `ApplicationDetailDto`: the list fields plus `SourceUrl`, `RecruiterEmail` and interviews (`Round`, `ScheduledAt`)\n- `ApplicationQueries` in Infrastructure using `AsNoTracking()` and `Select` straight into DTOs\n- Endpoints switched to the queries interface; `IApplicationRepository` kept for writes (week 6)\n\n### Step by step\n1. Create the interface and the detail DTO with a nested `InterviewDto`.\n2. Implement `ListAsync` with `AsNoTracking()`, then `Select` into `ApplicationDto`, reading `a.Company.Name` through the navigation. Order by `AppliedOn` descending.\n3. Implement `GetDetailAsync` with a nested `Select` for interviews and `FirstOrDefaultAsync`.\n4. Register it as scoped and point both endpoints at it.\n5. Keep the 404 for unknown ids.\n\n```csharp\nreturn await db.JobApplications\n    .AsNoTracking()\n    .Select(a => new ApplicationDto(/* TODO */))\n    .ToListAsync(ct);\n```\n\n### Acceptance criteria\n- [ ] Read endpoints never load full entities\n- [ ] No `Include` in read queries\n- [ ] The mapping happens inside the query, not after `ToListAsync`\n- [ ] Unknown ids still return 404\n\n### Hints\n- A projection can follow navigations and EF writes the join for you.\n- Value objects need care inside `Select`: read the mapped property, not a C# method EF cannot translate.\n\n### Common mistakes\n- `ToListAsync()` first and `Select` after, which loads everything and maps in memory.\n- Using no-tracking for entities you then modify and save.\n\n### Check your understanding\n- What does the change tracker do, and what does it cost?\n- When do you need tracking?\n- Why split read queries from the write repository?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Error and not-found routes",
+      "title": "Not-found screen for unknown ids and an error element for the route",
+      "doneWhen": "A random Guid shows \"Application not found\", `abc` shows the same screen without calling the API, an unknown URL shows a not-found page inside the layout, and a stopped API shows a different error message",
+      "learnLinks": [
+        {
+          "label": "React Router: Error boundaries",
+          "url": "https://reactrouter.com/how-to/error-boundary"
+        },
+        {
+          "label": "React Router: Data loading",
+          "url": "https://reactrouter.com/start/data/data-loading"
+        }
+      ],
+      "brief": "### Why this matters\nThe id in the URL can be wrong: deleted, mistyped or (from week 8) someone else's. Route error elements show a proper screen without every component writing its own error handling, and they keep 404 separate from real failures.\n\n### What you'll build\n- The loader throws a 404 response when `params.id` is missing or not Guid-shaped, before any fetch\n- `ApiError` with status 404 mapped to a 404 response; other errors bubble unchanged\n- A `RouteError` component using `useRouteError()` and `isRouteErrorResponse()`\n- `RouteError` set as the error element on the detail route and on the root layout\n- A catch-all `*` route inside the layout with a `NotFoundPage`\n- The detail type updated to the new detail DTO, with interviews listed\n\n### Step by step\n1. Add a small `isGuid` check and throw a 404 from the loader when it fails.\n2. Wrap `getApplication` in try/catch: rethrow a 404 response for an `ApiError` 404, rethrow everything else.\n3. Write `RouteError`: \"Application not found\" for 404, a generic message plus details in development otherwise.\n4. Set it with `ErrorBoundary` (or `errorElement`) on the detail route and the root.\n5. Add the `*` route as the last child of the layout.\n6. Render the interviews from the new DTO.\n7. Test a real id, a random Guid, `abc`, `/nope` and a stopped API.\n\n### Acceptance criteria\n- [ ] 404 and other errors show different messages\n- [ ] A child error keeps the header visible\n- [ ] `abc` never reaches the network\n- [ ] No `any` in the error component\n\n### Hints\n- React Router exports a `data` helper for throwing a response with a status; a plain `Response` works too.\n- The nearest error element up the tree handles the error.\n\n### Common mistakes\n- Treating every error as \"not found\", which hides server problems.\n- An error element only at the root, so the whole layout disappears on a 404.\n\n### Check your understanding\n- How does a thrown response reach `useRouteError()`?\n- Why validate the id before fetching?\n- Which error element handles an error in a child route?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Reading the SQL EF Core generates",
+      "title": "Logged SQL for the list and detail queries, checked for over-fetching",
+      "doneWhen": "The SQL for the list and detail queries is logged in Development, pasted into the PR description, and each selected column is used by the DTO",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Logging in .NET and ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging/"
+        },
+        {
+          "label": "Microsoft Learn: Simple logging",
+          "url": "https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/simple-logging"
+        },
+        {
+          "label": "Microsoft Learn: How queries work (EF Core)",
+          "url": "https://learn.microsoft.com/en-us/ef/core/querying/how-query-works"
+        }
+      ],
+      "brief": "### Why this matters\nEF hides SQL until it hurts. Developers who read the generated SQL catch over-fetching, N+1 queries and missing joins before production does. This closes the .NET side of the PR \"Persistence + routing\".\n\n### What you'll build\n- The `Microsoft.EntityFrameworkCore.Database.Command` log category at `Information` in `appsettings.Development.json` only\n- The SQL for the list and detail queries captured and checked\n- A comparison with the old `Include` based query from Wednesday\n- A short \"SQL check\" section in the PR description\n\n### Step by step\n1. Add the log level override and call both endpoints. Find the `Executed DbCommand` lines.\n2. For the list query, mark every selected column and match it to a DTO field.\n3. For the detail query, check how the interviews are fetched: one query with a join, not one per interview.\n4. Temporarily call the repository's `ListAsync` (with `Include`) and compare the column list with the projection.\n5. Try `ToQueryString()` on a query in the debugger to see SQL without running it.\n6. Write the PR section: before and after column counts and one sentence on what you learned.\n\n### Acceptance criteria\n- [ ] Command logging is on in Development only\n- [ ] No column is fetched that no DTO uses\n- [ ] The detail query does not run once per interview\n- [ ] Findings are written in the PR\n\n### Hints\n- `EnableSensitiveDataLogging()` shows parameter values; use it only locally.\n- The log line also shows the elapsed time per command; note it for week 5's index work.\n\n### Common mistakes\n- Turning on SQL logging in Production, which floods logs and can leak data.\n- Reading only the first query and missing the extra ones that run afterwards.\n\n### Stretch (optional)\n- Ask for the actual execution plan in SSMS or Azure Data Studio for the list query.\n\n### Check your understanding\n- What is an N+1 query and how would you spot it in the log?\n- What does `ToQueryString()` show, and when is it useful?\n- Why is over-fetching costly even for small tables?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Navigation: active links, back navigation, breadcrumbs",
+      "title": "Active nav link and a breadcrumb back to the list from the detail page",
+      "doneWhen": "The nav link for Applications is styled active on list and detail pages, the detail page shows an \"Applications / <role>\" breadcrumb that links back, and PR \"Persistence + routing\" is merged",
+      "learnLinks": [
+        {
+          "label": "React Router: NavLink",
+          "url": "https://reactrouter.com/api/components/NavLink"
+        },
+        {
+          "label": "MDN: ARIA",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA"
+        }
+      ],
+      "brief": "### Why this matters\nUsers need to know where they are and how to get back. Active links and breadcrumbs are small, but they are what make an app feel finished, and accessible navigation is checked in front-end reviews. Today also ends the week with the PR \"Persistence + routing\".\n\n### What you'll build\n- Header links as `NavLink`s with an active style from the `className` callback\n- A `Breadcrumbs` component on the detail page: \"Applications\" (link) then the role title (current page)\n- `aria-current=\"page\"` on the current item and a `nav` with an `aria-label`\n- The browser tab title set per page\n\n### Step by step\n1. Swap `Link` for `NavLink` in the header and style the active state with `({ isActive }) => ...`.\n2. Visit a detail page: the Applications link should still be active (it matches by prefix unless you set `end`).\n3. Write `Breadcrumbs` taking an array of `{ label, to? }` items; the last item has no link.\n4. Render it on the detail page with the role from the loader data.\n5. Render a `<title>` inside each page component (React 19 hoists it into the head).\n6. Run lint, build and `dotnet test`, push, open the PR \"Persistence + routing\", review the diff and merge.\n\n### Acceptance criteria\n- [ ] Active style on list and detail pages\n- [ ] Breadcrumb uses an ordered list inside a labelled `nav`\n- [ ] The current item has `aria-current=\"page\"` and is not a link\n- [ ] PR \"Persistence + routing\" is merged\n\n### Hints\n- `NavLink` sets `aria-current=\"page\"` for you when active.\n- A breadcrumb built from loader data stays correct after a refresh; one built from navigation state does not.\n\n### Common mistakes\n- Using `navigate(-1)` as the only way back, which leaves users stuck after opening a deep link.\n- Styling active links by comparing `location.pathname` by hand.\n\n### Check your understanding\n- What does the `end` prop change on a `NavLink`?\n- Why is a breadcrumb link better than a \"Back\" button here?\n- What does `aria-current` tell a screen reader?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "lane": null,
+      "learn": null,
+      "title": "Blank project → entity + DbContext + migration + GET endpoint, then a routed React page that shows one record, in 30 minutes",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nFrom a blank project, build an entity, a DbContext, a migration and a GET endpoint, then a routed React page that shows one record, in 30 minutes.\n\n### Rules\n- New empty folder outside the repo; use LocalDB or a SQL Server container with a new database name.\n- Docs are allowed, but try without them first and note every lookup. No AI assistants, no copying from JobHunt.\n- 30 minute timer: about 17 minutes for the API, 13 for React. Stop when it rings.\n\n### Must include\n- One entity in a new domain (for example `Book` with `Id`, `Title`, `Author`, `PublishedOn`)\n- A DbContext with a configuration class that sets a max length and a required field\n- A migration created and applied with `dotnet ef`, and one seeded row\n- `GET /api/books/{id}` returning a DTO via `AsNoTracking` and `Select`, 404 when missing\n- A Vite app with `createBrowserRouter`, a `books/:id` route, a loader and an error element for 404\n- A Vite proxy or a CORS policy so the call works\n\n### Self-check\n- [ ] Finished within 30 minutes\n- [ ] Wrote the `migrations add` and `database update` commands from memory\n- [ ] The endpoint returns a DTO, not the entity\n- [ ] A random id shows the not-found UI, not a crash\n- [ ] No `any` in the React code\n- [ ] You can explain why the DbContext is scoped\n- [ ] Lookup list written down\n\n### If you got stuck\n- DbContext and configuration: Monday, .NET part.\n- Router and layout: Monday, React part.\n- Migrations: Tuesday, .NET part.\n- Seeding and lifetimes: Wednesday, .NET part.\n- Loaders: Wednesday, React part.\n- `AsNoTracking` and `Select`: Thursday, .NET part.\n- Error elements: Thursday, React part."
+    }
+  ]
+}

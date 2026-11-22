@@ -1,0 +1,217 @@
+{
+  "week": 14,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "api",
+      "learn": "File uploads: IFormFile, limits, storage outside the database",
+      "title": "POST /api/applications/{id}/files with size and type validation",
+      "doneWhen": "Uploading a 1 MB PDF to `POST /api/applications/{id}/files` returns 201 and the file lands outside the web root under a generated name, while a renamed `.exe` or a 10 MB file returns 400 ProblemDetails with a `file` field error",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Upload files in ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads"
+        },
+        {
+          "label": "OWASP: File upload cheat sheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html"
+        },
+        {
+          "label": "Microsoft Learn: Parameter binding in Minimal API apps",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/parameter-binding"
+        }
+      ],
+      "brief": "### Why this matters\nFile upload is one of the riskiest features: huge files fill disks, renamed executables get served back, client file names can contain paths. Files live outside the database; the database keeps only metadata. \"How would you handle uploads safely?\" is a frequent interview question. Today's React part sends files to this endpoint with a progress bar.\n\n### What you'll build\nOn a new branch `feature/files-reminders`:\n- `Attachment` (child of `JobApplication`): `Id`, `FileName` (display only), `ContentType`, `SizeBytes`, `StorageKey`, `UploadedAt`, with a migration\n- `IFileStorage` in Application (`SaveAsync`, `OpenReadAsync`, `DeleteAsync`) and `LocalFileStorage` in Infrastructure writing to a configured folder outside the web root under a Guid name\n- `POST /api/applications/{id}/files` binding an `IFormFile`, with the week 8 ownership check on the parent\n- Validation: 5 MB maximum, `.pdf` and `.docx` only, and a check of the first bytes (file signature)\n\n### Step by step\n1. Read the OWASP threat list. For each threat, write which line of your design stops it.\n2. Add the entity and storage; the folder comes from the `JobHunt` options section.\n3. Map the endpoint. Form endpoints get antiforgery checks; JobHunt authenticates with a bearer header, not cookies, so disable them here and write why in a comment.\n4. Set a request size limit for the endpoint, and check `file.Length` too.\n5. Check the signature: PDF starts with `%PDF-`, DOCX with the zip header. Never trust the client's `ContentType`.\n6. Save the file, then the row. Delete the file if the save fails.\n\n```csharp\nfiles.MapPost(\"/\", async (Guid id, IFormFile file, AttachmentCommands commands, CancellationToken ct) =>\n{\n    // TODO: validate, store, return 201\n}).DisableAntiforgery();\n```\n\n### Acceptance criteria\n- [ ] Files are stored under generated names, outside `wwwroot`\n- [ ] Wrong type, wrong signature and too large all give 400\n- [ ] Another user's application gives 404\n- [ ] The original file name is metadata only\n\n### Hints\n- `IFormFile` buffers small files in memory and larger ones to a temp file.\n\n### Common mistakes\n- Using the client's file name as the path.\n- Validating only the extension.\n\n### Check your understanding\n- Why keep files out of the database?\n- Why check the file signature as well as the extension?\n- Why is disabling antiforgery safe here?"
+    },
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "web",
+      "learn": "FormData uploads with progress",
+      "title": "Attachment uploader with a progress bar",
+      "doneWhen": "The application detail has a Files tab where choosing a PDF uploads it to the API with a `<progress>` bar that moves from 0 to 100, a Cancel button aborts the request, and a 400 from the server shows its ProblemDetails message",
+      "learnLinks": [
+        {
+          "label": "MDN: Using FormData objects",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects"
+        },
+        {
+          "label": "MDN: XMLHttpRequest upload",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/upload"
+        }
+      ],
+      "brief": "### Why this matters\nA 2 MB upload on a slow connection takes long enough that users wonder if anything is happening. `fetch` still cannot report upload progress in most browsers, so the reliable way is `XMLHttpRequest` with `xhr.upload` progress events. Keeping auth and error handling identical to `api.ts` means uploads are not a second, weaker client. This calls the endpoint from today's .NET part.\n\n### What you'll build\n- `uploadAttachment(applicationId, file, { onProgress, signal })` in `api.ts` using `XMLHttpRequest` and `FormData`\n- The same auth as `request<T>`: the in-memory token, and on 401 the week 8 `refreshAccessToken()` then one retry\n- Errors parsed into the week 3 `ApiError` with ProblemDetails\n- A `files` child route and tab in the week 9 detail layout\n- `AttachmentUploader`: a labelled `<input type=\"file\" accept=\".pdf,.docx\">`, a `<progress>` bar and a Cancel button\n- An upload mutation in TanStack Query (the mutation function returns your promise)\n\n### Step by step\n1. Write `uploadAttachment` as a function returning a promise: resolve with the DTO on 2xx, reject with `ApiError` otherwise.\n2. Do not set `Content-Type`; the browser adds the multipart boundary.\n3. Report progress from `xhr.upload.onprogress` when `lengthComputable` is true.\n4. Connect `signal` so Cancel calls `xhr.abort()`.\n5. Reuse `refreshAccessToken()` for the 401 path; never write a second refresh.\n6. Upload a PDF on a throttled network and watch the bar.\n\n```ts\nexport function uploadAttachment(applicationId: string, file: File, opts: UploadOptions) {\n  return new Promise<AttachmentDto>((resolve, reject) => {\n    // TODO: XHR, FormData, progress, auth header, abort\n  });\n}\n```\n\n### Acceptance criteria\n- [ ] Progress is real, not a fake animation\n- [ ] Cancel stops the request\n- [ ] A 401 refreshes once through the shared helper\n- [ ] Server errors show as readable text\n\n### Hints\n- The `<progress>` element is accessible out of the box; give it a label.\n- An aborted upload is not an error to show; treat it like a cancelled query.\n\n### Common mistakes\n- Setting `Content-Type: multipart/form-data` by hand, which drops the boundary.\n- A separate token or refresh path just for uploads.\n\n### Check your understanding\n- Why `XMLHttpRequest` and not `fetch` for progress?\n- What does `FormData` put in the request?\n- Why must uploads share the refresh helper?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Authorised file downloads",
+      "title": "Download endpoint that checks ownership and sets content headers",
+      "doneWhen": "`GET /api/applications/{id}/files` lists attachments and `GET .../files/{fileId}` returns the file with its stored content type, a `Content-Disposition: attachment` download name and `X-Content-Type-Options: nosniff`, while another user gets 404 for both",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Create responses in Minimal API applications",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses"
+        },
+        {
+          "label": "MDN: Content-Disposition",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Disposition"
+        },
+        {
+          "label": "MDN: X-Content-Type-Options",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Content-Type-Options"
+        }
+      ],
+      "brief": "### Why this matters\nA download endpoint is where uploaded files come back out, so it must check ownership as strictly as any read. Headers matter too: without `attachment` and `nosniff`, a browser may render an uploaded file inline and guess its type, which is how a harmless-looking upload becomes script running on your origin. Today's React part checks files before they ever reach the server.\n\n### What you'll build\n- `AttachmentDto(Id, FileName, ContentType, SizeBytes, UploadedAt)` and a list query on `IApplicationQueries`\n- `GET /api/applications/{id}/files` returning the list for an owned application\n- `GET /api/applications/{id}/files/{fileId}` streaming the file from `IFileStorage`\n- The stored content type (from your signature check), never the client's, and a download name from `FileName`\n- `nosniff` on the response\n- Integration tests: owner 200, other user 404, unknown file 404\n\n### Step by step\n1. Write the list query as a projection, filtered by application and current user.\n2. For the download, check the parent with the week 8 authorizer, then load the attachment.\n3. Open a stream from storage and return `TypedResults.File(stream, contentType, fileDownloadName)`.\n4. Add the `nosniff` header for this response.\n5. Download in the browser through a `.http` file or Swagger and check the headers.\n6. Write the tests with the week 11 helpers.\n\n### Acceptance criteria\n- [ ] Both endpoints check ownership through the parent\n- [ ] Downloads always save, never render inline\n- [ ] The response streams, not a `byte[]` in memory\n- [ ] Tests cover owner, other user and unknown file\n\n### Hints\n- Setting `fileDownloadName` makes ASP.NET Core write `Content-Disposition` for you, with safe encoding.\n- Week 18 adds `nosniff` to every response; today it starts here.\n\n### Common mistakes\n- Checking that the file exists but not who owns its application.\n- Reading the whole file into memory before returning it.\n\n### Check your understanding\n- What does `Content-Disposition: attachment` protect against?\n- Why use the stored content type?\n- Why stream instead of buffering?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Drag and drop file input; file type errors",
+      "title": "Drop zone with clear errors for wrong type or size",
+      "doneWhen": "Dropping or picking a file shows a highlighted drop zone, a wrong type or a file over 5 MB is rejected before any request with a message naming the file and the rule, and the drop zone works with the keyboard through its file input",
+      "learnLinks": [
+        {
+          "label": "MDN: HTML Drag and Drop API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API"
+        },
+        {
+          "label": "MDN: input type file",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/file"
+        }
+      ],
+      "brief": "### Why this matters\nDragging a resume from the desktop is what users expect, and rejecting a 30 MB scan after uploading it for a minute is rude. Checking type and size in the browser gives instant feedback; the server's checks from today's .NET lesson stay the real gate. A drop zone must still work with the keyboard, so it wraps a real file input instead of replacing it.\n\n### What you'll build\n- `features/attachments/validateFile.ts`: `validateFile(file)` returning `null` or a message, with limits shared in one constants file that mirrors the API (5 MB, `.pdf`, `.docx`)\n- `DropZone` around yesterday's input:\n  - `dragover` and `drop` handlers that call `preventDefault()`\n  - a highlighted state while a file is over it\n  - files read from `dataTransfer.files`\n- Errors shown in a `role=\"alert\"` region under the zone\n- A unit test for `validateFile` and a component test that drops a wrong file\n\n### Step by step\n1. Write `validateFile` with the extension (lower-cased) and size checks. Write its tests first.\n2. Wrap the input: the zone is a `<label>` for the input, so clicking it or pressing Enter on the input opens the picker.\n3. Add the drag handlers. Without `preventDefault` on `dragover`, the browser opens the file instead.\n4. Run the same validation for dropped and picked files, then hand valid files to yesterday's uploader.\n5. Show the error with the file name: \"offer.png is not a PDF or DOCX file.\"\n6. Keep the server error path from yesterday as a fallback.\n\n```ts\nexport function validateFile(file: File): string | null {\n  // TODO: extension allow-list, then size limit\n  return null;\n}\n```\n\n### Acceptance criteria\n- [ ] Invalid files never reach the network\n- [ ] Limits live in one place and match the API\n- [ ] The zone works by mouse, drop and keyboard\n- [ ] Errors are announced\n\n### Hints\n- `File.type` comes from the extension on most systems; check the extension, and let the server check the bytes.\n- `dragleave` fires when moving over child elements; a counter or checking `relatedTarget` avoids flicker.\n\n### Common mistakes\n- A `<div>` drop zone with no input, unusable from the keyboard.\n- Trusting the client check and weakening the server's.\n\n### Check your understanding\n- Why check on both client and server?\n- Why does `dragover` need `preventDefault`?\n- What makes the zone keyboard accessible?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Background work: hosted services vs Hangfire",
+      "title": "Hangfire with SQL Server storage and its dashboard behind admin auth",
+      "doneWhen": "The API starts Hangfire with SQL Server storage (not in `Testing`), a daily refresh-token cleanup job appears under Recurring Jobs, and `/hangfire` opens for an admin through the Admin page while anyone else gets 401 or 403",
+      "learnLinks": [
+        {
+          "label": "Hangfire: Documentation",
+          "url": "https://docs.hangfire.io/en/latest/"
+        },
+        {
+          "label": "Hangfire: Using Dashboard",
+          "url": "https://docs.hangfire.io/en/latest/configuration/using-dashboard.html"
+        },
+        {
+          "label": "Microsoft Learn: Background tasks with hosted services",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services"
+        }
+      ],
+      "brief": "### Why this matters\nCleanup, reminders and emails should not run inside a request. A `BackgroundService` suits a simple loop but has no retries or history. Hangfire stores jobs in SQL Server, retries failures and shows everything in a dashboard. That dashboard can trigger jobs, so it must be admin-only. Today's React part finishes the Files tab.\n\n### What you'll build\n- `Hangfire.AspNetCore` and `Hangfire.SqlServer`, configured with SQL Server storage on the JobHunt database and `AddHangfireServer()`, both skipped in `Testing`\n- `RefreshTokenCleanupJob`: deletes refresh tokens expired more than 7 days ago (the week 8 idea), as a daily recurring job\n- The dashboard at `/hangfire`, mapped as an endpoint that requires an admin policy\n- A short-lived cookie scheme just for the dashboard (path `/hangfire`, `SameSite=Strict`, 15 minutes), signed in by `POST /api/admin/dashboard-session` (admin, bearer)\n- An \"Open job dashboard\" button on the week 8 Admin page\n\n### Step by step\n1. Write two sentences in the PR: when a `BackgroundService` is enough, and when Hangfire is better.\n2. Install, configure, and look at the schema Hangfire creates.\n3. Write the job as a normal class with DI dependencies and an async method; register it with `IRecurringJobManager`.\n4. A browser navigation cannot carry your in-memory bearer token, hence the cookie. Add the scheme and a policy that uses it and requires the admin role.\n5. Replace Hangfire's default local-only filter so your policy is the one gate.\n6. Add the session endpoint, the button and `/hangfire` in the Vite proxy. Trigger the job from the dashboard.\n\n```csharp\nrecurringJobs.AddOrUpdate<RefreshTokenCleanupJob>(\n    \"refresh-token-cleanup\", job => job.RunAsync(CancellationToken.None), Cron.Daily());\n```\n\n### Acceptance criteria\n- [ ] Jobs survive an API restart\n- [ ] Only admins reach the dashboard\n- [ ] Tests start no job server\n- [ ] The cleanup job ran from the dashboard\n\n### Hints\n- Job arguments are serialised to the database. Pass ids, never entities or a `DbContext`.\n- Each job gets its own DI scope.\n\n### Common mistakes\n- Leaving the dashboard open \"because it is only local\".\n- Capturing a scoped service at registration.\n\n### Check your understanding\n- What does Hangfire give you that a `BackgroundService` does not?\n- Why a separate cookie for the dashboard?\n- Why pass ids to jobs?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Listing and deleting attachments",
+      "title": "Attachments list with download and delete",
+      "doneWhen": "The Files tab lists attachments with name, formatted size and date, Download saves the file with the in-memory token attached, and Delete (with confirm) removes it from the list and from the server",
+      "learnLinks": [
+        {
+          "label": "MDN: URL.createObjectURL()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL_static"
+        },
+        {
+          "label": "TanStack Query: useMutation",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/reference/useMutation"
+        }
+      ],
+      "brief": "### Why this matters\nA plain `<a href>` to the download URL would not send your in-memory access token, so the API would answer 401. Fetching the file as a blob through `api.ts` and saving it with a temporary object URL keeps auth in one place. Listing and deleting are the everyday parts of a file feature. This uses the list and download endpoints from Tuesday's .NET part.\n\n### What you'll build\n- `applicationKeys.attachments(id)`, `getAttachments(id)` and `useAttachments(id)`\n- The upload mutation invalidating that key on success\n- `downloadAttachment(applicationId, file)`: a blob fetch through `api.ts` (so 401 refresh still works), then an object URL and a temporary link click\n- `AttachmentList`: name, size formatted with `Intl.NumberFormat` (KB or MB), date, Download and Delete buttons\n- `useDeleteAttachment(id)` with the week 6 confirm dialog\n\n### Step by step\n1. Add a `requestBlob` path in `api.ts` that reuses the same auth and error handling as `request<T>`.\n2. Write `downloadAttachment`; revoke the object URL right after the click.\n3. Build the list with loading and empty states.\n4. Delete needs `DELETE /api/applications/{id}/files/{fileId}`. If Tuesday's .NET part did not add it, add it first: ownership check, delete the row, then the file.\n5. Wire the delete mutation, the confirm and invalidation.\n6. Upload, download and delete one file end to end.\n\n### Acceptance criteria\n- [ ] Downloads work with the token in memory only\n- [ ] Object URLs are revoked\n- [ ] Deleting asks first and updates the list\n- [ ] Sizes are readable (\"1.2 MB\")\n\n### Hints\n- The file name comes from your DTO; you do not need to parse `Content-Disposition`.\n- Buttons labelled \"Download offer.pdf\" are clearer to screen reader users than ten \"Download\" buttons.\n\n### Common mistakes\n- Putting the token in the download URL's query string (week 18 forbids tokens in URLs).\n- Forgetting to revoke object URLs, leaking memory.\n\n### Check your understanding\n- Why fetch a blob instead of linking directly?\n- What does an object URL point to?\n- Why delete the row before the file?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Scheduled, idempotent jobs",
+      "title": "Follow-up reminder job for applications with no response after X days",
+      "doneWhen": "An application in `Applied` for longer than the configured days gets exactly one follow-up reminder, and an integration test that runs `FollowUpReminderJob` twice with a fake clock still finds one reminder",
+      "learnLinks": [
+        {
+          "label": "Hangfire: Recurring tasks",
+          "url": "https://docs.hangfire.io/en/latest/background-methods/performing-recurrent-tasks.html"
+        },
+        {
+          "label": "Hangfire: Best practices",
+          "url": "https://docs.hangfire.io/en/latest/best-practices.html"
+        }
+      ],
+      "brief": "### Why this matters\nA scheduled job will run twice one day: a retry after a crash (Hangfire retries failures), two servers, a badly timed deploy. If running twice sends two reminders, users lose trust. An idempotent job gives the same result however often it runs. \"What if this job runs twice?\" is a standard interview question. Today's React part builds the panel that shows these reminders.\n\n### What you'll build\n- `Reminder`: `Id`, `UserId`, `JobApplicationId`, `Kind` (`FollowUp`), `Message`, `CreatedAt`, `ReadAt?`, with a unique index on `(JobApplicationId, Kind)` and a migration\n- `FollowUpAfterDays` (default 7) in the validated `JobHunt` settings section\n- `FollowUpReminderJob.RunAsync(ct)`: applications in `Applied`, older than the threshold, not deleted, without a follow-up reminder; all inserts in one save\n- Registered hourly\n- Integration tests (week 11 Testcontainers) with a fake `TimeProvider`\n\n### Step by step\n1. Write the rule in one sentence: what \"older than 7 days\" means for a `DateOnly`.\n2. Add the entity, the index and the migration.\n3. Query with a \"not exists\" condition (`!db.Reminders.Any(...)`).\n4. A job has no HTTP request and no current user: skip only the per-user filter, keep soft delete (named filters from week 8, or the condition by hand).\n5. Insert in one save. If the unique index fires because another run won, treat it as success.\n6. Test: seed an old application, run twice, assert one reminder; advance the clock, assert nothing new.\n\n```csharp\nvar due = await db.JobApplications\n    .Where(a => a.Status == ApplicationStatus.Applied && a.AppliedOn <= cutoff)\n    // TODO: no existing follow-up reminder, select what you need\n    .ToListAsync(ct);\n```\n\n### Acceptance criteria\n- [ ] Two runs create no duplicates\n- [ ] Soft-deleted applications get no reminders\n- [ ] \"Now\" comes from `TimeProvider`\n- [ ] The threshold comes from settings\n\n### Hints\n- The query makes duplicates rare; the unique index makes them impossible. You need both.\n- `FakeTimeProvider` (package `Microsoft.Extensions.TimeProvider.Testing`) moves time.\n\n### Common mistakes\n- Removing every query filter, so deleted applications get reminders.\n- One save per reminder: a crash leaves half a batch.\n\n### Check your understanding\n- What does idempotent mean for this job?\n- Why both a query check and a unique index?\n- How does the job know the user without a request?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Notification UI: badge, read and unread",
+      "title": "Reminders panel with an unread count",
+      "doneWhen": "The header shows a bell with an unread badge (hidden at 0, \"9+\" above 9) whose accessible name includes the count, and it opens a panel listing reminders that link to their applications, all working against MSW handlers until Friday's endpoints exist",
+      "learnLinks": [
+        {
+          "label": "MDN: Popover API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Popover_API"
+        },
+        {
+          "label": "W3C WAI: Disclosure pattern",
+          "url": "https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/"
+        }
+      ],
+      "brief": "### Why this matters\nNotifications are small UI with big accessibility traps: a red dot means nothing to a screen reader, and a panel that steals focus without giving it back strands keyboard users. Getting the badge, the panel and focus right is the kind of detail product companies notice. Today's .NET part creates reminders; Friday's .NET part adds the endpoints, so today you build against MSW handlers and a typed fixture.\n\n### What you'll build\n- `ReminderDto` and `RemindersResponse { items, unreadCount }` types matching the planned API\n- MSW handlers for `GET /api/reminders` in tests and, optionally, in the browser during development\n- `reminderKeys`, `getReminders()` and `useReminders()`\n- `RemindersButton`: a bell icon with a badge and `aria-label` like \"Reminders, 3 unread\"\n- `RemindersPanel`: opened from the button (the native `popover` attribute is one option), each item linking to its application, unread items marked in text as well as style\n\n### Step by step\n1. Write the types and a fixture with read and unread reminders.\n2. Add the handler and the hook.\n3. Build the button. The count must be in the accessible name, not only a coloured circle.\n4. Build the panel. Opening moves focus inside; Escape and closing return focus to the button.\n5. Clicking a reminder navigates and closes the panel.\n6. Write a component test: three unread shows \"3\", the name includes \"3 unread\".\n\n```tsx\n<button aria-label={`Reminders, ${unread} unread`} popoverTarget=\"reminders-panel\">\n  {/* TODO: bell icon and badge */}\n</button>\n```\n\n### Acceptance criteria\n- [ ] The count is announced, not only shown\n- [ ] Focus goes in and comes back\n- [ ] Unread items are marked in text\n- [ ] The UI works from the fixture alone\n\n### Hints\n- `unreadCount` comes from the server, so paging later does not break the badge.\n- Hide the badge at zero, but keep the button.\n\n### Common mistakes\n- A badge with `aria-hidden` and no count in the name.\n- A panel that traps focus with no way out.\n\n### Check your understanding\n- How does a screen reader user learn the count?\n- Where does focus go when the panel closes, and why?\n- Why build against MSW before the endpoint exists?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Reminder endpoints",
+      "title": "GET reminders and POST mark-as-read",
+      "doneWhen": "`GET /api/reminders` returns the current user's reminders newest first with `unreadCount`, `POST /api/reminders/{id}/read` and `POST /api/reminders/read-all` return 204 and are idempotent, another user's reminder gives 404, and the PR \"Files + reminders\" is open",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Create responses in Minimal API applications",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses"
+        },
+        {
+          "label": "Microsoft Learn: ExecuteUpdate and ExecuteDelete",
+          "url": "https://learn.microsoft.com/en-us/ef/core/saving/execute-insert-update-delete"
+        }
+      ],
+      "brief": "### Why this matters\nReminders are only useful if the user can see and dismiss them. Mark-as-read must be idempotent: a double click, a retry or two tabs must not cause errors. \"Read all\" is a bulk update, a good place for `ExecuteUpdateAsync`, which changes many rows in one SQL statement without loading them. This closes the .NET side of the PR \"Files + reminders\"; today's React part polls these endpoints.\n\n### What you'll build\n- `RemindersResponse(Items, UnreadCount)` and `ReminderDto(Id, ApplicationId, Kind, Message, CreatedAt, ReadAt)`\n- `GET /api/reminders` through `IApplicationQueries` (or a small `IReminderQueries`), newest first, capped at 50, plus the unread count\n- `POST /api/reminders/{id}/read`: set `ReadAt` if empty, 204 either way; 404 when missing or not yours\n- `POST /api/reminders/read-all`: one `ExecuteUpdateAsync` for the user's unread rows, 204\n- Integration tests for ownership and idempotency\n\n### Step by step\n1. Map a `/api/reminders` group with `RequireAuthorization()`.\n2. Write the read query as a projection with the current user filter.\n3. Mark one: load, check owner, set `ReadAt` from `TimeProvider` only if null, save.\n4. Mark all with `ExecuteUpdateAsync`, filtered by user and `ReadAt == null`.\n5. Test: mark twice (204, 204), mark another user's (404), read-all twice.\n6. Push and open the PR \"Files + reminders\"; merge after today's React part.\n\n```csharp\nawait db.Reminders\n    .Where(r => r.UserId == userId && r.ReadAt == null)\n    .ExecuteUpdateAsync(s => s.SetProperty(r => r.ReadAt, now), ct);\n```\n\n### Acceptance criteria\n- [ ] Repeated calls never fail\n- [ ] Read-all runs one SQL statement\n- [ ] Other users' reminders are invisible\n- [ ] The count matches the items\n\n### Hints\n- `ExecuteUpdateAsync` skips the change tracker and interceptors; fine here, but know it.\n- POST for \"mark as read\" is a common, pragmatic choice; PATCH on `readAt` works too.\n\n### Common mistakes\n- Returning 409 for an already-read reminder.\n- Loading every unread reminder to update it in a loop.\n\n### Check your understanding\n- Why must mark-as-read be idempotent?\n- What does `ExecuteUpdateAsync` skip?\n- Why count on the server?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Polling with refetchInterval (until week 15 makes it real-time)",
+      "title": "Reminders refresh every minute and mark-as-read updates the badge",
+      "doneWhen": "With the real endpoints, reminders refetch every minute only while the tab is visible, marking one or all as read updates the badge instantly and survives a reload, a failed request rolls the badge back, and PR \"Files + reminders\" is merged",
+      "learnLinks": [
+        {
+          "label": "TanStack Query: useQuery",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/reference/useQuery"
+        },
+        {
+          "label": "TanStack Query: Optimistic updates",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates"
+        }
+      ],
+      "brief": "### Why this matters\nA reminder created by a background job will not appear unless the client asks. Polling is the simplest way: ask every minute. It is not elegant (week 15 replaces it with push), but it works everywhere and is a fair first version. Marking as read must feel instant, so it reuses week 9's optimistic pattern. It ends the week with the PR \"Files + reminders\", together with today's .NET part.\n\n### What you'll build\n- `useReminders()` switched from the MSW handler to the real API, with `refetchInterval: 60_000`\n- Background polling left off, so hidden tabs do not poll\n- `useMarkReminderRead()` and `useMarkAllRead()`:\n  - `onMutate`: cancel, snapshot, set `readAt` and lower `unreadCount` with `setQueryData`\n  - `onError`: restore\n  - `onSettled`: invalidate `reminderKeys.all`\n- Clicking a reminder marks it read and navigates\n- The polling interval added to your week 13 `staleTime` table\n\n### Step by step\n1. Point the hook at the real endpoint and remove the dev-only browser handler if you had one.\n2. Add `refetchInterval` and check the Network tab for a request each minute.\n3. Hide the tab for two minutes: no requests.\n4. Write the single mark mutation with week 9's typed context, then mark-all.\n5. Block the request in DevTools and watch the rollback.\n6. Run the reminder job from the dashboard and wait for the badge.\n7. Run all builds and tests, push, review and merge PR \"Files + reminders\".\n\n### Acceptance criteria\n- [ ] New reminders appear within a minute\n- [ ] Hidden tabs do not poll\n- [ ] Marking read is instant and rolls back on failure\n- [ ] PR \"Files + reminders\" is merged\n\n### Hints\n- `refetchIntervalInBackground` defaults to off; keep it that way.\n- Write a `// TODO week 15: replace polling with SignalR` next to the interval.\n\n### Common mistakes\n- Polling every few seconds \"to feel real-time\".\n- Lowering the count below zero when marking an already-read reminder.\n\n### Check your understanding\n- What does polling cost, and who pays?\n- Why stop polling in hidden tabs?\n- What does the optimistic update do if the server fails?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "lane": null,
+      "learn": null,
+      "title": "Explain why a reminder job must be idempotent and what happens if it runs twice; then upload a file end to end without docs",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nExplain why a reminder job must be idempotent and what happens if it runs twice, then upload a file end to end without docs, in 30 minutes.\n\n### Rules\n- Part 1 (about 8 minutes): blank page, explain out loud with a timeline of two runs.\n- Part 2 (about 22 minutes): a new empty folder outside the JobHunt repo. A minimal API with one upload endpoint and a tiny Vite React page with a file input.\n- Try without any docs; note every lookup. No AI assistants, no copying from JobHunt.\n\n### Must include\n- Part 1: why a job can run twice (retry, two servers, overlap), what a non-idempotent job does then, and the two guards: a \"not exists\" check and a unique index\n- What happens when the unique index fires, and why that counts as success\n- Part 2: an endpoint binding `IFormFile`, a size limit, an extension allow-list and a signature check\n- The file saved outside the web root under a generated name\n- The React page sending `FormData` (without setting `Content-Type` by hand) and showing the server's 400 message\n- A download that returns `Content-Disposition: attachment`\n\n### Self-check\n- [ ] Finished within 30 minutes\n- [ ] A renamed `.exe` was rejected\n- [ ] Explained why the client check is not enough\n- [ ] Explained why a single save makes the job safer\n- [ ] Zero lookups, or a list of exactly what to review\n\n### If you got stuck\n- Upload validation: Monday, .NET part. Download headers: Tuesday, .NET part.\n- Hangfire: Wednesday, .NET part. The idempotent job: Thursday, .NET part.\n- Progress and `FormData`: Monday, React part. Drop zone: Tuesday, React part.\n- Polling and optimistic read: Friday, React part."
+    }
+  ]
+}

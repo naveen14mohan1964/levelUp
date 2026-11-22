@@ -1,0 +1,2477 @@
+{
+ "note": "Read from the public YouTube playlist pages on 2026-11-18. Every playlist was confirmed by YouTube oEmbed as published by take U forward or Kunal Kushwaha. Do not add IDs by hand that are not in this file.",
+ "playlists": {
+  "a2z": {
+   "id": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "name": "Striver A2Z DSA course"
+  },
+  "twoPointer": {
+   "id": "PLgUwDviBIf0q7vrFA_HEWcqRqMpCXzYAL",
+   "name": "Striver: Two pointer + sliding window"
+  },
+  "hashing": {
+   "id": "PLgUwDviBIf0rVwua0kKYlsS_ik_1lyVK_",
+   "name": "Striver: Hashing"
+  },
+  "binarySearch": {
+   "id": "PLgUwDviBIf0pMFMWuuvDNMAkoQFi-h0ZF",
+   "name": "Striver: Binary search"
+  },
+  "recursion": {
+   "id": "PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
+   "name": "Striver: Recursion + backtracking"
+  },
+  "linkedList": {
+   "id": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "name": "Striver: Linked list"
+  },
+  "stackQueue": {
+   "id": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "name": "Striver: Stack and queue"
+  },
+  "trie": {
+   "id": "PLgUwDviBIf0pcIDCZnxhv0LkHf5KzG9zp",
+   "name": "Striver: Trie series"
+  },
+  "bits": {
+   "id": "PLgUwDviBIf0rnqh8QsJaHyIX7KUiaPUv7",
+   "name": "Striver: Bit manipulation"
+  },
+  "graph": {
+   "id": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "name": "Striver: Graph series"
+  },
+  "greedy": {
+   "id": "PLgUwDviBIf0rF1w2Koyh78zafB0cz7tea",
+   "name": "Striver: Greedy algorithms"
+  },
+  "dp": {
+   "id": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "name": "Striver: Dynamic programming"
+  },
+  "course": {
+   "id": "PLgUwDviBIf0p-INQC6rMuzsSmdZ77EcrH",
+   "name": "Striver: DSA course"
+  },
+  "twoPointerPlacement": {
+   "id": "PLgUwDviBIf0rBT8io74a95xT-hDFZonNs",
+   "name": "Striver: Placement series (2 pointer)"
+  },
+  "kunal": {
+   "id": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "name": "Kunal Kushwaha: Java + DSA course"
+  },
+  "kunalRecursion": {
+   "id": "PL9gnSGHSqcnp39cTyB1dTZ2pJ04Xmdrod",
+   "name": "Kunal Kushwaha: Recursion + backtracking"
+  }
+ },
+ "videos": {
+  "0bHoB32fuj0": {
+   "title": "Don't watch my A2Z DSA Course",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "h3uDCJ5mvgw": {
+   "title": "How to setup VS code for DSA and CP | Input / Output split format",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "EAR7De6Goz4": {
+   "title": "C++ Basics in One Shot - Strivers A2Z DSA Course - L1",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "FPu9Uld7W-E": {
+   "title": "Time and Space Complexity - Strivers A2Z DSA Course",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "tNm_NNSB3_w": {
+   "title": "Solve any Pattern Question - Trick Explained | 22 Patterns in 1 Shot | Strivers A2Z DSA Course",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "RRVYpIET_RU": {
+   "title": "Complete C++ STL in 1 Video | Time Complexity and Notes",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "1xNbjMdbjug": {
+   "title": "Basic Maths for DSA | Euclidean Algorithm | Strivers A2Z DSA Course",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "yVdKa8dnKiE": {
+   "title": "Re 1. Introduction to Recursion | Recursion Tree | Stack Space | Strivers A2Z DSA Course",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "un6PLygfXrA": {
+   "title": "Re 2. Problems on Recursion | Strivers A2Z DSA Course",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "69ZCDFy-OUo": {
+   "title": "Re 3. Parameterised and Functional Recursion | Strivers A2Z DSA Course",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "twuC1F6gLI8": {
+   "title": "Re 4. Problems on Functional Recursion | Strivers A2Z DSA Course",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "kvRjNm4rVBE": {
+   "title": "Re 5. Multiple Recursion Calls | Problems | Strivers A2Z DSA Course",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "KEs5UyBJ39g": {
+   "title": "Hashing | Maps | Time Complexity | Collisions | Division Rule of Hashing | Strivers A2Z DSA Course",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "HGk_ypEuS24": {
+   "title": "Sorting - Part 1 | Selection Sort, Bubble Sort, Insertion Sort | Strivers A2Z DSA Course",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "ogjf7ORKfd8": {
+   "title": "Merge Sort | Algorithm | Pseudocode | Dry Run | Code | Strivers A2Z DSA Course",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "WIrA4YexLRQ": {
+   "title": "Quick Sort For Beginners | Strivers A2Z DSA Course",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "37E9ckMDdTk": {
+   "title": "Find Second Largest Element in Array | Remove duplicates from Sorted Array | Arrays Intro Video",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "wvcQg43_V8U": {
+   "title": "Rotate Array by K places | Union, Intersection of Sorted Arrays | Move Zeros to End | Arrays Part-2",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "bYWLJb3vCWY": {
+   "title": "Find element that appears once | Find missing number | Max Consecutive number of 1's | Arrays Part-3",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "frf7qxiN2qU": {
+   "title": "Longest Subarray with sum K | Brute - Better - Optimal | Generate Subarrays",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "UXDSeD9mN-k": {
+   "title": "2 Sum Problem | 2 types of the same problem for Interviews | Brute-Better-Optimal",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "tp8JIuCXBaU": {
+   "title": "Sort an array of 0's 1's & 2's | Intuition of Algo🔥 | C++ Java Python | Brute-Better-Optimal",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "nP_ns3uSh80": {
+   "title": "Majority Element I | Brute-Better-Optimal | Moore's Voting Algorithm | Intuition 🔥|Brute to Optimal",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "AHZpyENo7k4": {
+   "title": "Kadane's Algorithm | Maximum Subarray Sum | Finding and Printing",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "excAOvwF_Wk": {
+   "title": "DP 35. Best Time to Buy and Sell Stock | DP on Stocks 🔥",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "h4aBagy4Uok": {
+   "title": "Rearrange Array Elements by Sign | 2 Varieties of same Problem",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "JDOXKqF60RQ": {
+   "title": "Next Permutation - Intuition in Detail 🔥 | Brute to Optimal",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "cHrH9CQ8pmY": {
+   "title": "Leaders in an Array | Brute - Optimal | Strivers A2Z DSA Course",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "oO5uLE7EUlM": {
+   "title": "Longest Consecutive Sequence | Google Interview Question | Brute Better Optimal",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "N0MgLvceX7M": {
+   "title": "Set Matrix Zeroes | O(1) Space Approach | Brute - Better - Optimal",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "Z0R2u6gd3GU": {
+   "title": "Rotate Matrix/Image by 90 Degrees | Brute - Optimal",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "3Zv-s9UUrFM": {
+   "title": "Spiral Traversal of a Matrix | Spiral Matrix",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "xvNwoz-ufXA": {
+   "title": "Count Subarray sum Equals K | Brute - Better -Optimal",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "bR7mQgwQ_o8": {
+   "title": "Pascal Triangle | Finding nCr in minimal time",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "vwZj1K0e9U8": {
+   "title": "Majority Element II | Brute-Better-Optimal",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "DhFh8Kw7ymk": {
+   "title": "3 Sum | Brute -  Better - Optimal with Codes",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "eD95WRfh81c": {
+   "title": "4 Sum | Brute - Better - Optimal with Codes",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "eZr-6p0B7ME": {
+   "title": "Number of Subarrays with xor K | Brute - Better - Optimal",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "IexN60k62jo": {
+   "title": "Merge Overlapping Intervals | Brute, Optimal with Precise TC analysis",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "n7uwj04E0I4": {
+   "title": "Merge Sorted Arrays Without Extra Space | 2 Optimal Solution",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "2D0D8HE6uak": {
+   "title": "Find the Missing and Repeating Number | 4 Approaches 🔥",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "AseUmwVNaoY": {
+   "title": "Count Inversions in an Array | Brute and Optimal",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "0e4bZaP3MDI": {
+   "title": "Reverse Pairs | Hard Interview Question",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "hnswaLJvr6g": {
+   "title": "Maximum Product Subarray - Best Intuitive Approach Discussed",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "MHf6awe89xw": {
+   "title": "BS-1. Binary Search Introduction | Real Life Example | Iterative | Recursive | Overflow Cases",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "6zhGS79oQ4k": {
+   "title": "BS-2. Implement Lower Bound and Upper Bound | Search Insert Position | Floor and Ceil",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "hjR1IYVx9lY": {
+   "title": "BS-3. First and Last Occurrences in Array | Count occurrences in Array",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "5qGrJbHhqFs": {
+   "title": "BS-4. Search Element in Rotated Sorted Array - I",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "w2G2W8l__pc": {
+   "title": "BS-5. Search Element in Rotated Sorted Array II",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "nhEMDKMB44g": {
+   "title": "BS-6. Minimum in Rotated Sorted Array",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "jtSiWTPLwd0": {
+   "title": "BS-7. Find out how many times array has been rotated",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "AZOmHuHadxQ": {
+   "title": "BS-8. Single Element in Sorted Array",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "cXxmbemS6XM": {
+   "title": "BS-9. Find Peak Element",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "Bsv3FPUX_BA": {
+   "title": "BS-10. Finding Sqrt of a number using Binary Search",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "rjEJeYCasHs": {
+   "title": "BS-11. Find the Nth root of an Integer",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "qyfekrNni90": {
+   "title": "BS-12. Koko Eating Bananas",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "TXAuxeYBTdg": {
+   "title": "BS-13. Minimum days to make M bouquets | Binary Search",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "UvBKTVaG6U8": {
+   "title": "BS-14. Find the Smallest Divisor Given a Threshold | Binary Search",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "MG-Ac4TAvTY": {
+   "title": "BS-15. Capacity to Ship Packages within D Days",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "uZ0N_hZpyps": {
+   "title": "BS-16. Kth Missing Positive Number | Maths + Binary Search",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "R_Mfw4ew-Vo": {
+   "title": "BS-17. Aggressive Cows | Binary Search Hard",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "Z0hwjftStI4": {
+   "title": "BS-18. Allocate Books or Book Allocation | Hard Binary Search",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "thUd_WJn6wk": {
+   "title": "BS 19. Painter's Partition and Split Array - Largest Sum",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "kMSBvlZ-_HA": {
+   "title": "BS-20. Minimise Maximum Distance between Gas Stations | 3 Approaches | Heap | Binary Search",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "C2rRzz-JDk8": {
+   "title": "BS 21: Median of two Sorted Arrays of Different Sizes | Brute and Better Approach",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "F9c7LpRZWVQ": {
+   "title": "BS-21. Median of two Sorted Arrays of Different Sizes | Binary Search Approach With Intuition",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "D1oDwWCq50g": {
+   "title": "Bs-22. K-th element of two sorted arrays | Binary Search Approach",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "SCz-1TtYxDI": {
+   "title": "BS 23. Row with maximum number of 1s | Binary Search on 2D Arrays",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "JXU4Akft7yk": {
+   "title": "BS-24. Search in a 2D Matrix - I | Binary Search of 2D",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "9ZbB397jU4k": {
+   "title": "BS-25. Search in a 2D Matrix - II  |  Binary Search on 2D",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "nGGp5XBzC4g": {
+   "title": "BS-26. Find Peak Element-II | Binary Search",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "Q9wXgdxJq48": {
+   "title": "BS-27. Median in a Row Wise Sorted Matrix",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "_ANrF3FJm7I": {
+   "title": "L1. Introduction to Trees | Types of Trees",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "ctCpP0RFDFc": {
+   "title": "L2. Binary Tree Representation in C++",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "hyLyW7rP24I": {
+   "title": "L3. Binary Tree Representation in Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "jmy0LaGET1I": {
+   "title": "L4. Binary Tree Traversals in Binary Tree | BFS | DFS",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "RlUu72JrOCQ": {
+   "title": "L5. Preorder Traversal of Binary Tree | C++ | Java | Code Explanation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "Z_NEgBgbRVI": {
+   "title": "L6. Inorder Traversal of Binary Tree | C++ | Java | Code Explanation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "COQOU6klsBg": {
+   "title": "L7. Postorder Traversal of Binary Tree | C++ | Java | Code Explanation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "EoAsWbO7sqg": {
+   "title": "L8. Level Order Traversal of Binary Tree | BFS | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "Bfqd8BsPVuw": {
+   "title": "L9. Iterative Preorder Traversal in Binary Tree | C++ | Java | Stack",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "lxTGsVXjwvM": {
+   "title": "L10. iterative Inorder Traversal in Binary Tree | C++ | Java | Stack",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "2YBhNLodD8Q": {
+   "title": "L11. Iterative Postorder Traversal using 2 Stack | C++ | Java | Binary Tree",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "NzIGLLwZBS8": {
+   "title": "L12. Iterative Postorder Traversal using 1 Stack | C++ | Java | Binary Trees",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "ySp2epYvgTE": {
+   "title": "L13. Preorder Inorder Postorder Traversals in One Traversal | C++ | Java | Stack | Binary Trees",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "eD3tmO66aBA": {
+   "title": "L14. Maximum Depth in Binary Tree | Height of Binary Tree | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "Yt50Jfbd8Po": {
+   "title": "L15. Check for Balanced Binary Tree | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "Rezetez59Nk": {
+   "title": "L16. Diameter of Binary Tree | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "WszrfSwMz58": {
+   "title": "L17. Maximum Path Sum in Binary Tree | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "BhuvF_-PWS0": {
+   "title": "L18. Check it two trees are Identical or Not | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "3OXWEdlIGl4": {
+   "title": "L19. Zig-Zag or Spiral Traversal in Binary Tree | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "0ca1nvR0be4": {
+   "title": "L20. Boundary Traversal in Binary Tree | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "q_a6lpbKJdw": {
+   "title": "L21. Vertical Order Traversal of Binary Tree | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "Et9OCDNvJ78": {
+   "title": "L22. Top View of Binary Tree | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "0FtVY6I4pB8": {
+   "title": "L23. Bottom View of Binary Tree | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "KV4mRzTjlAk": {
+   "title": "L24. Right/Left View of Binary Tree | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "nKggNAiEpBE": {
+   "title": "L25. Check for Symmetrical Binary Trees | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "fmflMqVOC7k": {
+   "title": "L26. Print Root to Node Path in Binary Tree | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "_-QHfMDde90": {
+   "title": "L27. Lowest Common Ancestor in Binary Tree | LCA | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "ZbybYvcVLks": {
+   "title": "L28. Maximum Width of Binary Tree | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+   "playlistName": "Striver A2Z DSA course"
+  },
+  "9kdHxplyl5I": {
+   "title": "L1. Introduction to Sliding Window and 2 Pointers | Templates | Patterns",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0q7vrFA_HEWcqRqMpCXzYAL",
+   "playlistName": "Striver: Two pointer + sliding window"
+  },
+  "pBWCOCS636U": {
+   "title": "L2. Maximum Points You Can Obtain from Cards | 2 Pointers and Sliding Window Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0q7vrFA_HEWcqRqMpCXzYAL",
+   "playlistName": "Striver: Two pointer + sliding window"
+  },
+  "-zSxTJkcdAo": {
+   "title": "L3. Longest Substring Without Repeating Characters | 2 Pointers and Sliding Window Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0q7vrFA_HEWcqRqMpCXzYAL",
+   "playlistName": "Striver: Two pointer + sliding window"
+  },
+  "3E4JBHSLpYk": {
+   "title": "L4. Max Consecutive Ones III | 2 Pointers and Sliding Window Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0q7vrFA_HEWcqRqMpCXzYAL",
+   "playlistName": "Striver: Two pointer + sliding window"
+  },
+  "e3bs0uA1NhQ": {
+   "title": "L5. Fruit Into Baskets | 2 Pointers and Sliding Window Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0q7vrFA_HEWcqRqMpCXzYAL",
+   "playlistName": "Striver: Two pointer + sliding window"
+  },
+  "teM9ZsVRQyc": {
+   "title": "L6. Longest Substring With At Most K Distinct Characters | 2 Pointers and Sliding Window Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0q7vrFA_HEWcqRqMpCXzYAL",
+   "playlistName": "Striver: Two pointer + sliding window"
+  },
+  "xtqN4qlgr8s": {
+   "title": "L7. Number of Substrings Containing All Three Characters | 2 Pointers and Sliding Window Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0q7vrFA_HEWcqRqMpCXzYAL",
+   "playlistName": "Striver: Two pointer + sliding window"
+  },
+  "_eNhaDCr6P0": {
+   "title": "L8. Longest Repeating Character Replacement | 2 Pointers and Sliding Window Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0q7vrFA_HEWcqRqMpCXzYAL",
+   "playlistName": "Striver: Two pointer + sliding window"
+  },
+  "XnMdNUkX6VM": {
+   "title": "L9. Binary Subarrays With Sum | 2 Pointers and Sliding Window Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0q7vrFA_HEWcqRqMpCXzYAL",
+   "playlistName": "Striver: Two pointer + sliding window"
+  },
+  "j_QOv9OT9Og": {
+   "title": "L10. Count number of Nice subarrays | 2 Pointers and Sliding Window Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0q7vrFA_HEWcqRqMpCXzYAL",
+   "playlistName": "Striver: Two pointer + sliding window"
+  },
+  "7wYGbV_LsX4": {
+   "title": "L11. Subarray with k different integers | 2 Pointers and Sliding Window Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0q7vrFA_HEWcqRqMpCXzYAL",
+   "playlistName": "Striver: Two pointer + sliding window"
+  },
+  "WJaij9ffOIY": {
+   "title": "L12. Minimum Window Substring | 2 Pointers and Sliding Window Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0q7vrFA_HEWcqRqMpCXzYAL",
+   "playlistName": "Striver: Two pointer + sliding window"
+  },
+  "dRUpbt8vHpo": {
+   "title": "Two Sum Problem | Leetcode's First Ever Problem | Please watch new video - link in description",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rVwua0kKYlsS_ik_1lyVK_",
+   "playlistName": "Striver: Hashing"
+  },
+  "4ggF3tXIAp0": {
+   "title": "4SUM | GOOGLE | AMAZON",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rVwua0kKYlsS_ik_1lyVK_",
+   "playlistName": "Striver: Hashing"
+  },
+  "qgizvmgeyUM": {
+   "title": "Longest Consecutive Sequence | Leetcode(Hard) | GooGLe",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rVwua0kKYlsS_ik_1lyVK_",
+   "playlistName": "Striver: Hashing"
+  },
+  "xmguZ6GbatA": {
+   "title": "Largest Subarray with Zero Sum | Amazon | MMT",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rVwua0kKYlsS_ik_1lyVK_",
+   "playlistName": "Striver: Hashing"
+  },
+  "lO9R5CaGRPY": {
+   "title": "Count Subarrays with Xor as K | This problem clears a lot of concepts",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rVwua0kKYlsS_ik_1lyVK_",
+   "playlistName": "Striver: Hashing"
+  },
+  "qtVh-XEpsJo": {
+   "title": "Longest Substring Without Repeating Characters | Amazon",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rVwua0kKYlsS_ik_1lyVK_",
+   "playlistName": "Striver: Hashing"
+  },
+  "LjPx4wQaRIs": {
+   "title": "Job Sequencing Problem | Greedy Algorithms",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rVwua0kKYlsS_ik_1lyVK_",
+   "playlistName": "Striver: Hashing"
+  },
+  "xDEuM5qa0zg": {
+   "title": "Implement LRU Cache | Leetcode",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rVwua0kKYlsS_ik_1lyVK_",
+   "playlistName": "Striver: Hashing"
+  },
+  "Xc4sICC8m4M": {
+   "title": "Implement LRU Cache | C++ and Java Clean and Short Implementation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rVwua0kKYlsS_ik_1lyVK_",
+   "playlistName": "Striver: Hashing"
+  },
+  "0PSB9y8ehbk": {
+   "title": "Imlement LFU Cache | Leetcode(Hard)",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rVwua0kKYlsS_ik_1lyVK_",
+   "playlistName": "Striver: Hashing"
+  },
+  "mzqHlAW7jeE": {
+   "title": "Implement LFU cache in C++/Java  | Leetcode(Hard)",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rVwua0kKYlsS_ik_1lyVK_",
+   "playlistName": "Striver: Hashing"
+  },
+  "_NT69eLpqks": {
+   "title": "Launching Binary Search Bootcamp - C++, Java, Python, Notes, Contest, Doubt Support 🔥",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pMFMWuuvDNMAkoQFi-h0ZF",
+   "playlistName": "Striver: Binary search"
+  },
+  "AxNNVECce8c": {
+   "title": "L6. Recursion on Subsequences | Printing Subsequences",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
+   "playlistName": "Striver: Recursion + backtracking"
+  },
+  "eQCS_v3bw0Q": {
+   "title": "L7. All Kind of Patterns in Recursion | Print All | Print one | Count",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
+   "playlistName": "Striver: Recursion + backtracking"
+  },
+  "OyZFFqQtu98": {
+   "title": "L8. Combination Sum | Recursion | Leetcode | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
+   "playlistName": "Striver: Recursion + backtracking"
+  },
+  "G1fRTGRxXU8": {
+   "title": "L9. Combination Sum II | Leetcode | Recursion | Java | C++",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
+   "playlistName": "Striver: Recursion + backtracking"
+  },
+  "rYkfBRtMJr8": {
+   "title": "L10. Subset Sum I | Recursion | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
+   "playlistName": "Striver: Recursion + backtracking"
+  },
+  "RIn3gOkbhQE": {
+   "title": "L11. Subset Sum II | Leetcode | Recursion",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
+   "playlistName": "Striver: Recursion + backtracking"
+  },
+  "YK78FU5Ffjw": {
+   "title": "L12. Print all Permutations of a String/Array | Recursion | Approach - 1",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
+   "playlistName": "Striver: Recursion + backtracking"
+  },
+  "f2ic2Rsc9pU": {
+   "title": "L13. Print all Permutations of a String/Array | Recursion | Approach - 2",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
+   "playlistName": "Striver: Recursion + backtracking"
+  },
+  "i05Ju7AftcM": {
+   "title": "L14. N-Queens | Leetcode Hard | Backtracking",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
+   "playlistName": "Striver: Recursion + backtracking"
+  },
+  "FWAIf_EVUKE": {
+   "title": "L15. Sudoko Solver | Backtracking",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
+   "playlistName": "Striver: Recursion + backtracking"
+  },
+  "wuVwUK25Rfc": {
+   "title": "L16. M-Coloring Problem | Backtracking",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
+   "playlistName": "Striver: Recursion + backtracking"
+  },
+  "WBgsABoClE0": {
+   "title": "L17. Palindrome Partitioning | Leetcode | Recursion | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
+   "playlistName": "Striver: Recursion + backtracking"
+  },
+  "bLGZhJlt4y0": {
+   "title": "L19. Rat in A Maze | Backtracking",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
+   "playlistName": "Striver: Recursion + backtracking"
+  },
+  "wT7gcXLYoao": {
+   "title": "L18. K-th Permutation Sequence | Leetcode",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
+   "playlistName": "Striver: Recursion + backtracking"
+  },
+  "cg6JGiXhQ9c": {
+   "title": "Paid LinkedList Bootcamp - Launch Video",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "Nq7ok-OyEpg": {
+   "title": "L1. Introduction to LinkedList | Traversal | Length | Search an Element",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "VaECK03Dz-g": {
+   "title": "L2. Deletion and Insertion in LL | 8 Problems",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "0eKMU10uEDI": {
+   "title": "L3. Introduction to Doubly LinkedList | Insertions and Deletions",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "u3WUW2qe6ww": {
+   "title": "L4. Reverse a DLL | Multiple Approaches",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "XmRrGzR6udg": {
+   "title": "L5. Add 2 numbers in LinkedList | Dummy Node Approach",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "qf6qp7GzD5Q": {
+   "title": "L6. Odd Even Linked List | Multiple Approaches",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "gRII7LhdJWc": {
+   "title": "L7. Sort a LinkedList of 0's, 1's and 2's | Multiple Approaches",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "3kMKYQ2wNIU": {
+   "title": "L8. Remove Nth Node from the end of the LinkedList | Multiple Approaches",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "D2vI2DNJGd8": {
+   "title": "L9. Reverse a LinkedList | Iterative and Recursive",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "lRY_G-u_8jk": {
+   "title": "L10. Check if a LinkedList is Palindrome or Not | Multiple Approaches",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "aXQWhbvT3w0": {
+   "title": "L11. Add 1 to a number represented by LinkedList",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "0DYoPz2Tpt4": {
+   "title": "L12. Find the intersection point of Y LinkedList",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "7LjQ57RqgEc": {
+   "title": "L13. Find the middle element of the LinkedList | Multiple Approaches",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "wiOo4DC5GGA": {
+   "title": "L14. Detect a loop or cycle in LinkedList | With proof and Intuition",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "I4g1qbkTPus": {
+   "title": "L15. Find the length of the Loop in LinkedList",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "ePpV-_pfOeI": {
+   "title": "L16. Delete the middle node of the LinkedList",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "2Kd0KKmmHFc": {
+   "title": "L17. Find the starting point of the Loop/Cycle in LinkedList | Multiple Approaches",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "Mh0NH_SD92k": {
+   "title": "L18. Delete all occurrences of a Key in DLL",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "YitR4dQsddE": {
+   "title": "L19. Find all Pairs with given Sum in DLL",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "YJKVTnOJXSY": {
+   "title": "L20. Remove duplicates from sorted DLL",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "lIar1skcQYI": {
+   "title": "L21. Reverse Nodes in K Group Size of LinkedList",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "uT7YI7XbTY8": {
+   "title": "L22. Rotate a LinkedList",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "jXu-H7XuClE": {
+   "title": "L23. Merge two sorted Linked Lists",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "ykelywHJWLg": {
+   "title": "L24. Flattening a LinkedList | Multiple Approaches with Dry Run",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "1zktEppsdig": {
+   "title": "L25. Merge K Sorted Lists | Multiple Approaches",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "8ocB7a_c-Cc": {
+   "title": "L26. Sort a Linked List | Merge Sort and Brute Force",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "q570bKdrnlw": {
+   "title": "L27. Clone a LinkedList with Next and Random Pointers | Copy List with Random Pointers",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "mG3KLugbOdc": {
+   "title": "L28. Design a Browser History | LinkedList Implementation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rAuz8tVcM0AymmhTRsfaLU",
+   "playlistName": "Striver: Linked list"
+  },
+  "tqQ5fTamIN4": {
+   "title": "L1. Introduction to Stack and Queue | Implementation using Data Structures",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "xwjS0iZhw4I": {
+   "title": "L2. Check for Balanced Parentheses | Stack and Queue",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "4pIc9UBHJtk": {
+   "title": "L3. Prefix, Infix, and Postfix Conversion | Stack and Queue Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "NdDIaH91P0g": {
+   "title": "L4. Implement Min Stack | Stack and Queue Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "e7XQLtOQM3I": {
+   "title": "L5. Next Greater Element | Stack and Queue Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "7PrncD7v9YQ": {
+   "title": "L6. Next Greater Element - II | Stack and Queue Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "zMdbdGJNlh4": {
+   "title": "L7. Previous Smaller Element | Stack and Queue Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "1_5VuquLbXg": {
+   "title": "L8. Trapping Rainwater | 2 Approaches | Stack and Queue Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "v0e8p9JCgRc": {
+   "title": "L9. Sum of Subarray Minimum | Stack and Queue Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "gIrMptNPf5M": {
+   "title": "L10. Sum of subarray ranges | Stack and Queue Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "_eYGqw_VDR4": {
+   "title": "L11. Aestroid Collisions | Stack and Queue Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "Bzat9vgD0fs": {
+   "title": "L12. Largest Rectangle in Histogram | Stack and Queue Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "ttVu6G7Ayik": {
+   "title": "L13. Maximal Rectangle | Stack and Queue Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "jmbuRzYPGrg": {
+   "title": "L14. Remove K Digits | Stack and Queue Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "eay-zoSRkVc": {
+   "title": "L15. Stock Span Problem | Stack and Queue Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "NwBvene4Imo": {
+   "title": "L16. Sliding Window Maximum | Stack and Queue Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "cEadsbTeze4": {
+   "title": "L17. The Celebrity Problem | Stack and Queue Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "z9bJUPxzFOw": {
+   "title": "L18. Implement LRU Cache",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pOd5zvVVSzgpo6BaCpHT9c",
+   "playlistName": "Striver: Stack and queue"
+  },
+  "dBGUmUQhjaM": {
+   "title": "L1. Implement TRIE | INSERT | SEARCH | STARTSWITH",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pcIDCZnxhv0LkHf5KzG9zp",
+   "playlistName": "Striver: Trie series"
+  },
+  "K5pcpkEMCN0": {
+   "title": "L2. Implement Trie-2 | INSERT | countWordsEqualTo() | countWordsStartingWith() | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pcIDCZnxhv0LkHf5KzG9zp",
+   "playlistName": "Striver: Trie series"
+  },
+  "AWnBa91lThI": {
+   "title": "L3. Longest Word With All Prefixes | Complete String | Trie",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pcIDCZnxhv0LkHf5KzG9zp",
+   "playlistName": "Striver: Trie series"
+  },
+  "RV0QeTyHZxo": {
+   "title": "L4. Number of Distinct Substrings in a String | Trie | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pcIDCZnxhv0LkHf5KzG9zp",
+   "playlistName": "Striver: Trie series"
+  },
+  "5iyuU4hQFrw": {
+   "title": "L5. Bit PreRequisites for TRIE Problems",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pcIDCZnxhv0LkHf5KzG9zp",
+   "playlistName": "Striver: Trie series"
+  },
+  "EIhAwfHubE8": {
+   "title": "L6. Maximum XOR of Two Numbers in an Array | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pcIDCZnxhv0LkHf5KzG9zp",
+   "playlistName": "Striver: Trie series"
+  },
+  "Q8LhG9Pi5KM": {
+   "title": "L7. Maximum XOR With an Element From Array | Queries | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0pcIDCZnxhv0LkHf5KzG9zp",
+   "playlistName": "Striver: Trie series"
+  },
+  "qQd-ViW7bfk": {
+   "title": "L1. Introduction to Bit Manipulation | 1's 2's Compliment | Bit Operators",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rnqh8QsJaHyIX7KUiaPUv7",
+   "playlistName": "Striver: Bit manipulation"
+  },
+  "nttpF8kwgd4": {
+   "title": "L2. Must Know Tricks in Bit Manipulation | Swap two numbers without third variable",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rnqh8QsJaHyIX7KUiaPUv7",
+   "playlistName": "Striver: Bit manipulation"
+  },
+  "OOdrmcfZXd8": {
+   "title": "L3. Minimum Bit Flips to Convert Number | Bit Manipulation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rnqh8QsJaHyIX7KUiaPUv7",
+   "playlistName": "Striver: Bit manipulation"
+  },
+  "LqKaUv1G3_I": {
+   "title": "L4. Power Set | Bit Manipulation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rnqh8QsJaHyIX7KUiaPUv7",
+   "playlistName": "Striver: Bit manipulation"
+  },
+  "sFBCAl8yBfE": {
+   "title": "L5. Single Number-I | Bit Manipulation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rnqh8QsJaHyIX7KUiaPUv7",
+   "playlistName": "Striver: Bit manipulation"
+  },
+  "5Bb2nqA40JY": {
+   "title": "L6. Single Number II | Bit Manipulation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rnqh8QsJaHyIX7KUiaPUv7",
+   "playlistName": "Striver: Bit manipulation"
+  },
+  "UA5JnV1J2sI": {
+   "title": "L7. Single Number III | Bit Manipulation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rnqh8QsJaHyIX7KUiaPUv7",
+   "playlistName": "Striver: Bit manipulation"
+  },
+  "WqGb7159h7Q": {
+   "title": "L8. XOR of Numbers in a Given Range | Bit Manipulation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rnqh8QsJaHyIX7KUiaPUv7",
+   "playlistName": "Striver: Bit manipulation"
+  },
+  "pBD4B1tzgVc": {
+   "title": "L9. Divide Two Integers without using Multiplication and Division Operators | Bit Manipulation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rnqh8QsJaHyIX7KUiaPUv7",
+   "playlistName": "Striver: Bit manipulation"
+  },
+  "M3_pLsDdeuU": {
+   "title": "G-1. Introduction to Graph | Types | Different Conventions Used",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "3oI-34aPMWM": {
+   "title": "G-2. Graph Representation in C++ | Two Ways to Represent",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "OsNklbh9gYI": {
+   "title": "G-3. Graph Representation in Java | Two Ways to Represent",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "lea-Wl_uWXY": {
+   "title": "G-4. What are Connected Components ?",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "-tgVpUgsQ5k": {
+   "title": "G-5. Breadth-First Search (BFS) | C++ and Java | Traversal Technique in Graphs",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "Qzf1a--rhp8": {
+   "title": "G-6. Depth-First Search (DFS) | C++ and Java | Traversal Technique in Graphs",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "ACzkVtewUYA": {
+   "title": "G-7. Number of Provinces | C++ | Java | Connected Components",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "muncqlKJrH0": {
+   "title": "G-8. Number of Islands | Number of Connected Components in Matrix | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "C-2_uSRli8o": {
+   "title": "G-9. Flood Fill Algorithm | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "yf3oUhkvqA0": {
+   "title": "G-10. Rotten Oranges | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "BPlrALf1LDU": {
+   "title": "G-11. Detect a Cycle in an Undirected Graph using BFS | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "zQ3zgFypzX4": {
+   "title": "G-12. Detect a Cycle in an Undirected Graph using DFS | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "edXdVwkYHF8": {
+   "title": "G-13. Distance of nearest cell having 1 | 0/1 Matrix | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "BtdgAys4yMk": {
+   "title": "G-14. Surrounded Regions | Replace O's with X's | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "rxKcepXQgU4": {
+   "title": "G-15. Number of Enclaves | Multi-source BFS | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "7zmgQSJghpo": {
+   "title": "G-16. Number of Distinct Islands | Constructive Thinking + DFS | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "-vu34sct1g8": {
+   "title": "G-17. Bipartite Graph | BFS | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "KG5YFfR0j8A": {
+   "title": "G-18. Bipartite Graph | DFS | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "9twcmtQj4DU": {
+   "title": "G-19. Detect cycle in a directed graph using DFS | Java | C++",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "uRbJ1OF9aYM": {
+   "title": "G-20. Find Eventual Safe States - DFS",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "5lZ0iJMrUMk": {
+   "title": "G-21. Topological Sort Algorithm | DFS",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "73sneFXuTEg": {
+   "title": "G-22. Kahn's Algorithm | Topological Sort Algorithm | BFS",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "iTBaI90lpDQ": {
+   "title": "G-23. Detect a Cycle in Directed Graph | Topological Sort | Kahn's Algorithm | BFS",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "WAOfKpxYHR8": {
+   "title": "G-24. Course Schedule I and II | Pre-requisite Tasks | Topological Sort",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "2gtg3VsDGyc": {
+   "title": "G-25. Find Eventual Safe States - BFS - Topological Sort",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "U3N_je7tWAs": {
+   "title": "G-26. Alien Dictionary - Topological Sort",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "ZUFQfFaU-8U": {
+   "title": "G-27. Shortest Path in Directed Acyclic Graph - Topological Sort",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "C4gxoTaI71U": {
+   "title": "G-28. Shortest Path in Undirected Graph with Unit Weights",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "tRPda0rcf8E": {
+   "title": "G-29. Word Ladder - I | Shortest Paths",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "DREutrv2XD0": {
+   "title": "G-30. Word Ladder - 2 | Shortest Paths",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "AD4SFl7tu7I": {
+   "title": "G-31. Word Ladder - 2 | Optimised Approach for Leetcode",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "V6H1qAeB-l4": {
+   "title": "G-32. Dijkstra's Algorithm - Using Priority Queue - C++ and Java - Part 1",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "PATgNiuTP20": {
+   "title": "G-33. Dijkstra's Algorithm - Using Set - Part 2",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "3dINsjyfooY": {
+   "title": "G-34. Dijkstra's Algorithm - Why PQ and not Q, Intuition, Time Complexity Derivation - Part 3",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "rp1SMw7HSO8": {
+   "title": "G-35. Print Shortest Path - Dijkstra's Algorithm",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "U5Mw4eyUmw4": {
+   "title": "G-36. Shortest Distance in a Binary Maze",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "0ytpZyiZFhA": {
+   "title": "G-37. Path With Minimum Effort",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "9XybHVqTHcQ": {
+   "title": "G-38. Cheapest Flights Within K Stops",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "_BvEJ3VIDWw": {
+   "title": "G-39. Minimum Multiplications to Reach End",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "_-0mx0SmYxA": {
+   "title": "G-40. Number of Ways to Arrive at Destination",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "0vVofAhAYjc": {
+   "title": "G-41. Bellman Ford Algorithm",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "YbY8cVwWAvw": {
+   "title": "G-42. Floyd Warshall Algorithm",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "PwMVNSJ5SLI": {
+   "title": "G-43. Find the City With the Smallest Number of Neighbours at a Threshold Distance",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "ZSPjZuZWCME": {
+   "title": "G-44. Minimum Spanning Tree - Theory",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "mJcZjjKzeqk": {
+   "title": "G-45. Prim's Algorithm - Minimum Spanning Tree - C++ and Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "aBxjDBC4M1U": {
+   "title": "G-46. Disjoint Set | Union by Rank | Union by Size | Path Compression",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "DMnDM_sxVig": {
+   "title": "G-47. Kruskal's Algorithm - Minimum Spanning Tree - C++ and Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "ZGr5nX-Gi6Y": {
+   "title": "G-48. Number of Provinces - Disjoint Set",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "FYrl7iz9_ZU": {
+   "title": "G-49. Number of Operations to Make Network Connected - DSU",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "FMwpt_aQOGw": {
+   "title": "G-50. Accounts Merge - DSU",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "Rn6B-Q4SNyA": {
+   "title": "G-51. Number of Islands - II - Online Queries - DSU",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "lgiz0Oup6gM": {
+   "title": "G-52. Making a Large Island - DSU",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "OwMNX8SPavM": {
+   "title": "G-53. Most Stones Removed with Same Row or Column - DSU",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "R6uoSjZ2imo": {
+   "title": "G-54. Strongly Connected Components - Kosaraju's Algorithm",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "qrAub5z8FeA": {
+   "title": "G-55. Bridges in Graph - Using Tarjan's Algorithm of time in and low time",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "j1QDfU21iZk": {
+   "title": "G-56. Articulation Point in Graph",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn",
+   "playlistName": "Striver: Graph series"
+  },
+  "DIX2p7vb9co": {
+   "title": "L1. Assign Cookies | Greedy Algorithm Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rF1w2Koyh78zafB0cz7tea",
+   "playlistName": "Striver: Greedy algorithms"
+  },
+  "n_tmibEhO6Q": {
+   "title": "L2. Lemonade Change | Greedy Algorithm Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rF1w2Koyh78zafB0cz7tea",
+   "playlistName": "Striver: Greedy algorithms"
+  },
+  "3-QbX1iDbXs": {
+   "title": "L3. Shortest Job First (or SJF) CPU Scheduling",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rF1w2Koyh78zafB0cz7tea",
+   "playlistName": "Striver: Greedy algorithms"
+  },
+  "tZAa_jJ3SwQ": {
+   "title": "L4. Jump Game - I | Greedy Algorithm Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rF1w2Koyh78zafB0cz7tea",
+   "playlistName": "Striver: Greedy algorithms"
+  },
+  "7SBVnw7GSTk": {
+   "title": "L5. Jump Game - II | Greedy Algorithm Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rF1w2Koyh78zafB0cz7tea",
+   "playlistName": "Striver: Greedy algorithms"
+  },
+  "QbwltemZbRg": {
+   "title": "L6. Job Sequencing Problem | Greedy Algorithm Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rF1w2Koyh78zafB0cz7tea",
+   "playlistName": "Striver: Greedy algorithms"
+  },
+  "mKfhTotEguk": {
+   "title": "L7. N Meeting in One Room | Greedy Algorithms Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rF1w2Koyh78zafB0cz7tea",
+   "playlistName": "Striver: Greedy algorithms"
+  },
+  "HDHQ8lAWakY": {
+   "title": "L8. Non Overlapping Intervals | Greedy Algorithms Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rF1w2Koyh78zafB0cz7tea",
+   "playlistName": "Striver: Greedy algorithms"
+  },
+  "xxRE-46OCC8": {
+   "title": "L9. Insert Intervals | Greedy Algorithms Playlist",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rF1w2Koyh78zafB0cz7tea",
+   "playlistName": "Striver: Greedy algorithms"
+  },
+  "AsGzwR_FWok": {
+   "title": "L10. Minimum number of platforms required in a railway station",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rF1w2Koyh78zafB0cz7tea",
+   "playlistName": "Striver: Greedy algorithms"
+  },
+  "cHT6sG_hUZI": {
+   "title": "L11. Valid Parenthesis String | Multiple Approaches",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rF1w2Koyh78zafB0cz7tea",
+   "playlistName": "Striver: Greedy algorithms"
+  },
+  "IIqVFvKE6RY": {
+   "title": "L12. Candy | Slope Approach Intuition Based",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rF1w2Koyh78zafB0cz7tea",
+   "playlistName": "Striver: Greedy algorithms"
+  },
+  "1ibsQrnuEEg": {
+   "title": "L13. Fractional Knapsack Algorithm",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rF1w2Koyh78zafB0cz7tea",
+   "playlistName": "Striver: Greedy algorithms"
+  },
+  "FfXoiwwnxFw": {
+   "title": "Striver's Dynamic Programming Series | The ULTIMATE | The BIGGEST | Teaser  #shorts",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "tyB0ztf0DNY": {
+   "title": "DP 1. Introduction to Dynamic Programming | Memoization | Tabulation | Space Optimization Techniques",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "mLfjzJsN8us": {
+   "title": "DP 2. Climbing Stairs | Learn How to Write 1D Recurrence Relations",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "EgG3jsGoPvQ": {
+   "title": "DP 3. Frog Jump | Dynamic Programming | Learn to write 1D DP",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "Kmh3rhyEtB8": {
+   "title": "DP 4. Frog Jump with K Distance | Lecture 3 Follow Up Question",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "GrMBfJNk_NY": {
+   "title": "DP 5. Maximum Sum of Non-Adjacent Elements | House Robber | 1-D | DP on Subsequences",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "3WaxQMELSkw": {
+   "title": "DP 6. House Robber 2 | 1D DP | DP on Subsequences",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "AE39gJYuRog": {
+   "title": "DP 7. Ninja's Training | MUST WATCH for 2D CONCEPTS 🔥 | Vacation | Atcoder | 2D DP |",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "sdE0A2Oxofw": {
+   "title": "DP 8. Grid Unique Paths | Learn Everything about DP on Grids | ALL TECHNIQUES 🔥",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "TmhpgXScLyY": {
+   "title": "DP 9. Unique Paths 2 | DP on Grid with Maze Obstacles",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "_rgTlyky1uQ": {
+   "title": "DP 10. Minimum Path Sum in Grid | Asked to me In Microsoft Internship Interview | DP on GRIDS",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "SrP-PiLSYC0": {
+   "title": "DP 11. Triangle | Fixed Starting Point and Variable Ending Point | DP on GRIDS",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "N_aJ5qQbYA0": {
+   "title": "DP 12. Minimum/Maximum Falling Path Sum | Variable Starting and Ending Points | DP on Grids",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "QGfn7JeXK54": {
+   "title": "DP 13. Cherry Pickup II | 3D DP Made Easy | DP On Grids",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "fWX9xDmIzRI": {
+   "title": "DP 14. Subset Sum Equals to Target | Identify DP on Subsequences and Ways to Solve them",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "7win3dcgo3k": {
+   "title": "DP 15. Partition Equal Subset Sum | DP on Subsequences",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "GS_OqZb2CWc": {
+   "title": "Dp 16. Partition A Set Into Two Subsets With Minimum Absolute Sum Difference | DP on Subsequences",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "ZHyb-A2Mte4": {
+   "title": "DP 17. Counts Subsets with Sum K | Dp on Subsequences",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "zoilQD1kYSg": {
+   "title": "DP 18. Count Partitions With Given Difference | Dp on Subsequences",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "GqOmJHQZivw": {
+   "title": "DP 19. 0/1 Knapsack | Recursion to Single Array Space Optimised Approach | DP on Subsequences",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "myPeWb3Y68A": {
+   "title": "DP 20. Minimum Coins | DP on Subsequences | Infinite Supplies Pattern",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "b3GD8263-PQ": {
+   "title": "DP 21. Target Sum | DP on Subsequences",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "HgyouUi11zk": {
+   "title": "DP 22. Coin Change 2 | Infinite Supply Problems  | DP on Subsequences",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "OgvOZ6OrJoY": {
+   "title": "DP 23. Unbounded Knapsack | 1-D Array Space Optimised Approach",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "mO8XpGoJwuo": {
+   "title": "DP 24. Rod Cutting Problem | 1D Array Space Optimised Approach",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "NPZn9jBrX8U": {
+   "title": "Dp 25. Longest Common Subsequence | Top Down | Bottom-Up | Space Optimised | DP on Strings",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "-zI4mrF2Pb4": {
+   "title": "DP 26. Print Longest Common Subsequence | Dp on Strings",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "_wP9mWNPL5w": {
+   "title": "DP 27. Longest Common Substring | DP on Strings 🔥",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "6i_T5kkfv4A": {
+   "title": "DP 28. Longest Palindromic Subsequence",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "xPBLEj41rFU": {
+   "title": "DP 29. Minimum Insertions to Make String Palindrome",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "yMnH0jrir0Q": {
+   "title": "DP 30. Minimum Insertions/Deletions to Convert String A to String B",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "xElxAuBcvsU": {
+   "title": "DP 31. Shortest Common Supersequence | DP on Strings",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "nVG7eTiD2bY": {
+   "title": "DP 32. Distinct Subsequences | 1D Array Optimisation Technique 🔥",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "fJaKO8FbDdo": {
+   "title": "DP 33. Edit Distance | Recursive to 1D Array Optimised Solution 🔥",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "ZmlQ3vgAOMo": {
+   "title": "DP 34. Wildcard Matching | Recursive to 1D Array Optimisation 🔥",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "nGJmxkUJQGs": {
+   "title": "DP 36. Buy and Sell Stock - II | Recursion to Space Optimisation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "-uQGzhYj8BQ": {
+   "title": "DP 37. Buy and Sell Stocks III | Recursion to Space Optimisation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "IV1dHbk5CDc": {
+   "title": "DP 38. Buy and Stock Sell IV | Recursion to Space Optimisation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "IGIe46xw3YY": {
+   "title": "DP 39. Buy and Sell Stocks With Cooldown | Recursion to Space Optimisation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "k4eK-vEmnKg": {
+   "title": "DP 40. Buy and Sell Stocks With Transaction Fee | Recursion to Space Optimisation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "ekcwMsSIzVc": {
+   "title": "DP 41. Longest Increasing Subsequence | Memoization",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "IFfYfonAFGc": {
+   "title": "DP 42. Printing Longest Increasing Subsequence | Tabulation | Algorithm",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "on2hvxBXJH4": {
+   "title": "DP 43. Longest Increasing Subsequence | Binary Search | Intuition",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "gDuZwBW9VvM": {
+   "title": "DP 44. Largest Divisible Subset | Longest Increasing Subsequence",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "YY8iBaYcc4g": {
+   "title": "DP 45. Longest String Chain | Longest Increasing Subsequence | LIS",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "y4vN0WNdrlg": {
+   "title": "DP 46. Longest Bitonic Subsequence | LIS",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "cKVl1TFdNXg": {
+   "title": "DP 47. Number of Longest Increasing Subsequences",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "vRVfmbCFW7Y": {
+   "title": "DP 48. Matrix Chain Multiplication | MCM | Partition DP Starts 🔥",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "pDCXsbAw5Cg": {
+   "title": "DP 49. Matrix Chain Multiplication | Bottom-Up | Tabulation",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "xwomavsC86c": {
+   "title": "DP 50. Minimum Cost to Cut the Stick",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "Yz4LlDSlkns": {
+   "title": "DP 51. Burst Balloons | Partition DP | Interactive G-Meet Session Update",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "MM7fXopgyjw": {
+   "title": "DP 52. Evaluate Boolean Expression to True | Partition DP",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "_H8V5hJUGd0": {
+   "title": "DP 53. Palindrome Partitioning - II | Front Partition 🔥",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "PhWWJmaKfMc": {
+   "title": "DP 54. Partition Array for Maximum Sum | Front Partition 🔥",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "tOylVCugy9k": {
+   "title": "DP 55. Maximum Rectangle Area with all 1's | DP on Rectangles",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "auS1fynpnjo": {
+   "title": "DP 56. Count Square Submatrices with All Ones | DP on Rectangles 🔥",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY",
+   "playlistName": "Striver: Dynamic programming"
+  },
+  "onLoX6Nhvmg": {
+   "title": "3 SUM | Brute | Better | Optimal | C++ | Java",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rBT8io74a95xT-hDFZonNs",
+   "playlistName": "Striver: Placement series (2 pointer)"
+  },
+  "m18Hntz4go8": {
+   "title": "Trapping Rainwater | Brute | Better | Optimal | with INTUITION",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rBT8io74a95xT-hDFZonNs",
+   "playlistName": "Striver: Placement series (2 pointer)"
+  },
+  "Fm_p9lJ4Z_8": {
+   "title": "Remove Duplicates From Sorted Array | Brute | Optimal",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rBT8io74a95xT-hDFZonNs",
+   "playlistName": "Striver: Placement series (2 pointer)"
+  },
+  "Mo33MjjMlyA": {
+   "title": "Max Consecutive Ones | Leetcode",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rBT8io74a95xT-hDFZonNs",
+   "playlistName": "Striver: Placement series (2 pointer)"
+  },
+  "S6rsAlj_iB4": {
+   "title": "Reverse Pairs | Leetcode(HARD) | Please watch new video - link in description",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rBT8io74a95xT-hDFZonNs",
+   "playlistName": "Striver: Placement series (2 pointer)"
+  },
+  "dxVcMDI7vyI": {
+   "title": "Minimum Platforms | Greedy Algorithms",
+   "channel": "Striver (take U forward)",
+   "playlist": "PLgUwDviBIf0rBT8io74a95xT-hDFZonNs",
+   "playlistName": "Striver: Placement series (2 pointer)"
+  },
+  "rZ41y93P2Qo": {
+   "title": "Best Data Structures & Algorithms (DSA) Course - Clear Any FAANG Interview!",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "Nckx9qMy_kw": {
+   "title": "Java vs C++ for Data Structures & Algorithms",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "waGfV-IoOt8": {
+   "title": "How I Cleared My Google Interviews - Use LeetCode Effectively!",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "apGV9Kg7ics": {
+   "title": "Complete Git and GitHub Tutorial",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "wn49bJOYAZM": {
+   "title": "Introduction to Programming - Types of Languages, Memory Management",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "lhELGQAV4gg": {
+   "title": "Flow of Program - Flowcharts & Pseudocode",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "4EP8YzcN0hQ": {
+   "title": "Introduction to Java - Architecture & Installation",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "TAtrPoaJ7gc": {
+   "title": "First Java Program - Input/Output, Debugging and Datatypes",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "ldYLYRNaucM": {
+   "title": "Conditionals and Loops + Calculator Program",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "mA23x39DjbI": {
+   "title": "Switch Statements + Nested Case in Java",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "vvanI8NRlSI": {
+   "title": "Functions / Methods in Java",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "n60Dn0UsbEk": {
+   "title": "Introduction to Arrays and ArrayList in Java",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "_HRA37X8N_Q": {
+   "title": "Linear Search Algorithm - Theory + Code + Questions",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "f6UU7V3szVw": {
+   "title": "Binary Search Algorithm - Theory + Code",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "W9QJ8HaRvJQ": {
+   "title": "Binary Search Interview Questions - Google, Facebook, Amazon",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "enI_KyGLYPo": {
+   "title": "Binary Search in 2D Arrays",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "F5MZyqRp_IM": {
+   "title": "Bubble Sort Algorithm - Theory + Code",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "Nd4SCCIHFWk": {
+   "title": "Selection Sort Algorithm - Theory + Code",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "By_5-RRqVeE": {
+   "title": "Insertion Sort Algorithm - Theory + Code",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "JfinxytTYFQ": {
+   "title": "Cycle Sort - Amazon, Google, Microsoft Interview Questions",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "zL1DPZ0Ovlo": {
+   "title": "Strings and StringBuilder in Java",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "lsOOs5J8ycw": {
+   "title": "Solve Any Pattern Question With This Trick!",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "M2uO2nMT0Bk": {
+   "title": "Introduction to Recursion - Learn In The Best Way",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "mV3wrLBbuuE": {
+   "title": "Time and Space Complexity COMPLETE Tutorial - What is Big O?",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "fzip9Aml6og": {
+   "title": "Bitwise Operators + Number Systems - Maths for DSA",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "lmSpZ0bjCyQ": {
+   "title": "Maths for Data Structures & Algorithms",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "JxILxTwHukM": {
+   "title": "Recursion - Level 1 Questions (Theory + Code + Tips)",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "sTdiMLom00U": {
+   "title": "Recursion - Array Questions (Theory + Code + Tips)",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "ymgnIIclCF0": {
+   "title": "Recursion - Pattern Questions + Bubble Sort + Selection Sort",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "iKGAgWdgoRk": {
+   "title": "Merge Sort Using Recursion (Theory + Complexity + Code)",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "Z8svOqamag8": {
+   "title": "Quick Sort Using Recursion (Theory + Complexity + Code)",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "gdifkIwCJyg": {
+   "title": "Recursion Subset, Subsequence, String Questions",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "gDGw0cvFXPQ": {
+   "title": "Recursion - Permutations (Theory + Code + Tips)",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "9ByWqPzfXDU": {
+   "title": "Recursion Google, Amazon Questions: Dice Throw & Letter Combinations of a Phone Number",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "zg5v2rlV1tM": {
+   "title": "Backtracking Introduction + Maze Problems - Theory + Code + Tips",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "nC1rbW2YSz0": {
+   "title": "N-Queens, N-Knights, Sudoku Solver (LeetCode) - Backtracking Questions",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "BSVKUk58K6U": {
+   "title": "OOP 1 | Introduction & Concepts - Classes, Objects, Constructors, Keywords",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "_Ya6CN13t8k": {
+   "title": "OOP 2 | Packages, Static, Singleton Class, In-built Methods",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "46T2wD3IuhM": {
+   "title": "OOP 3 | Principles - Inheritance, Polymorphism, Encapsulation, Abstraction",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "W145DXs8fFg": {
+   "title": "OOP 4 | Access Control, In-built Packages, Object Class",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "rgHZa7-Dibg": {
+   "title": "OOP 5 | Abstract Classes, Interfaces, Annotations",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "OY2lPr8h93U": {
+   "title": "OOP 6 | Generics, Custom ArrayList, Lambda Expressions, Exception Handling, Object Cloning",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "9ogGan-R1pc": {
+   "title": "OOP 7 | Collections Framework, Vector Class, Enums in Java",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "58YbpRDc4yw": {
+   "title": "Linked List Tutorial - Singly + Doubly + Circular (Theory + Code + Implementation)",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "70tx7KcMROc": {
+   "title": "Linked List Interview Questions - Google, Facebook, Amazon, Microsoft",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "rHQI4mrJ3cg": {
+   "title": "Stacks and Queues Complete Tutorial - Theory + Implementation + Types (Dynamic, Circular)",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "S9LUYztYLu4": {
+   "title": "Stacks and Queues Interview Questions - Google, Facebook, Amazon, Microsoft",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "jlLNXmi4Nmw": {
+   "title": "Tic Tac Toe Java Game in Under 15 Minutes",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "4s1Tcvm00pA": {
+   "title": "Binary Trees Tutorial - Introduction + Traversals + Code | Binary Search Trees (BST)",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "CVA85JuJEn0": {
+   "title": "AVL Trees Tutorial | Self Balancing Binary Search Trees",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "ciHThtTVNto": {
+   "title": "Segment Trees Tutorial | Range Queries | Interview Questions",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "YFZai3fPUQI": {
+   "title": "StringBuffer in Java | Data Formatting | Working With Large Data",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "lHtoypC-4Ps": {
+   "title": "BigInteger & BigDecimal - Handling Large Numbers in Java",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "b35mlSPOlJg": {
+   "title": "File Handling in Java Complete Course",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "9D-vP-jcc-Y": {
+   "title": "Binary Tree Questions for Technical Interviews - Google, Facebook, Amazon, Microsoft",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "Qf-TDPr0nYw": {
+   "title": "Introduction to Heap Data Structure + Priority Queue + Heapsort Tutorial",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "XLbvmMz8Fr8": {
+   "title": "Introduction to HashMap & HashTable in Java",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "swciWFPq3NE": {
+   "title": "Karp-Rabin String Matching Algorithm | Substring Search Pattern",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "FOo820lJV1Y": {
+   "title": "Count Sort Algorithm - Theory + Code",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "mLi6VQDqAOs": {
+   "title": "Radix Sort Algorithm - Theory + Code",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "XLfgeaYHinM": {
+   "title": "Huffman Coding Greedy Algorithm | Text Compression",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "U4YmISZViSs": {
+   "title": "Easily Solve Range Query Interview Problems with Square Root Decomposition/Mo's Algorithm",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "LFGBTFxHJII": {
+   "title": "Binary Tree from Preorder & Inorder Traversal - Advance Tree Questions",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "Qdr3ohMSxBo": {
+   "title": "Vertical Order Traversal of a Binary Tree - Google Interview Question",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "2odLxQWYDi0": {
+   "title": "Word Ladder - LeetCode Hard - Google Phone Screen Interview Question",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "oB1EIXIDS8s": {
+   "title": "Two Sum IV - Google, Amazon, Facebook Interview Question",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "guzgnCSafg4": {
+   "title": "Kth Smallest Element in a BST - Google, Amazon, Facebook Interview Question",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "kNZ5VIkqReU": {
+   "title": "Convert Binary Tree to Doubly Linked List - FAANG Interview Question",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  },
+  "CxNRKTp6_9s": {
+   "title": "Correct Binary Tree That Has Two Nodes Swapped - FAANG Interview Question",
+   "channel": "Kunal Kushwaha",
+   "playlist": "PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ",
+   "playlistName": "Kunal Kushwaha: Java + DSA course"
+  }
+ }
+}

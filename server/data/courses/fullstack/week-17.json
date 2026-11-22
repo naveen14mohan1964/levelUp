@@ -1,0 +1,217 @@
+{
+  "week": 17,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Domain events; why publishing in the transaction is not enough",
+      "title": "ApplicationStatusChanged raised by the domain and saved to an outbox table",
+      "doneWhen": "A status change writes the application update and one `OutboxMessages` row in the same transaction, an illegal transition writes no row, and a test that makes the save fail finds neither the change nor the outbox row",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Domain events design and implementation",
+          "url": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/domain-events-design-implementation"
+        },
+        {
+          "label": "Microsoft Learn: EF Core interceptors",
+          "url": "https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/interceptors"
+        }
+      ],
+      "brief": "### Why this matters\n\"Save, then publish\" has two failure windows: crash after the commit and the event is lost; publish first and a failed save announces something that never happened. The outbox writes the event in the same transaction as the change; a separate process publishes it later. Today's React part designs the feed these events fill.\n\n### What you'll build\nOn a new branch `feature/events`:\n- `IDomainEvent` in Domain (`EventId`, `OccurredAt`) and a list of raised events on `JobApplication` with `Raise(...)` and `ClearEvents()`\n- `ApplicationStatusChanged(ApplicationId, UserId, From, To)` raised inside the week 2 transition methods, after the guard\n- `OutboxMessage`: `Id` (the event id), `Type`, `Payload`, `OccurredAt`, `CorrelationId` (week 16), `ProcessedAt?`, `Attempts`, `LastError?`, indexed on unprocessed rows\n- A `SaveChangesInterceptor` (or your `IUnitOfWork`) turning raised events into outbox rows before saving\n\n### Step by step\n1. Draw both failure timelines and mark where each loses or invents an event.\n2. Add the event list to the aggregate; Domain stays free of EF and RabbitMQ.\n3. Raise the event after the guard, so illegal moves raise nothing.\n4. Add the entity and migration.\n5. Write the interceptor's saving phase: find aggregates with events, serialise, add rows, clear the lists.\n6. Test: a domain test for raising, an integration test for the row, one where the save throws.\n\n```csharp\npublic override ValueTask<InterceptionResult<int>> SavingChangesAsync(\n    DbContextEventData data, InterceptionResult<int> result, CancellationToken ct = default)\n{\n    // TODO: collect events, add OutboxMessage rows, clear events\n    return base.SavingChangesAsync(data, result, ct);\n}\n```\n\n### Acceptance criteria\n- [ ] Change and event commit together or not at all\n- [ ] Illegal transitions raise nothing\n- [ ] Domain has no infrastructure references\n\n### Hints\n- The event id becomes the message id; consumers use it to ignore duplicates.\n- Store a versioned type name (`ApplicationStatusChanged.v1`) so the shape can change later.\n\n### Common mistakes\n- Publishing to the broker inside the request \"just this once\".\n- Forgetting to clear events, so a second save writes them again.\n\n### Check your understanding\n- What are the two failure windows without an outbox?\n- Why is the outbox at-least-once?\n- Why raise the event inside the domain method?"
+    },
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Designing an activity feed",
+      "title": "Activity feed page shell with event types and icons",
+      "doneWhen": "`/activity` (lazy-loaded, in the nav) renders a typed list of sample activity entries where each kind (status changed, interview scheduled, note added, reminder) has its own icon, text and accessible label, with empty and loading states",
+      "learnLinks": [
+        {
+          "label": "TypeScript: Narrowing",
+          "url": "https://www.typescriptlang.org/docs/handbook/2/narrowing.html"
+        },
+        {
+          "label": "react.dev: Rendering lists",
+          "url": "https://react.dev/learn/rendering-lists"
+        }
+      ],
+      "brief": "### Why this matters\nAn activity feed turns raw events into a story the user can scan: what changed, when, on which application. Designing it from the data's shape first (a union of event kinds) means TypeScript forces you to handle every kind, including ones added later. Today's .NET part creates the events that will fill it; until Thursday's endpoint exists, the page runs on typed sample data.\n\n### What you'll build\n- `ActivityEntryDto` as a discriminated union on `kind`: `StatusChanged` (from, to), `InterviewScheduled` (at), `NoteAdded`, `ReminderCreated`\n- `ActivityItem` rendering each kind with a switch, an icon, one sentence (\"Moved Acme to Interviewing\") and a relative time with a full date in `title`\n- An exhaustive check (`never`) so a new kind fails to compile until handled\n- `ActivityPage` at `/activity`, lazy-loaded like week 12's routes, with a sample array, loading skeleton and empty state\n- Entries grouped by day (\"Today\", \"Yesterday\", date)\n\n### Step by step\n1. Write the union type, matching the payloads you plan on the server.\n2. Write `ActivityItem` with a `switch` on `kind` and a `default` that assigns to `never`.\n3. Icons are decoration: `aria-hidden` on the icon, meaning carried by the text.\n4. Format relative time with `Intl.RelativeTimeFormat`.\n5. Group by day during render.\n6. Add the route, nav link and states.\n\n```ts\nfunction assertNever(x: never): never {\n  throw new Error(`Unhandled activity kind: ${JSON.stringify(x)}`);\n}\n```\n\n### Acceptance criteria\n- [ ] Every kind renders distinctly\n- [ ] Adding a kind breaks the build until handled\n- [ ] Icons are hidden from screen readers; text carries meaning\n- [ ] The route is its own chunk\n\n### Hints\n- Use a `<ol>` or `<ul>` with day headings: a feed is a list.\n- Keep `ActivityItem` presentational; Tuesday adds paging around it.\n\n### Common mistakes\n- A `kind: string` with optional fields for every variant.\n- Colour as the only difference between kinds.\n\n### Check your understanding\n- What does a discriminated union give you over optional fields?\n- How does the `never` check work?\n- Why is the icon `aria-hidden`?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "api",
+      "learn": "RabbitMQ: exchanges, queues, acknowledgements",
+      "title": "Outbox publisher background service sending events to RabbitMQ",
+      "doneWhen": "A status change produces a persistent message in a debug queue in the RabbitMQ management UI whose message id equals the outbox row id, and with RabbitMQ stopped two status changes stay unprocessed and are published within seconds of it restarting",
+      "learnLinks": [
+        {
+          "label": "RabbitMQ: Tutorials",
+          "url": "https://www.rabbitmq.com/tutorials"
+        },
+        {
+          "label": "RabbitMQ: .NET client API guide",
+          "url": "https://www.rabbitmq.com/client-libraries/dotnet-api-guide"
+        },
+        {
+          "label": "RabbitMQ: Consumer acknowledgements and publisher confirms",
+          "url": "https://www.rabbitmq.com/docs/confirms"
+        }
+      ],
+      "brief": "### Why this matters\nThe outbox holds events safely; now something must deliver them. A background publisher reads unprocessed rows and sends them to RabbitMQ, marking each only after the broker confirms it. If the broker is down, rows wait and go out later. Exchanges, queues and acknowledgements are the vocabulary of every message broker interview. Today's React part pages through the feed on the client.\n\n### What you'll build\n- RabbitMQ in Docker with the management UI (port 15672)\n- RabbitMQ settings in the validated `JobHunt` section, credentials outside the repo\n- A durable topic exchange `jobhunt.events` with routing keys like `application.status-changed`\n- `RabbitMQ.Client` with one long-lived connection as a singleton\n- `OutboxPublisher : BackgroundService`: every 2 seconds, in a new DI scope, read a batch oldest first, publish each as persistent with `MessageId`, `Type` and `CorrelationId`, then set `ProcessedAt`\n- Publisher confirms on; failures raise `Attempts` and store `LastError`\n- The publisher off in `Testing`\n\n### Step by step\n1. Do the first tutorial by hand in the management UI: exchange, queue, binding, publish.\n2. Declare the exchange at start-up (declaring is idempotent).\n3. Write the loop with `PeriodicTimer` and the stopping token.\n4. Publish, await the confirm, then mark the row.\n5. Bind a debug queue to `#` and watch messages arrive.\n6. Stop RabbitMQ, change two statuses, start it again.\n\n### Acceptance criteria\n- [ ] Rows are marked only after a confirm\n- [ ] Messages are persistent with the event id as message id\n- [ ] A broker outage delays, never loses\n- [ ] Errors are recorded and the loop continues\n\n### Hints\n- The current .NET client is async-only: connections, channels, declares and publishes are all awaited. Check signatures in the API guide.\n- Two API instances would read the same rows; a lease column or locked-row skipping fixes that (week 20).\n\n### Common mistakes\n- One DbContext for the whole lifetime of the service.\n- Marking rows processed before the broker confirms.\n\n### Check your understanding\n- What is an exchange, a queue and a binding?\n- Why wait for the confirm?\n- Why is delivery at-least-once, not exactly-once?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Cursor pagination in the client",
+      "title": "Feed loads pages with a cursor",
+      "doneWhen": "`useActivityFeed()` uses `useInfiniteQuery` with a cursor: against MSW handlers that serve 45 entries in pages of 20, a test proves three pages load in order with no duplicates and `hasNextPage` turns false at the end",
+      "learnLinks": [
+        {
+          "label": "TanStack Query: Infinite queries",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/infinite-queries"
+        },
+        {
+          "label": "MSW: Documentation",
+          "url": "https://mswjs.io/docs/"
+        }
+      ],
+      "brief": "### Why this matters\nFeeds grow forever and change while you read them. Page numbers break when new items arrive at the top (page 2 now repeats an item from page 1). A cursor says \"give me what comes after this item\", which stays correct as the feed grows. `useInfiniteQuery` keeps all loaded pages under one key. Thursday's .NET part builds the real endpoint; today you write the contract into MSW handlers so the client is ready first.\n\n### What you'll build\n- The contract written down: `GET /api/activity?cursor=&limit=20` returning `{ items, nextCursor }`, `nextCursor` null at the end, the cursor opaque to the client\n- MSW handlers serving 45 typed fixture entries with a fake cursor (an encoded index is fine for the mock)\n- `getActivity(cursor, signal)` in `api.ts`\n- `useActivityFeed()` with `initialPageParam: null` and `getNextPageParam` returning `nextCursor ?? undefined`\n- `ActivityPage` flattening `data.pages` and rendering yesterday's `ActivityItem`\n- A Vitest test calling `fetchNextPage()` until the end\n\n### Step by step\n1. Write the contract as a comment above the API function; Thursday's .NET part implements it.\n2. Write the handlers. Read `cursor` from `request.url`.\n3. Write the hook. Type the page param as `string | null`.\n4. Flatten pages with `flatMap` during render.\n5. Add a temporary \"Next page\" button to try it by hand.\n6. Write the test with `renderHook`: three pages, 45 unique ids, then no next page.\n\n```ts\nuseInfiniteQuery({\n  queryKey: activityKeys.feed(),\n  queryFn: ({ pageParam, signal }) => getActivity(pageParam, signal),\n  initialPageParam: null as string | null,\n  // TODO: getNextPageParam\n});\n```\n\n### Acceptance criteria\n- [ ] The client never builds or parses a cursor\n- [ ] All pages live under one query key\n- [ ] The end of the feed is detected\n- [ ] The test covers the last page\n\n### Hints\n- Returning `undefined` from `getNextPageParam` is how TanStack Query knows there is no next page.\n- `maxPages` can cap memory for very long feeds.\n\n### Common mistakes\n- Using page numbers \"because it is simpler\".\n- Keeping loaded items in `useState` alongside the query.\n\n### Check your understanding\n- Why does offset paging break when items are added at the top?\n- What does \"opaque cursor\" mean, and why does it matter?\n- What does `getNextPageParam` decide?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Idempotent consumers and at-least-once delivery",
+      "title": "Consumer that writes activity entries once per event id",
+      "doneWhen": "Delivering the same event twice (a test, or republishing from the management UI) produces exactly one activity entry, and a malformed message ends up in a dead-letter queue instead of being redelivered forever",
+      "learnLinks": [
+        {
+          "label": "RabbitMQ: Reliability guide",
+          "url": "https://www.rabbitmq.com/docs/reliability"
+        },
+        {
+          "label": "RabbitMQ: Dead letter exchanges",
+          "url": "https://www.rabbitmq.com/docs/dlx"
+        },
+        {
+          "label": "RabbitMQ: Consumer acknowledgements and publisher confirms",
+          "url": "https://www.rabbitmq.com/docs/confirms"
+        }
+      ],
+      "brief": "### Why this matters\nAt-least-once delivery means duplicates will happen: a consumer crashes after saving but before acknowledging, and the broker delivers again. An idempotent consumer makes the second delivery harmless. And a message that can never be processed must not loop forever. \"How do you handle duplicate messages?\" is the follow-up to every outbox answer. Today's React part loads the feed as the user scrolls.\n\n### What you'll build\n- `ActivityEntry`: `Id`, `UserId`, `ApplicationId`, `Kind`, `Summary`, `OccurredAt`, `EventId` with a unique index on `EventId`, and a migration\n- A durable queue `jobhunt.activity` bound to `application.*`, with a dead-letter exchange and queue `jobhunt.activity.dlq`\n- `ActivityProjector.HandleAsync(envelope, ct)` in Application: pure handling logic, testable without RabbitMQ\n- `ActivityConsumer : BackgroundService`: manual acks, a prefetch limit, deserialise, call the projector in a scope, then ack\n- Failure classes: duplicate (unique violation) means ack; poison means reject without requeue; transient means retry later\n- The message's correlation id pushed into the log context\n\n### Step by step\n1. Declare the queue with its dead-letter arguments and the binding at start-up.\n2. Write the projector: summary such as \"Moved Acme to Interviewing\", insert, save once.\n3. Test it twice with the same event against Testcontainers SQL Server: one row.\n4. Write the consumer with automatic ack off; ack after the save commits.\n5. Publish a malformed message by hand and find it in the DLQ.\n6. Republish a real message by hand and confirm one row.\n\n```csharp\ncatch (DbUpdateException ex) when (IsUniqueViolation(ex))\n{\n    // already handled this event id: treat as success\n}\n```\n\n### Acceptance criteria\n- [ ] Duplicates create no extra rows\n- [ ] Poison messages land in the DLQ\n- [ ] Acks happen only after the commit\n- [ ] The projector is tested without a broker\n\n### Hints\n- Prefetch caps unacked messages per consumer: your back-pressure.\n- In a bigger system the consumer would be its own worker project; say why the API process is fine here.\n\n### Common mistakes\n- Auto-ack, so a crash after receiving loses the message.\n- Requeueing poison messages, creating an endless loop.\n\n### Check your understanding\n- Why do duplicates happen with at-least-once delivery?\n- What makes your consumer idempotent?\n- What belongs in a dead-letter queue?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Infinite scroll with an intersection observer",
+      "title": "Load more when the end of the feed is visible, with a button fallback",
+      "doneWhen": "Scrolling near the end of the feed loads the next page automatically through an `IntersectionObserver`, a visible Load more button does the same with the keyboard alone, and \"You're all caught up\" shows at the end",
+      "learnLinks": [
+        {
+          "label": "MDN: Intersection Observer API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API"
+        },
+        {
+          "label": "TanStack Query: Infinite queries",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/infinite-queries"
+        }
+      ],
+      "brief": "### Why this matters\nInfinite scroll feels natural on a feed, but done carelessly it traps keyboard users, fires duplicate loads and makes the footer unreachable. `IntersectionObserver` tells you efficiently when an element enters the viewport, without scroll listeners. A real button as a fallback keeps the feed accessible. Today's .NET part fills the activity table that this page will read.\n\n### What you'll build\n- A sentinel element after the last item, observed by an `IntersectionObserver` created in an effect\n- `fetchNextPage()` called only when the sentinel is visible, `hasNextPage` is true and nothing is fetching\n- A `rootMargin` so loading starts a little before the bottom\n- A Load more button always rendered while there is a next page, with a busy state\n- A polite live region announcing \"20 more entries loaded\"\n- An end message, and focus kept in place after loading\n\n### Step by step\n1. Create the observer in an effect that depends on `hasNextPage` and `isFetchingNextPage`; disconnect in cleanup.\n2. Attach it to the sentinel with a ref.\n3. Guard against double loads.\n4. Add the button with `aria-busy` while fetching.\n5. Add the live region text after each page.\n6. Try it with the keyboard only, then with the mouse wheel.\n\n```tsx\nuseEffect(() => {\n  const el = sentinelRef.current;\n  if (!el || !hasNextPage) return;\n  const observer = new IntersectionObserver(/* TODO */);\n  observer.observe(el);\n  return () => observer.disconnect();\n}, [hasNextPage, isFetchingNextPage, fetchNextPage]);\n```\n\n### Acceptance criteria\n- [ ] Scrolling loads the next page once\n- [ ] The button works with the keyboard\n- [ ] New pages are announced\n- [ ] The end of the feed is clear\n\n### Hints\n- jsdom has no `IntersectionObserver`; in tests, click the button instead, or stub the observer.\n- Keep the button even with auto-loading: some users never scroll.\n\n### Common mistakes\n- Scroll event listeners doing layout math on every pixel.\n- Creating a new observer on every render without cleanup.\n\n### Check your understanding\n- Why `IntersectionObserver` instead of scroll events?\n- Why keep a button?\n- What prevents two loads for one page?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Activity endpoint with cursor paging",
+      "title": "GET /api/activity with a stable cursor",
+      "doneWhen": "`GET /api/activity?cursor=&limit=` returns `{ items, nextCursor }` for the current user ordered newest first, a test proves no duplicates or gaps across a page boundary that falls on equal timestamps, a malformed cursor gives 400, and the consumer pushes `ActivityAdded` after each insert",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Pagination in EF Core",
+          "url": "https://learn.microsoft.com/en-us/ef/core/querying/pagination"
+        },
+        {
+          "label": "Microsoft Learn: Indexes",
+          "url": "https://learn.microsoft.com/en-us/ef/core/modeling/indexes"
+        }
+      ],
+      "brief": "### Why this matters\nOffset paging (`Skip`) reads and throws away every earlier row, and shifts when new rows arrive. Keyset paging seeks straight to \"older than this item\", so it stays fast and stable however long the feed gets. The cursor must include a tie-breaker, or two entries with the same timestamp can be skipped or repeated. Today's React part shows new entries live, using the push you add at the end.\n\n### What you'll build\n- `ActivityPageDto(Items, NextCursor)` and a query on `IApplicationQueries` (or `IActivityQueries`)\n- Order by `OccurredAt` then `Id`, both descending; filter \"older than the cursor\" with the `Id` tie-break\n- `limit + 1` rows read to know whether there is a next page; `limit` capped at 50 by the validator\n- The cursor as base64url of `OccurredAt` and `Id`, decoded in one helper, 400 ProblemDetails when malformed\n- An index on `(UserId, OccurredAt desc, Id desc)`\n- After the consumer saves an entry, an `ActivityAdded` push through the week 15 publisher\n\n### Step by step\n1. Write the encode and decode helpers and their unit tests first.\n2. Write the query and read its SQL: a seek, not an offset.\n3. Add the index and check the plan (week 12 habit).\n4. Test with entries sharing one timestamp across a page boundary.\n5. Validate `limit` and the cursor with FluentValidation (week 6 pattern).\n6. Add the push in the consumer after the commit; the payload can be the entry DTO.\n\n```csharp\nquery = query.Where(a =>\n    a.OccurredAt < c.OccurredAt ||\n    (a.OccurredAt == c.OccurredAt && /* TODO: tie-break on Id */));\n```\n\n### Acceptance criteria\n- [ ] No `Skip` anywhere in the feed query\n- [ ] Equal timestamps never duplicate or vanish\n- [ ] Malformed cursors give 400\n- [ ] The response matches Tuesday's MSW contract\n\n### Hints\n- Guids are not time-ordered, but they are a stable tie-breaker, which is all a cursor needs.\n- Switch Tuesday's hook from MSW to the real endpoint and check nothing else changes.\n\n### Common mistakes\n- A cursor of the timestamp alone.\n- Exposing raw ids in the cursor format and letting clients build it.\n\n### Check your understanding\n- Why is keyset paging stable when rows are added?\n- Why does the cursor need a tie-breaker?\n- Why read `limit + 1` rows?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Live feed updates through the week 15 connection",
+      "title": "New activity appears at the top without a reload",
+      "doneWhen": "With the feed open, a status change in another tab makes the new entry appear at the top within a second without a reload, without duplicating it on the next page load, and a \"New activity\" button appears instead if the user has scrolled down",
+      "learnLinks": [
+        {
+          "label": "TanStack Query: QueryClient",
+          "url": "https://tanstack.com/query/latest/docs/reference/QueryClient"
+        },
+        {
+          "label": "Microsoft Learn: ASP.NET Core SignalR JavaScript client",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/javascript-client"
+        }
+      ],
+      "brief": "### Why this matters\nA feed that needs a reload feels dead. Week 15's connection is already open, so a new event can go straight into the cached first page. The care is in the details: no duplicate when the entry also arrives by paging, and no jump while the user is reading further down. This consumes the `ActivityAdded` push from today's .NET part.\n\n### What you'll build\n- `ActivityAdded` added to the week 15 event types and the envelope tracker\n- A handler that prepends the entry to the first page of the infinite query with `setQueryData`, skipping it if its id is already cached\n- Detection of the user's position: at the top, prepend; scrolled down, count new entries and show a \"New activity (3)\" button that scrolls up and reveals them\n- Gaps and reconnects (week 15) still invalidating the feed\n\n### Step by step\n1. Add the event type and register the handler with `useRealtimeEvent`.\n2. Write a pure `prependEntry(data, entry)` working on the infinite query's `{ pages, pageParams }` shape; test it.\n3. Skip entries whose id is already in any page.\n4. Track whether the top of the list is visible (an observer on a top sentinel).\n5. When scrolled down, buffer new entries and show the button; clicking it prepends and scrolls up.\n6. Try it with two tabs.\n\n```ts\nexport function prependEntry(data: InfiniteData<ActivityPageDto>, entry: ActivityEntryDto) {\n  // TODO: skip if present, else add to the first page's items\n}\n```\n\n### Acceptance criteria\n- [ ] New entries appear without a reload\n- [ ] No duplicates after paging\n- [ ] Reading further down is never interrupted\n- [ ] Reconnects still resync the feed\n\n### Hints\n- The cursor of later pages does not change when you prepend: keyset paging makes that safe.\n- Announce new entries through the feed's live region, politely.\n\n### Common mistakes\n- Invalidating the whole infinite query on every event, refetching every loaded page.\n- Mutating the cached arrays in place instead of returning new ones.\n\n### Check your understanding\n- Why is prepending safe with a cursor but not with offsets?\n- Why buffer entries while the user is scrolled down?\n- What heals the feed after a missed event?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Scheduled digests and email in development",
+      "title": "Weekly digest email sent to a local SMTP catcher",
+      "doneWhen": "Triggering `WeeklyDigestJob` puts one email per opted-in user whose digest day is today into the local SMTP catcher, running it again sends nothing new, opted-out users get nothing, and the PR \"Events\" is open",
+      "learnLinks": [
+        {
+          "label": "Hangfire: Recurring tasks",
+          "url": "https://docs.hangfire.io/en/latest/background-methods/performing-recurrent-tasks.html"
+        },
+        {
+          "label": "Microsoft Learn: SmtpClient class",
+          "url": "https://learn.microsoft.com/en-us/dotnet/api/system.net.mail.smtpclient"
+        }
+      ],
+      "brief": "### Why this matters\nThe activity entries are a ready-made summary of the user's week. A digest email brings them back without opening the app. It combines everything so far: a scheduled job, user preferences, idempotency and safe HTML. In development, an SMTP catcher shows the emails without sending anything real. This closes the .NET side of the PR \"Events\"; today's React part adds the settings.\n\n### What you'll build\n- A local SMTP catcher in Docker (Mailpit or smtp4dev): SMTP on one port, an inbox UI on another\n- `IEmailSender` in Application and `SmtpEmailSender` in Infrastructure with SMTP settings in the validated section; MailKit is the commonly recommended library (the `SmtpClient` docs explain why)\n- `DigestEnabled` (default true) and `DigestDay` (default Monday) added to week 15's `UserPreferences` and its endpoints\n- `WeeklyDigestJob` running daily, with an explicit time zone, for users whose digest day is today\n- `DigestSent` with a unique `(UserId, WeekStart)`, so a rerun sends nothing\n- Plain text and HTML bodies, every user value HTML-encoded\n\n### Step by step\n1. Run the catcher; send one test email.\n2. Extend preferences, the validator and the migration.\n3. Write the job: opted-in users for today, their last 7 days of activity via `TimeProvider`, skip users with none.\n4. Insert `DigestSent`, then send. Write down what a failure between the two means.\n5. Build both bodies; encode every company and role name.\n6. Trigger it twice from the dashboard and read the inbox.\n7. Push and open the PR \"Events\"; merge after today's React part.\n\n```csharp\nrecurringJobs.AddOrUpdate<WeeklyDigestJob>(\"weekly-digest\",\n    job => job.RunAsync(CancellationToken.None),\n    Cron.Daily(7) /* TODO: options with a time zone */);\n```\n\n### Acceptance criteria\n- [ ] A rerun sends nothing new\n- [ ] Opted-out users and users with no activity get nothing\n- [ ] User text is encoded in the HTML\n- [ ] No real email leaves your machine\n\n### Hints\n- Row first, send second: a failure skips a week. Send first: a failure can send twice. Pick one and write why.\n- Week 20's compose file adds the catcher.\n\n### Common mistakes\n- Building HTML with raw string concatenation of user input.\n- Using server local time for \"today\".\n\n### Check your understanding\n- What makes the digest job idempotent?\n- Why encode values in an email?\n- What does the SMTP catcher replace in development?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Settings forms",
+      "title": "Digest on/off and day of week in the preferences page",
+      "doneWhen": "A Settings page (React Hook Form + Zod) shows quiet mode, digest on/off and a digest day select loaded from `/api/me/preferences`, the day select is disabled while the digest is off, saving shows a confirmation and survives a reload, and PR \"Events\" is merged",
+      "learnLinks": [
+        {
+          "label": "React Hook Form: useForm",
+          "url": "https://react-hook-form.com/docs/useform"
+        },
+        {
+          "label": "React Hook Form: reset",
+          "url": "https://react-hook-form.com/docs/useform/reset"
+        },
+        {
+          "label": "Zod: Defining schemas",
+          "url": "https://zod.dev/api"
+        }
+      ],
+      "brief": "### Why this matters\nSettings forms look simple but hide real questions: load before rendering, show the saved state, disable options that do not apply, and confirm that saving worked. A form that resets to the server's response after saving never drifts from the truth. It ends the week with the PR \"Events\", together with today's .NET part.\n\n### What you'll build\n- `/settings` route and a link in the user menu\n- `preferencesQuery` (week 15) feeding a form with `defaultValues` once loaded, or `reset(data)` when it arrives\n- A Zod schema: `quietMode` boolean, `digestEnabled` boolean, `digestDay` from the seven weekdays\n- Fields: two checkboxes (or switches with `role=\"switch\"`) and a `<select>` for the day, all labelled\n- The day select disabled while the digest is off, with a hint saying why\n- A save mutation writing the response into the cache and calling `reset(response)`; a polite \"Saved\" message\n- The week 15 quiet mode toggle in the menu reading the same cache\n\n### Step by step\n1. Load first: show a skeleton until preferences arrive, then render the form.\n2. Write the schema and the form with `zodResolver`.\n3. Watch `digestEnabled` with `watch` (or `useWatch`) to disable the select.\n4. Submit, write the response into the query cache, then `reset` so the form is clean.\n5. Disable Save while nothing changed (`isDirty`) or while saving.\n6. Change settings in one tab and check the menu toggle in another after a refetch.\n7. Run all builds and tests, push, review and merge PR \"Events\".\n\n### Acceptance criteria\n- [ ] The form shows saved values on load\n- [ ] Disabled options explain why\n- [ ] Saving confirms and the form becomes clean\n- [ ] PR \"Events\" is merged\n\n### Hints\n- Weekday names can come from `Intl.DateTimeFormat` with `weekday: \"long\"`.\n- Server errors map onto fields with week 6's helper.\n\n### Common mistakes\n- Rendering the form with empty defaults, then never resetting when data arrives.\n- Two sources of truth for quiet mode.\n\n### Check your understanding\n- Why `reset` after a successful save?\n- Why disable the day select instead of hiding it?\n- Where does quiet mode live on the client?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "lane": null,
+      "learn": null,
+      "title": "Explain the outbox pattern and an idempotent consumer with a diagram",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nExplain the outbox pattern and an idempotent consumer with a diagram, in 20 minutes.\n\n### Rules\n- Blank page or whiteboard. Draw first, then explain out loud as if to an interviewer.\n- Optional, if time is left: write the consumer's duplicate check from memory in a scratch file outside the JobHunt repo.\n- Docs allowed, but try without first and note every lookup. No AI assistants.\n\n### Must include\n- The two failure windows of \"save, then publish\" and how the outbox closes them\n- The transaction: the business change and the outbox row committed together\n- The publisher loop: read unprocessed rows, publish, wait for the confirm, mark processed; what happens while the broker is down\n- Why this gives at-least-once delivery, and where duplicates come from\n- The consumer: manual ack after commit, a unique index on the event id, a duplicate treated as success\n- Poison messages and the dead-letter queue\n- How the activity feed and the digest use the result\n\n### Self-check\n- [ ] Finished within 20 minutes\n- [ ] Every box and arrow is labelled\n- [ ] Named where each duplicate can come from\n- [ ] Explained why exactly-once is not promised\n- [ ] Zero lookups, or a list of exactly what to review\n\n### If you got stuck\n- Domain events and the outbox: Monday, .NET part.\n- The publisher and confirms: Tuesday, .NET part.\n- The idempotent consumer and DLQ: Wednesday, .NET part.\n- Cursor paging: Thursday, .NET part, and Tuesday, React part.\n- Live feed updates: Thursday, React part. Digest: Friday, both parts."
+    }
+  ]
+}

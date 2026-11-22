@@ -1,7 +1,7 @@
 // Which roadmap the Today hero card shows, and where each lesson lives.
 import { blockStatus, nowMinutes } from './timeline.js';
 
-const FALLBACK = ['ai', 'dsa', 'lld', 'hld', 'judge', 'node', 'dotnet', 'react'];
+const FALLBACK = ['ai', 'dsa', 'fullstack', 'lld', 'hld', 'judge', 'node'];
 
 /**
  * The hero follows your timeline: an unfinished DSA or project block happening right now picks that roadmap.

@@ -1,0 +1,217 @@
+{
+  "week": 13,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Output caching and keys that vary by user",
+      "title": "Output caching on stats, varying by user",
+      "doneWhen": "The second `GET /api/stats` for a user within a minute is served from the output cache with no SQL in the log, a second user gets their own numbers, and an integration test proves user B never receives user A's cached stats",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Output caching middleware",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/caching/output"
+        },
+        {
+          "label": "Microsoft Learn: Caching overview",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/caching/overview"
+        }
+      ],
+      "brief": "### Why this matters\nThe stats query is the most expensive read you have, and users open the dashboard often. Output caching stores the whole response on the server and replays it. The trap: by default it refuses authenticated requests, and when you override that, a cache key without the user id serves one user's numbers to another. That leak is a classic interview question. Today's React part tunes the client cache, the other half of the story.\n\n### What you'll build\nOn a new branch `feature/caching-search`:\n- `AddOutputCache()` and `UseOutputCache()` placed after authentication and authorization\n- A first attempt with `.CacheOutput()` that caches nothing, and a note on why\n- A custom `IOutputCachePolicy` named `PerUserStats` that enables caching for authenticated requests, varies by the user id claim, and expires after 60 seconds\n- `.CacheOutput(\"PerUserStats\")` on `GET /api/stats` only\n\n### Step by step\n1. Read the page's default policy rules. Write down which requests it refuses to cache and why.\n2. Add the middleware in the right place, so the policy can see the user.\n3. Write the policy: in the request phase, enable lookup and storage, set the expiry, add the user id to the vary-by values.\n4. Call stats twice as one user and watch the SQL log.\n5. Call as a second user, then write the two-user test.\n\n```csharp\npublic sealed class PerUserStatsPolicy : IOutputCachePolicy\n{\n    public ValueTask CacheRequestAsync(OutputCacheContext ctx, CancellationToken ct)\n    {\n        // TODO: enable caching, set expiry, vary by user id\n        return ValueTask.CompletedTask;\n    }\n    // TODO: ServeFromCacheAsync, ServeResponseAsync\n}\n```\n\n### Acceptance criteria\n- [ ] Only the stats endpoint is cached\n- [ ] The cache key includes the user id\n- [ ] The leak test fails if you remove the vary-by\n- [ ] The middleware runs after authentication\n\n### Hints\n- Writes still show stale stats for up to a minute; tomorrow's tags fix that.\n- `Cache-Control: private` tells browsers and proxies not to share a response; output caching is a separate, server-side layer.\n\n### Common mistakes\n- Caching every endpoint with a base policy.\n- Varying by the `Authorization` header, which changes on every token refresh.\n\n### Check your understanding\n- Why does the default policy refuse authenticated requests?\n- What exactly is in your cache key?\n- Where else could a per-user response leak?"
+    },
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "web",
+      "learn": "staleTime and gcTime in TanStack Query",
+      "title": "Tune staleTime per query and explain each choice",
+      "doneWhen": "Every query gets its `staleTime` from a shared `queryOptions` factory, a comment table in `queries.ts` gives each query's value and reason, and switching tabs back to the dashboard within the stats `staleTime` sends no request",
+      "learnLinks": [
+        {
+          "label": "TanStack Query: Important defaults",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/important-defaults"
+        },
+        {
+          "label": "TanStack Query: Caching examples",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/caching"
+        },
+        {
+          "label": "TanStack Query: Query options",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-options"
+        }
+      ],
+      "brief": "### Why this matters\nTanStack Query's defaults are safe but chatty: data is stale at once, so every mount and window focus refetches. Tuning `staleTime` per query, with a reason, cuts requests without showing old data where it matters. `staleTime` versus `gcTime` is a frequent interview question. Today's .NET part caches stats for 60 seconds on the server, so the client can wait that long too.\n\n### What you'll build\n- `features/*/queries.ts` with `queryOptions` factories: `applicationListQuery(filters)`, `applicationDetailQuery(id)`, `statsQuery()`, plus interviews and notes\n- Hooks and loaders using those factories, so key, `queryFn` and `staleTime` live in one place\n- A comment table: list, detail, interviews, notes, stats, `me`, each with a `staleTime` and a reason\n- `gcTime` left at the default unless you can explain a change\n\n### Step by step\n1. Read \"Important defaults\". Note what happens on mount, window focus and reconnect.\n2. Open the Devtools and watch which queries refetch when you switch browser tabs.\n3. Create the factories and switch each hook and loader to them.\n4. Pick values: stats near the server cache, list short, `me` long.\n5. Check mutations from weeks 6, 9 and 10 still invalidate the same keys.\n6. Switch tabs again and compare.\n\n```ts\nexport const statsQuery = () =>\n  queryOptions({\n    queryKey: statsKeys.all,\n    queryFn: ({ signal }) => getStats(signal),\n    // TODO: staleTime with a reason\n  });\n```\n\n### Acceptance criteria\n- [ ] No query sets its options inline any more\n- [ ] Every `staleTime` has a written reason\n- [ ] Invalidation still refreshes after writes\n- [ ] Fewer requests on tab switches, seen in Devtools\n\n### Hints\n- `staleTime` is \"how long until I refetch in the background\"; `gcTime` is \"how long unused data stays in memory\".\n- Invalidation ignores `staleTime`: writes still refresh.\n\n### Common mistakes\n- A global `staleTime: Infinity` that hides other users' changes forever.\n- Confusing `gcTime` with freshness.\n\n### Check your understanding\n- What makes a query stale, and what triggers a refetch?\n- Why can stats wait longer than the list?\n- What does `queryOptions` give you over a plain object?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Cache invalidation with tags",
+      "title": "Evict a user's cached stats when their applications change",
+      "doneWhen": "Creating, editing, moving, deleting or restoring an application evicts only that user's cached stats, so their next `GET /api/stats` hits SQL while another user's stays cached, proven by an integration test",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Output caching middleware",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/caching/output"
+        }
+      ],
+      "brief": "### Why this matters\n\"There are only two hard things in computer science: cache invalidation and naming things.\" A short expiry hides stale data for a while; tags fix it properly. Each cached entry gets labels, and a write evicts every entry with its label. Evicting one user's entries, not everyone's, keeps the cache useful. Today's React part keeps the client calm while users type.\n\n### What you'll build\n- A per-user tag such as `stats:{userId}` added in yesterday's policy\n- `IStatsCacheInvalidator` in Application, implemented in Api with `IOutputCacheStore.EvictByTagAsync`\n- Every command that changes applications calling the invalidator for the current user after a successful save\n- An integration test: cache stats for A and B, write as A, assert A's next call reflects the change and B's is still served from cache\n\n### Step by step\n1. Add the tag in the request phase of the policy, next to the vary-by.\n2. Define the interface in Application, so commands depend on an abstraction, not on ASP.NET Core.\n3. Implement it in Api with the store and the same tag format, kept in one constant.\n4. Call it from create, update, status change, delete and restore, after `SaveChangesAsync`.\n5. Write the test. Counting SQL in a test is awkward; assert on the response values instead.\n6. Raise the expiry to several minutes now that eviction is precise.\n\n```csharp\npublic Task InvalidateStatsAsync(Guid userId, CancellationToken ct) =>\n    store.EvictByTagAsync(/* TODO: the tag constant */, ct).AsTask();\n```\n\n### Acceptance criteria\n- [ ] Every write path evicts\n- [ ] Only the writer's entries are evicted\n- [ ] Eviction happens after the commit\n- [ ] Application has no ASP.NET Core reference\n\n### Hints\n- Evicting before the save lets a reader refill the cache with old data in between.\n- Week 15's live events will call the same commands, so eviction comes for free.\n\n### Common mistakes\n- One global `stats` tag that empties everyone's cache on every write.\n- Forgetting restore, so a restored application is missing from the stats.\n\n### Check your understanding\n- Why is the tag per user?\n- Why evict after the commit?\n- How would this work with two API instances?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Debouncing input",
+      "title": "useDebounce hook for the company search box",
+      "doneWhen": "A `useDebounce<T>(value, delay)` hook has a Vitest test with fake timers proving it returns the new value only after the delay, and the company search box shows the debounced term changing once per pause, not per keystroke",
+      "learnLinks": [
+        {
+          "label": "react.dev: Reusing logic with custom Hooks",
+          "url": "https://react.dev/learn/reusing-logic-with-custom-hooks"
+        },
+        {
+          "label": "Vitest: Fake timers",
+          "url": "https://vitest.dev/guide/mocking/timers"
+        }
+      ],
+      "brief": "### Why this matters\nA search that fires on every keystroke sends six requests for \"google\", wastes server time and shows flickering results. Debouncing waits until the user pauses. Writing `useDebounce` from memory is a very common front-end interview task. Wednesday's .NET part adds `GET /api/companies?search=` and Wednesday's React part wires the request; today is only the hook and the input, so nothing depends on the endpoint yet.\n\n### What you'll build\n- `hooks/useDebounce.ts`: `useDebounce<T>(value: T, delayMs: number): T`\n- `useDebounce.test.ts` using `renderHook` and fake timers\n- `CompanySearchBox`: a labelled input in the create form's company field, holding the raw text in state and showing the debounced value in a small dev-only line for today\n\n### Step by step\n1. Write the hook: state for the debounced value, an effect that sets a timer, a cleanup that clears it.\n2. Think through the cleanup: each keystroke clears the previous timer, so only the last one fires.\n3. Test with `vi.useFakeTimers()`: rerender with new values, advance time less than the delay, assert the old value; advance past it, assert the new one.\n4. Wrap timer advances in `act`.\n5. Build the input and type \"acme\" quickly: the debounced line changes once.\n\n```ts\nexport function useDebounce<T>(value: T, delayMs: number): T {\n  const [debounced, setDebounced] = useState(value);\n  // TODO: effect with setTimeout and a cleanup\n  return debounced;\n}\n```\n\n### Acceptance criteria\n- [ ] The hook is generic and typed\n- [ ] The timer is cleared on every change and on unmount\n- [ ] The test uses fake timers, not real waits\n- [ ] The input has a visible label\n\n### Hints\n- Debounce waits for quiet; throttle limits the rate during activity. Know both.\n- 250 to 300 ms feels instant to most people.\n\n### Common mistakes\n- No cleanup, so every keystroke's timer fires.\n- Forgetting to restore real timers after the test.\n\n### Check your understanding\n- Why does the cleanup make debouncing work?\n- When would you throttle instead?\n- Why test with fake timers?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "api",
+      "learn": "IDistributedCache and Redis: cache-aside",
+      "title": "Redis cache for each user's company list with a database fallback",
+      "doneWhen": "`GET /api/companies?search=ac` serves the user's company list from Redis on the second call (seen with `redis-cli MONITOR` and no SQL in the log), creating a company removes the key, and with the Redis container stopped the endpoint still answers from the database",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Distributed caching",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/caching/distributed"
+        },
+        {
+          "label": "Redis: Docs",
+          "url": "https://redis.io/docs/latest/"
+        },
+        {
+          "label": "Microsoft Learn: HybridCache library",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/caching/hybrid"
+        }
+      ],
+      "brief": "### Why this matters\nOutput caching stores whole responses; sometimes you want to cache data that several endpoints use. A distributed cache such as Redis is shared by every API instance and survives restarts of one of them. Cache-aside (look in the cache, else load and store) is the pattern interviewers expect, and so is the question \"what happens when Redis is down?\". Today's React part makes the search box call this endpoint.\n\n### What you'll build\n- Redis running in Docker and `Microsoft.Extensions.Caching.StackExchangeRedis` in Infrastructure\n- `AddStackExchangeRedisCache(...)` with the connection string from configuration and an `InstanceName` prefix\n- `ICompanyQueries.SearchAsync(term, ct)` and `GET /api/companies?search=` returning up to 10 names for the current user, matched by prefix\n- Cache-aside on the user's whole company list, key `companies:v1:{userId}`, a few minutes' expiry\n- A `GetOrSetAsync<T>(key, factory, options, ct)` helper around `IDistributedCache` with the database fallback\n- Invalidation after a company is created\n\n### Step by step\n1. Run Redis in Docker and try `SET`, `GET` and `TTL` with `redis-cli`.\n2. Register the cache from configuration.\n3. Write the helper: get bytes, deserialize on a hit; on a miss call the factory, store, return.\n4. Wrap cache calls in `try/catch`: log a warning and use the database if Redis fails.\n5. Cache the whole list (it is small) and filter by prefix in memory.\n6. Remove the key after the save that creates a company.\n7. Watch `MONITOR`, then stop the container and call again.\n\n### Acceptance criteria\n- [ ] The second call hits Redis, not SQL\n- [ ] Keys include the user id and a version\n- [ ] A Redis outage degrades, never fails\n- [ ] Week 11 tests use the in-memory distributed cache, not Redis\n\n### Hints\n- A version in the key lets you change the cached shape without flushing Redis.\n- `HybridCache` (built into recent .NET) adds a local layer, stampede protection and tags. Know it exists; today you learn the layer underneath.\n- A short connect timeout keeps an outage from making every request slow.\n\n### Common mistakes\n- Caching per search term, filling Redis with near-duplicate keys.\n- Invalidating before the commit.\n\n### Check your understanding\n- Walk through cache-aside on a hit and a miss.\n- Why must the API survive Redis being down?\n- When is a distributed cache better than output caching?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Cancelling stale requests with AbortController",
+      "title": "Search requests cancelled when the user keeps typing",
+      "doneWhen": "Typing \"acme\" quickly into the company box sends one search request after the pause, an earlier slow request shows as cancelled in the Network tab, and an MSW test proves fast typing sends a single request",
+      "learnLinks": [
+        {
+          "label": "MDN: AbortController",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController"
+        },
+        {
+          "label": "TanStack Query: Query cancellation",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-cancellation"
+        }
+      ],
+      "brief": "### Why this matters\nDebouncing reduces requests, but a slow response for \"ac\" can still arrive after the response for \"acme\" and overwrite it: a race condition. Cancelling the old request stops wasted work and wrong results. `AbortController` is the browser's standard way to cancel fetches, and TanStack Query passes one to every query for you. This uses the endpoint from today's .NET part and yesterday's debounced term.\n\n### What you'll build\n- A quick experiment first: a plain `useEffect` that fetches with an `AbortController` and aborts in cleanup, to see the mechanics\n- Then the real version: `useCompanySearch(term)` with `useQuery`, key `companyKeys.search(debouncedTerm)`, the query's `signal` passed to `api.ts`, `enabled` only for two or more characters, and `placeholderData` keeping the previous results\n- A suggestions list under the input (keyboard support can stay simple: a list of buttons)\n- An MSW test with a short delay in the handler\n\n### Step by step\n1. Throttle the network to Slow 3G for the experiment.\n2. Write the effect version, type fast, and watch requests turn \"cancelled\".\n3. Ignore the `AbortError` on cancel: it is not a real error.\n4. Replace it with `useQuery`. Check that `api.ts` forwards the signal to `fetch`.\n5. Use `keepPreviousData` as `placeholderData` so the list does not flash empty between terms.\n6. Write the test: type fast with `user-event`, assert the handler ran once.\n\n```ts\nexport function useCompanySearch(term: string) {\n  const debounced = useDebounce(term, 250);\n  return useQuery({\n    queryKey: companyKeys.search(debounced),\n    queryFn: ({ signal }) => searchCompanies(debounced, signal),\n    // TODO: enabled, placeholderData\n  });\n}\n```\n\n### Acceptance criteria\n- [ ] Old requests are cancelled, not just ignored\n- [ ] No error appears for a cancelled request\n- [ ] Searching under two characters sends nothing\n- [ ] Results never flash empty while typing\n\n### Hints\n- TanStack Query only aborts if your `queryFn` uses the signal.\n- With fake timers, tell `user-event` to advance them, or use real timers and a short delay.\n\n### Common mistakes\n- Not passing the signal through `api.ts`.\n- Treating `AbortError` as a failure and showing an error banner.\n\n### Check your understanding\n- What race does cancellation prevent?\n- How does TanStack Query know when to abort?\n- Why debounce and cancel, not just one of them?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Rate limiting: fixed window, sliding window, token bucket",
+      "title": "Rate limits on the auth endpoints with 429 and Retry-After",
+      "doneWhen": "The sixth login within a minute from one IP returns 429 ProblemDetails with a `Retry-After` header, refresh allows a small burst, an integration test covers the login limit, and a TODO next to the partition key mentions forwarded headers",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Rate limiting middleware",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/rate-limit"
+        },
+        {
+          "label": "MDN: 429 Too Many Requests",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/429"
+        },
+        {
+          "label": "MDN: Retry-After",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Retry-After"
+        }
+      ],
+      "brief": "### Why this matters\nLogin is where attackers guess passwords, and an API without limits can be flooded by one script. Rate limiting answers \"too many, slow down\" with 429 before the expensive work runs. Fixed window, sliding window and token bucket behave differently under bursts, and comparing them is a common system design question. Today's React part turns the 429 into a calm message.\n\n### What you'll build\n- `AddRateLimiter(...)` with `RejectionStatusCode` 429 and `UseRateLimiter()` after routing\n- Policy `\"auth\"`: fixed window, 5 requests per minute per IP, on login and register\n- Policy `\"refresh\"`: token bucket allowing a small burst (several tabs starting at once) with a low steady rate\n- `OnRejected` writing ProblemDetails and a `Retry-After` header from the lease metadata\n- Limits read from options so tests do not wait real minutes\n\n### Step by step\n1. Draw how each algorithm handles 10 requests in one second.\n2. Register both policies with `RateLimitPartition` helpers keyed by `RemoteIpAddress`.\n3. Add a `// TODO: behind a proxy this is the proxy's IP; forwarded headers (week 18)` comment there.\n4. In `OnRejected`, use `TryGetMetadata(MetadataName.RetryAfter, ...)` for the wait.\n5. Attach with `.RequireRateLimiting(...)` and try it with a `.http` file.\n6. Write the integration test with a tiny configured limit.\n\n```csharp\noptions.AddPolicy(\"auth\", http =>\n    RateLimitPartition.GetFixedWindowLimiter(\n        http.Connection.RemoteIpAddress?.ToString() ?? \"unknown\",\n        _ => new FixedWindowRateLimiterOptions { /* TODO */ }));\n```\n\n### Acceptance criteria\n- [ ] 429 comes with ProblemDetails and `Retry-After`\n- [ ] Each IP has its own window\n- [ ] Refresh tolerates a few tabs at once\n- [ ] The forwarded headers TODO is in the code\n\n### Hints\n- Per-IP limits and Identity lockout per account stop different attacks. Use both.\n- If `UseRateLimiter()` runs before routing, endpoint policies are not found.\n\n### Common mistakes\n- One global partition, so one attacker locks out everyone.\n- A refresh limit so tight that opening three tabs logs the user out.\n\n### Check your understanding\n- Fixed window vs token bucket: what differs under a burst?\n- Why is the partition key a security decision?\n- What breaks behind a reverse proxy?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Handling 429 in the client",
+      "title": "Friendly 'slow down' message using Retry-After",
+      "doneWhen": "Six fast login attempts show \"Too many attempts. Try again in N seconds.\" with a live countdown and a disabled submit button, `ApiError` carries `retryAfterSeconds`, and TanStack Query does not retry a 429",
+      "learnLinks": [
+        {
+          "label": "MDN: Retry-After",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Retry-After"
+        },
+        {
+          "label": "TanStack Query: Query retries",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-retries"
+        }
+      ],
+      "brief": "### Why this matters\nA 429 shown as \"Something went wrong\" makes users click again, which makes it worse. The server already says how long to wait; the client should say it in plain words and stop the user from hammering. Retry logic that ignores 429 turns one limited request into four. This shows the limit from today's .NET part.\n\n### What you'll build\n- `retryAfterSeconds?: number` on `ApiError`, read from the `Retry-After` header in `request<T>`\n- The `QueryClient` default `retry` returning `false` for 429, next to the week 7 and 8 rules\n- A `useCountdown(seconds)` hook with `setInterval` and cleanup\n- `LoginPage` showing the message in a `role=\"alert\"` region and disabling submit until the countdown ends\n- An MSW test returning 429 with `Retry-After: 30`\n\n### Step by step\n1. Parse the header as seconds; it can also be an HTTP date, so handle a non-number with a fallback.\n2. Add the retry rule and check other errors still retry.\n3. Write `useCountdown`: start from the value, tick every second, stop at zero, clean up.\n4. In the login submit handler, catch an `ApiError` with status 429 and start the countdown.\n5. Disable the button and show the remaining seconds.\n6. Write the test: submit, see the message and the disabled button.\n\n```ts\nconst retryAfter = response.headers.get(\"Retry-After\");\n// TODO: number of seconds, or a date, or undefined\n```\n\n### Acceptance criteria\n- [ ] The message names the wait time\n- [ ] Submit stays disabled until the wait ends\n- [ ] 429 is never retried automatically\n- [ ] The countdown cleans up on unmount\n\n### Hints\n- The Vite proxy passes headers through; behind a different origin you would need CORS `exposedHeaders`.\n- Keep the user's typed email when the error appears.\n\n### Common mistakes\n- A countdown without cleanup that keeps ticking after navigation.\n- Retrying 429 like any other error.\n\n### Check your understanding\n- Why trust the server's `Retry-After` instead of a fixed wait?\n- Why must 429 not be retried at once?\n- What does `role=\"alert\"` do here?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Measuring cache hit rates",
+      "title": "Log cache hits and misses and check them under a small load",
+      "doneWhen": "Output cache and Redis hits and misses are logged with structured fields and counted with a metric, a 200-request load script shows a hit rate you write in the PR notes, and the PR \"Caching + search\" is open",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Compile-time logging source generation",
+          "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/logger-message-generator"
+        },
+        {
+          "label": "Microsoft Learn: Creating metrics",
+          "url": "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics-instrumentation"
+        },
+        {
+          "label": "Microsoft Learn: dotnet-counters",
+          "url": "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/dotnet-counters"
+        }
+      ],
+      "brief": "### Why this matters\nA cache you cannot measure is a guess. If the hit rate is 5%, the cache adds complexity and a failure mode for nothing; if it is 95%, you can say so with numbers. Logging hits and misses with structured fields, and counting them with a metric, is the first step to the observability work in week 16. This closes the .NET side of the PR \"Caching + search\".\n\n### What you'll build\n- Source-generated log methods (`[LoggerMessage]`) for `CacheHit` and `CacheMiss` with fields `Cache`, `Key` (no user data beyond the id) and `Elapsed`\n- Logging in the Redis helper on hit and miss, and in the output cache policy's `ServeFromCacheAsync` for stats hits\n- A `Meter` named `JobHunt.Cache` with a counter tagged by cache name and result\n- A tiny load script: 200 requests to stats and company search for two users, with a few writes in between\n- The hit rate per cache in the PR notes\n\n### Step by step\n1. Write the log methods in one static partial class.\n2. Call them from the two places. Log at `Debug` for hits so production logs stay quiet.\n3. Create the meter and counter; register the meter so tools can see it.\n4. Write the load script: a loop with `HttpClient`, a `.http` file run in a loop, or a tool such as k6.\n5. Run it and watch the counter live with `dotnet-counters monitor`.\n6. Write the hit rates and one sentence on what would change them.\n7. Push and open the PR \"Caching + search\"; merge after today's React part.\n\n```csharp\n[LoggerMessage(Level = LogLevel.Debug, Message = \"Cache hit {Cache} {Key}\")]\npublic static partial void CacheHit(ILogger logger, string cache, string key);\n```\n\n### Acceptance criteria\n- [ ] Hits and misses are logged with fields, not string concatenation\n- [ ] The counter separates caches and results\n- [ ] A written hit rate per cache\n- [ ] No tokens or emails in log lines\n\n### Hints\n- A miss right after a write is expected: that is invalidation working.\n- Week 16 sends these metrics to OpenTelemetry; the meter name you choose now carries over.\n\n### Common mistakes\n- Logging hits at `Information`, flooding production logs.\n- Measuring with one user, which makes every hit rate look perfect.\n\n### Check your understanding\n- What hit rate makes a cache worth it?\n- Why structured fields instead of interpolated strings?\n- What would a sudden drop in hit rate tell you?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Prefetching on hover",
+      "title": "Prefetch application details when hovering a row",
+      "doneWhen": "Hovering or focusing an application row for about 100 ms prefetches its detail, clicking it then shows the page with no new detail request in the Network tab, and PR \"Caching + search\" is merged",
+      "learnLinks": [
+        {
+          "label": "TanStack Query: Prefetching",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/prefetching"
+        },
+        {
+          "label": "React Router: Route object",
+          "url": "https://reactrouter.com/start/data/route-object"
+        }
+      ],
+      "brief": "### Why this matters\nThe fastest request is the one that finished before the user clicked. Hovering a row is a strong signal of intent, and a few hundred milliseconds of head start makes the detail page appear instantly. Prefetching with the same query options as the page means no duplicate request and no stale copy. It ends the week with the PR \"Caching + search\", together with today's .NET part.\n\n### What you'll build\n- The week 4 detail loader using `queryClient.ensureQueryData(applicationDetailQuery(id))` from Monday's factory\n- The detail layout (week 9) reading the same options with `useQuery`, so invalidations still update it\n- `ApplicationCard` (or row) prefetching on `onMouseEnter` and `onFocus` after about 100 ms, cancelled on `onMouseLeave` and `onBlur`\n- A Network tab check written in the PR\n\n### Step by step\n1. Read the prefetching guide, then check how your loader gets its data today.\n2. Switch the loader to `ensureQueryData` with the shared options.\n3. Add the handlers with a `setTimeout` and clear it on leave. Clear it on unmount too.\n4. Hover a row, wait, click. The request should happen on hover.\n5. Sweep the mouse across the list quickly: no prefetch storm.\n6. Run all builds and tests, push, review and merge PR \"Caching + search\".\n\n```tsx\nfunction onIntent() {\n  timer.current = window.setTimeout(() => {\n    void queryClient.prefetchQuery(applicationDetailQuery(id));\n  }, 100);\n}\n```\n\n### Acceptance criteria\n- [ ] Clicking after hover sends no detail request\n- [ ] Keyboard focus prefetches too\n- [ ] Quick sweeps do not prefetch everything\n- [ ] PR \"Caching + search\" is merged\n\n### Hints\n- `prefetchQuery` does nothing while data is fresh, so a second hover costs nothing.\n- Touch devices have no hover; focus and the loader still cover them.\n\n### Common mistakes\n- Prefetching with a different key or `queryFn` than the page uses.\n- A timer that fires after the row unmounted.\n\n### Stretch (optional)\n- Prefetch the next page of the list when the Next button is hovered or focused.\n\n### Check your understanding\n- Why use the same `queryOptions` in loader, page and prefetch?\n- What does the 100 ms delay protect against?\n- What does `ensureQueryData` do when data is cached?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "lane": null,
+      "learn": null,
+      "title": "Explain one case where output caching would leak another user's data, and write useDebounce from memory",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nExplain one case where output caching would leak another user's data, then write `useDebounce` from memory, in 20 minutes.\n\n### Rules\n- Part 1 (about 10 minutes): blank page, explain it out loud as if to a reviewer, then sketch the fix in code.\n- Part 2 (about 10 minutes): a new empty Vite React + TypeScript project outside the JobHunt repo.\n- Docs allowed, but try without first and note every lookup. No AI assistants, no copying from JobHunt.\n\n### Must include\n- Part 1: an authenticated endpoint cached with a key that does not include the user, and the exact sequence that leaks (A fills the cache, B gets A's response)\n- Why the default output cache policy refuses authenticated requests\n- The fix: vary by the user id claim, a per-user tag, and eviction after writes\n- Part 2: a generic `useDebounce<T>(value, delay)` with `useState`, `useEffect`, `setTimeout` and a cleanup\n- A search input using it, logging the debounced value\n- One sentence on how cancellation with `AbortController` complements debouncing\n\n### Self-check\n- [ ] Finished within 20 minutes\n- [ ] The leak sequence named both users and the key\n- [ ] The hook clears its timer on every change\n- [ ] The hook is typed without `any`\n- [ ] Explained `staleTime` vs output cache expiry\n- [ ] Zero lookups, or a list of exactly what to review\n\n### If you got stuck\n- Per-user output caching: Monday, .NET part. Tags: Tuesday, .NET part.\n- Redis cache-aside: Wednesday, .NET part. Rate limiting: Thursday, .NET part.\n- `staleTime`: Monday, React part. `useDebounce`: Tuesday, React part.\n- Cancellation: Wednesday, React part. Prefetching: Friday, React part."
+    }
+  ]
+}

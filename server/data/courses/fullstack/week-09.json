@@ -1,0 +1,205 @@
+{
+  "week": 9,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "api",
+      "learn": "EF Core one-to-many relationships and cascades",
+      "title": "Interview gets kind and outcome; new Note entity, both with migrations",
+      "doneWhen": "Migration `AddNotes` is applied, deleting a `JobApplication` row in SQL removes its interviews and notes, and deleting a `Company` that still has applications is refused",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Relationships",
+          "url": "https://learn.microsoft.com/en-us/ef/core/modeling/relationships"
+        },
+        {
+          "label": "Microsoft Learn: Cascade delete",
+          "url": "https://learn.microsoft.com/en-us/ef/core/saving/cascade-delete"
+        }
+      ],
+      "brief": "### Why this matters\nAn application has interview rounds and notes; a company has applications. Relationship configuration decides what happens on delete, and the wrong cascade silently wipes data or fails a migration with a cryptic SQL Server error. \"When is cascade delete dangerous?\" is a common EF interview question. Today's React part builds the tabs that will show this data.\n\n### What you'll build\nOn a new branch `feature/interviews-notes`:\n- `Interview` extended with `Kind` (an `InterviewKind` enum: `Phone`, `Technical`, `SystemDesign`, `Behavioural`, `Onsite`) and `Outcome?`\n- A `Note` entity: `Id`, `JobApplicationId`, `Body`, `CreatedAt`, optional `InterviewId?`\n- `JobApplication.AddNote(body, now)` with guards and a read-only `Notes` collection\n- `NoteConfiguration` and an updated `InterviewConfiguration` with explicit delete behaviour\n- Migration `AddNotes`\n\n### Step by step\n1. For each relationship write: principal, dependent, required or optional, what should happen on delete.\n2. Add the enum and properties; store `Kind` as a string like `Status`.\n3. Add `Note` and `AddNote`, guarding against a blank body or more than 4,000 characters.\n4. Application to interviews and notes: cascade. Company to applications: restrict.\n5. Note to interview: optional with no database cascade. Try cascade first and read the error.\n6. Add the migration, read the foreign keys in it, apply it, and prove the rules in SQL.\n\n```csharp\nbuilder.HasMany(a => a.Notes).WithOne()\n       .HasForeignKey(n => n.JobApplicationId)\n       .OnDelete(DeleteBehavior.Cascade);\n```\n\n### Acceptance criteria\n- [ ] Every relationship has explicit delete behaviour\n- [ ] Children are created only through `JobApplication` methods\n- [ ] Company deletes are restricted\n- [ ] Domain tests cover the `AddNote` guards\n\n### Hints\n- SQL Server refuses multiple cascade paths: a note is reachable directly and through an interview, so only one path may cascade.\n- Soft delete (week 6) triggers no cascade; notes of a hidden application stay hidden behind it.\n\n### Common mistakes\n- Leaving delete behaviour to conventions.\n- Cascading from `Company`, so fixing a typo company deletes years of history.\n\n### Check your understanding\n- What makes a relationship required rather than optional?\n- When is cascade delete dangerous?\n- Why does SQL Server reject multiple cascade paths?"
+    },
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Tabs with nested routes",
+      "title": "Detail page with Overview, Interviews and Notes tabs",
+      "doneWhen": "`/applications/:id`, `/applications/:id/interviews` and `/applications/:id/notes` render one shared header with tabs, the active tab is highlighted, and each tab is deep-linkable and survives a reload",
+      "learnLinks": [
+        {
+          "label": "React Router: Routing (data mode)",
+          "url": "https://reactrouter.com/start/data/routing"
+        },
+        {
+          "label": "React Router: NavLink",
+          "url": "https://reactrouter.com/api/components/NavLink"
+        }
+      ],
+      "brief": "### Why this matters\nDetail pages grow tabs quickly. Each tab on its own URL means links, Back and reload all work, and each tab loads only its own data. A layout that renders shared chrome around an `<Outlet />` is composition, and \"how would you structure this page?\" is a common live-coding prompt. The tabs fill with the interviews and notes from today's .NET part over the week.\n\n### What you'll build\n- The detail route turned into a layout: `ApplicationDetailLayout` with the week 4 loader, rendering `ApplicationHeader` (role, company, status pill, Edit, Delete) and a tab bar\n- Child routes: index (`OverviewTab`), `interviews` (`InterviewsTab`), `notes` (`NotesTab`), the last two as placeholders for now\n- Tabs as `NavLink`s inside `<nav aria-label=\"Application sections\">`, the Overview link with `end`\n\n### Step by step\n1. Sketch the route tree. Decide where the week 6 `edit` route lives: under the layout or beside it.\n2. Give the detail route an `id` and read its data in children with `useRouteLoaderData(...)`. Type it.\n3. Build `ApplicationHeader` taking the DTO as a prop and knowing nothing about routing.\n4. Move today's detail content into `OverviewTab`.\n5. Add the tabs and style the active one with `NavLink`'s `className` callback.\n6. Reload on each tab and press Back between them.\n\n```tsx\n<nav aria-label=\"Application sections\">\n  <NavLink to=\".\" end>Overview</NavLink>\n  {/* TODO: interviews, notes */}\n</nav>\n```\n\n### Acceptance criteria\n- [ ] Every tab has its own URL and survives a reload\n- [ ] The header renders once, in the layout\n- [ ] The not-found handling from week 8 still works on every tab\n- [ ] Tabs work with the keyboard\n\n### Hints\n- Route-based tabs are links. The ARIA tabs pattern (`role=\"tablist\"`) is for panels that switch without a URL change; do not mix them.\n- A props-only header is easy to test in week 11.\n\n### Common mistakes\n- Forgetting `end` on the index link, so Overview always looks active.\n- Copying the header into each tab.\n\n### Check your understanding\n- Why put tabs on URLs instead of in `useState`?\n- What is component composition, in one sentence?\n- How does a child route read its parent's loader data?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Nested resource routes",
+      "title": "GET/POST /api/applications/{id}/interviews",
+      "doneWhen": "`POST /api/applications/{id}/interviews` returns 201 with a working `Location`, `GET` returns only that application's interviews in time order, and another user's application id returns 404 on both",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Route handlers in Minimal API apps",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/route-handlers"
+        },
+        {
+          "label": "Microsoft Learn: Loading related data",
+          "url": "https://learn.microsoft.com/en-us/ef/core/querying/related-data/"
+        }
+      ],
+      "brief": "### Why this matters\nNested routes put ownership in the URL: an interview belongs to an application. The parent decides access, so a foreign parent must return 404, never an empty list. Designing child resources cleanly is a regular API design interview topic. Today's React part lists what this endpoint returns.\n\n### What you'll build\n- `InterviewDto` and `GetInterviewsAsync(applicationId)` on `IApplicationQueries` (projection, `AsNoTracking`, ordered by `ScheduledAt`)\n- A nested group `MapGroup(\"/api/applications/{id:guid}/interviews\").RequireAuthorization()`\n- `GET /` and `GET /{interviewId:guid}` (so `Location` resolves)\n- `POST /` calling `ScheduleInterview(...)` from week 2, with a validator (week 6 pattern)\n- The parent checked first with the week 8 authorizer\n\n### Step by step\n1. Map the nested group in its own file, next to the applications endpoints.\n2. Write the read query: filter by application id and current user in the same query.\n3. Tell \"no interviews\" from \"no such parent\": check the parent exists for this user first.\n4. For POST, load the application as a tracked aggregate with its interviews, call the domain method, save once.\n5. Return `TypedResults.Created(...)` with the DTO.\n6. Test in a `.http` file as the owner and as user B.\n\n```csharp\nvar group = app.MapGroup(\"/api/applications/{id:guid}/interviews\")\n               .RequireAuthorization();\ngroup.MapGet(\"/\", async (Guid id, IApplicationQueries q, CancellationToken ct) => /* TODO */);\n```\n\n### Acceptance criteria\n- [ ] A foreign or missing parent returns 404, not `[]`\n- [ ] New interviews go through the aggregate, never `db.Interviews.Add` in the endpoint\n- [ ] One `SaveChangesAsync` per command\n- [ ] The application id comes from the route, never the body\n\n### Hints\n- If saving a new child throws \"expected to affect 1 row but actually affected 0\", EF thinks your new Guid-keyed child already exists. Configure domain-generated keys with `ValueGeneratedNever()`.\n\n### Common mistakes\n- Returning 200 with an empty list for someone else's application.\n- Trusting `JobApplicationId` from the request body.\n\n### Check your understanding\n- Why is the parent's ownership enough to protect the children?\n- Why add children through the aggregate root?\n- What should `GET` return for a parent with no interviews?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Lists inside a detail page; query per tab",
+      "title": "Interviews tab listing rounds with its own query",
+      "doneWhen": "The Interviews tab lists upcoming and past rounds from `GET /api/applications/{id}/interviews` with its own query key, shows loading, empty and error states, and does not refetch when switching back within the stale time",
+      "learnLinks": [
+        {
+          "label": "TanStack Query: Query keys",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-keys"
+        },
+        {
+          "label": "TanStack Query: useQuery",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/reference/useQuery"
+        }
+      ],
+      "brief": "### Why this matters\nA detail page with tabs should not load everything up front. One query per tab keeps each tab fast and lets the cache remember tabs you already opened. Designing query keys for child data is where TanStack Query starts to matter. It reads today's .NET endpoint.\n\n### What you'll build\n- `applicationKeys.interviews(id)` added to the key factory\n- `getInterviews(id)` in `api.ts` and a `useInterviews(id)` hook\n- `InterviewsTab` splitting the list into Upcoming and Past, each sorted sensibly\n- An `InterviewRow` showing kind, time and outcome\n- Loading, empty (\"No interviews yet\") and error states, reusing your shared components\n\n### Step by step\n1. Decide the key shape. Put it under the detail key (`[...detail(id), \"interviews\"]`) or beside it; write down what invalidating the detail will now also refresh.\n2. Add the API function and the hook.\n3. Split upcoming and past with a `now` value computed once per render.\n4. Show times with a temporary formatter; Wednesday replaces it with a proper one.\n5. Open the tab, switch to Overview and back: Devtools shows a cache hit.\n6. Stop the API and check the error state.\n\n```ts\nexport const applicationKeys = {\n  // ...\n  interviews: (id: string) => /* TODO */,\n};\n```\n\n### Acceptance criteria\n- [ ] The tab fetches only interviews, not notes\n- [ ] The key comes from the factory\n- [ ] Upcoming and past are derived, not stored in state\n- [ ] All three states render\n\n### Hints\n- The layout loader already loads the application; the tab does not need it again.\n- Deriving lists in render is fine; sorting a handful of rows is cheap.\n\n### Common mistakes\n- Fetching interviews in the layout loader, so every tab waits for them.\n- Building keys by hand in components, which drift from the factory.\n\n### Check your understanding\n- What happens to the interviews cache when you invalidate the detail key?\n- Why one query per tab?\n- Why derive Upcoming and Past instead of storing them?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "api",
+      "learn": "DateTimeOffset, UTC storage and time zones",
+      "title": "Interview times stored in UTC and validated in the future",
+      "doneWhen": "An interview sent as local time with an offset is stored as UTC, returned as ISO 8601, and a time more than a day in the past returns 400 with a field error, with \"now\" coming from an injected `TimeProvider`",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Choose between DateTime, DateOnly, DateTimeOffset",
+          "url": "https://learn.microsoft.com/en-us/dotnet/standard/datetime/choosing-between-datetime"
+        },
+        {
+          "label": "FluentValidation: Creating your first validator",
+          "url": "https://docs.fluentvalidation.net/en/latest/start.html"
+        }
+      ],
+      "brief": "### Why this matters\nTime bugs are the ones users notice: an interview an hour late after a daylight saving change. The rule: store instants in UTC, convert to local only at the edge, and keep calendar dates like `AppliedOn` as dates. \"How do you handle time zones?\" comes up in back-end and front-end rounds. Today's React part sends the times this endpoint validates.\n\n### What you'll build\n- `TimeProvider.System` registered and injected wherever code needs \"now\"\n- `ScheduledAt` normalised to UTC in the command before it reaches the domain\n- A validator rule: an interview cannot be more than a day in the past\n- Times returned as ISO 8601 with an offset\n\n### Step by step\n1. In your notes, write why `AppliedOn` is a `DateOnly` and `ScheduledAt` a `DateTimeOffset`.\n2. Register `TimeProvider` and replace every `UtcNow` in Application with `GetUtcNow()`.\n3. Inject `TimeProvider` into the validator and write the past-time rule.\n4. Normalise with `ToUniversalTime()` and check the column type in your migration.\n5. Post `2026-12-01T14:30:00+05:30` and read the stored value in SQL.\n6. Post yesterday's date and read the 400.\n\n```csharp\nRuleFor(x => x.ScheduledAt)\n    .Must(t => /* TODO: not more than a day before now */)\n    .WithMessage(\"Interview time cannot be in the past.\");\n```\n\n### Acceptance criteria\n- [ ] Every stored interview time is UTC\n- [ ] No `DateTime.Now` or `DateTimeOffset.Now` anywhere\n- [ ] The past-time rule uses the injected clock\n- [ ] `AppliedOn` is still a plain date\n\n### Hints\n- A one-day allowance avoids rejecting a round you are logging late; the domain does not need a rule for it.\n- `TimeProvider` makes time testable: week 11 can use a fake one.\n\n### Common mistakes\n- Accepting a string without an offset, so the server reads it in its own local zone.\n- Reading the clock statically in a validator, which makes tests flaky.\n\n### Check your understanding\n- When is `DateOnly` right, and when `DateTimeOffset`?\n- Why store UTC and convert at the edges?\n- Why inject the clock instead of calling it?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Formatting dates and times in the user's time zone",
+      "title": "Schedule-an-interview form with local time display",
+      "doneWhen": "An interview scheduled for 14:30 in the form is stored as UTC, displayed as 14:30 with the time zone name, and switching the browser time zone in DevTools changes the displayed time while the stored value stays the same",
+      "learnLinks": [
+        {
+          "label": "MDN: Intl.DateTimeFormat",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat"
+        },
+        {
+          "label": "React Hook Form: useForm",
+          "url": "https://react-hook-form.com/docs/useform"
+        }
+      ],
+      "brief": "### Why this matters\nThe browser knows the user's time zone; the server should not have to. The form converts local input to UTC at submit, and the display converts UTC back to local. Getting this round trip right is a classic front-end bug hunt. It feeds the UTC rule in today's .NET part.\n\n### What you'll build\n- `lib/dates.ts` with `localInputToUtcIso(value)`, `utcIsoToLocalInput(iso)` and `formatDateTime(iso)`\n- `ScheduleInterviewForm` (React Hook Form + Zod): a `datetime-local` input and a kind `<select>`\n- A `useScheduleInterview(id)` mutation invalidating the interviews key and the detail key\n- Interview times displayed with `Intl.DateTimeFormat`, including the zone name\n- The API's 400 for a past time shown under the input\n\n### Step by step\n1. A `datetime-local` value has no zone; `new Date(value)` reads it as local time. Write the helpers with that in mind.\n2. Build the form; convert to UTC only at submit.\n3. Show the kind options from one array typed against the union.\n4. Invalidate the detail too: the status may have moved to `Interviewing`.\n5. Format with `dateStyle`, `timeStyle` and `timeZoneName`; replace Tuesday's temporary formatter.\n6. In Chrome DevTools, Sensors, override the location to another zone, reload and compare.\n\n```ts\nexport function localInputToUtcIso(value: string): string {\n  // TODO: parse as local time, return a UTC ISO string\n}\n```\n\n### Acceptance criteria\n- [ ] The round trip shows the same local time you entered\n- [ ] Display always includes the time zone\n- [ ] A server 400 appears under the time input\n- [ ] Scheduling the first round updates the status pill\n\n### Hints\n- `toISOString()` is always UTC: right for sending, wrong for filling the input.\n- Reuse week 6's `applyServerErrors` for the 400.\n\n### Common mistakes\n- `toISOString().slice(0, 16)` to fill the input, shifting the time by your offset.\n- Formatting dates by hand instead of with `Intl`.\n\n### Stretch (optional)\n- Show \"in 2 days\" with `Intl.RelativeTimeFormat`.\n\n### Check your understanding\n- What exactly does a `datetime-local` input give you?\n- Where in your code does local become UTC?\n- Why include the zone name in the display?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Include vs projection for related data",
+      "title": "GET/POST /api/applications/{id}/notes with a projected summary",
+      "doneWhen": "`GET /api/applications/{id}/notes` returns a projected summary (id, preview, created time, interview label) newest first, `POST` returns 201 with a working `Location`, and you can show the logged SQL for the projection and for an `Include`",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Loading related data",
+          "url": "https://learn.microsoft.com/en-us/ef/core/querying/related-data/"
+        },
+        {
+          "label": "Microsoft Learn: Single vs. split queries",
+          "url": "https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries"
+        }
+      ],
+      "brief": "### Why this matters\n`Include` loads whole entities and fits when you will change them; projection loads exactly the columns a screen needs. Knowing which to use, and why two collection `Include`s can explode the row count, is a favourite EF interview topic. Today's React part adds notes to this list optimistically.\n\n### What you'll build\n- `NoteSummaryDto(Id, Preview, CreatedAt, InterviewLabel?)`: the first 200 characters and the interview kind, built in the `Select`\n- `NoteDto` with the full body for the single-note GET\n- `GET /api/applications/{id}/notes`, `GET /{noteId}` and `POST /` calling `AddNote(...)`, with a validator\n- The same parent check as Tuesday\n\n### Step by step\n1. Write the summary query as a projection. Navigate to the interview inside the `Select`; no `Include` needed.\n2. Turn on SQL logging and run it: only the needed columns appear.\n3. Write the same read with `Include(a => a.Notes)` and map in memory; compare the SQL.\n4. Add `Include` of interviews and notes together and look at the row count; then try `AsSplitQuery()`.\n5. Write POST: load the aggregate tracked, without interviews this time, call `AddNote`, save once.\n6. Write three sentences in your notes on what you saw.\n\n### Acceptance criteria\n- [ ] Reads use projection, writes use tracked entities\n- [ ] The preview is computed in SQL, not after loading full bodies\n- [ ] A foreign parent returns 404\n- [ ] Your notes explain the SQL difference\n\n### Hints\n- Projections ignore `Include`; the `Select` decides what loads.\n- Two collection includes return interviews × notes rows. Split queries send one query per collection instead.\n\n### Common mistakes\n- `Include` on read endpoints, then mapping in memory.\n- Loading interviews for a note POST that does not need them.\n\n### Check your understanding\n- When do you use `Include`, and when projection?\n- What is a cartesian explosion, and how does a split query avoid it?\n- Why can a projection follow a navigation without `Include`?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Optimistic updates: onMutate, rollback, settle",
+      "title": "Add a note instantly with optimistic update and rollback on error",
+      "doneWhen": "With the network throttled, a new note appears in the list instantly and dimmed, and when the API fails it disappears with an error message and the typed text restored",
+      "learnLinks": [
+        {
+          "label": "TanStack Query: Optimistic updates",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates"
+        },
+        {
+          "label": "TanStack Query: useMutation",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/reference/useMutation"
+        }
+      ],
+      "brief": "### Why this matters\nWaiting for a round trip before showing a note feels slow. Optimistic updates show the change at once and roll it back if the server says no. The lifecycle (`onMutate` snapshot, `onError` restore, `onSettled` resync) is one of the most asked TanStack Query topics, and this week's checkpoint asks you to write it from memory. It posts to today's .NET endpoint.\n\n### What you'll build\n- `applicationKeys.notes(id)`, `useNotes(id)` and the Notes tab list\n- `useAddNote(applicationId)` with:\n  - `onMutate`: `cancelQueries` for the notes key, snapshot with `getQueryData`, insert a temporary note with `setQueryData`, return the snapshot\n  - `onError`: restore the snapshot\n  - `onSettled`: invalidate the notes key so the server wins\n- A temporary id (`temp-` plus `crypto.randomUUID()`) and a `pending` flag to dim unsaved notes\n- A form that clears on submit and refills if the save fails\n\n### Step by step\n1. Read the guide: there is a \"via the UI\" approach and a \"via the cache\" one. You are doing the cache one.\n2. Build the list with loading and empty states.\n3. Write the hook; type the context so `onError` knows the snapshot's shape.\n4. Make the temporary note match `NoteSummaryDto`.\n5. Force a failure: block the request in DevTools.\n6. On error, restore, refill the form, show the `ApiError` message.\n\n```ts\nonMutate: async (body) => {\n  await queryClient.cancelQueries({ queryKey: applicationKeys.notes(applicationId) });\n  // TODO: snapshot, set optimistic data, return context\n},\n```\n\n### Acceptance criteria\n- [ ] The note appears before the server responds\n- [ ] A failed save restores the exact previous list\n- [ ] After settle the temporary note is replaced by the real one\n- [ ] The cache is updated with a new array\n\n### Hints\n- Without `cancelQueries`, a refetch that started earlier can land later and erase the optimistic note.\n- Never put a temporary id in a URL.\n\n### Common mistakes\n- Forgetting `onSettled`, so the temporary note stays forever.\n- Mutating the cached array in place.\n\n### Check your understanding\n- What does each of the three callbacks do here?\n- Why cancel queries before writing optimistic data?\n- When is an optimistic update a bad idea?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Deleting related data safely",
+      "title": "Delete interview and note endpoints with ownership checks",
+      "doneWhen": "`DELETE` for an interview and a note return 204 for the owner and 404 for another user, deleting an interview keeps its notes with `InterviewId` cleared, and `PUT /api/applications/{id}/notes/{noteId}` updates a note body",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Cascade delete",
+          "url": "https://learn.microsoft.com/en-us/ef/core/saving/cascade-delete"
+        },
+        {
+          "label": "MDN: DELETE",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/DELETE"
+        }
+      ],
+      "brief": "### Why this matters\nDeleting a child sounds trivial until you ask what happens to data that points at it. Monday's decision (no database cascade from interview to note) now needs code. Doing deletes through the aggregate keeps the rules in one place. This closes the .NET side of the PR \"Interviews + notes\"; today's React part needs the PUT, so it is part of today's work too.\n\n### What you'll build\n- `JobApplication.RemoveInterview(id)` clearing `InterviewId` on related notes, and `RemoveNote(id)`\n- `JobApplication.EditNote(id, body)` with the same guards as `AddNote`\n- `DELETE /interviews/{interviewId}`, `DELETE /notes/{noteId}` and `PUT /notes/{noteId}` on the nested groups\n- 404 when the parent or the child is missing or not yours\n\n### Step by step\n1. Write what deleting an interview does to its notes. Decide: notes stay, link cleared.\n2. Implement the three domain methods; unknown child ids throw a not-found result, not an exception you leak.\n3. Load the aggregate with the collections the method needs. Removing from the collection marks the child deleted when the relationship is required.\n4. Map the endpoints: 204 for delete, 200 with `NoteDto` for PUT.\n5. Test as owner and as user B, then check SQL: notes of a deleted interview have a null `InterviewId`.\n6. Push and open the PR \"Interviews + notes\"; merge after today's React part.\n\n### Acceptance criteria\n- [ ] Deletes go through domain methods\n- [ ] No orphaned foreign key errors when an interview with notes is deleted\n- [ ] User B gets 404 for every child endpoint\n- [ ] A blank body on PUT returns 400\n\n### Hints\n- `DeleteBehavior.ClientSetNull` makes EF clear the foreign key on tracked dependents; that is why the notes must be loaded.\n- Children are hard deleted; only applications are soft deleted. Write that decision down.\n\n### Common mistakes\n- Deleting with `db.Notes.Remove` from the endpoint, bypassing the aggregate.\n- Forgetting to load notes, so the interview delete fails on the foreign key.\n\n### Check your understanding\n- Why does the interview delete need the notes loaded?\n- Why hard delete children but soft delete applications?\n- What should deleting an already deleted note return?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Inline edit and delete for list items",
+      "title": "Edit and delete notes inline with optimistic updates",
+      "doneWhen": "Each note can be edited inline (Enter saves, Escape cancels) and deleted, both update the list instantly and roll back on error, and PR \"Interviews + notes\" is merged",
+      "learnLinks": [
+        {
+          "label": "TanStack Query: Optimistic updates",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates"
+        },
+        {
+          "label": "react.dev: Choosing the state structure",
+          "url": "https://react.dev/learn/choosing-the-state-structure"
+        }
+      ],
+      "brief": "### Why this matters\nInline editing is a small UI with many states: viewing, editing, saving, failed. Keeping only one row in edit mode and reusing Thursday's optimistic pattern for update and delete shows you can generalise a pattern instead of copying it. It calls the PUT and DELETE from today's .NET part and ends the week with the PR \"Interviews + notes\".\n\n### What you'll build\n- `editingId: string | null` in `NotesTab`, so only one note is in edit mode\n- `NoteRow` with view mode and edit mode (a textarea, Save, Cancel)\n- `useEditNote` and `useDeleteNote`, both optimistic with snapshot and rollback\n- A confirm before delete (the week 6 `<dialog>`) and focus returned to a sensible place afterwards\n\n### Step by step\n1. Write the row states on paper and what each key does: Enter saves, Shift+Enter adds a line, Escape cancels.\n2. Add `editingId` to the tab and pass `isEditing` and callbacks to each row.\n3. Write `useEditNote`: replace the note in the cached array, roll back on error.\n4. Write `useDeleteNote`: filter it out, roll back on error.\n5. Pull the shared snapshot and restore steps into a small helper if both hooks repeat them.\n6. Move focus to the textarea when editing starts, and back to the row's Edit button when it ends.\n7. Run all builds and tests, push, review and merge PR \"Interviews + notes\".\n\n### Acceptance criteria\n- [ ] Only one note is editable at a time\n- [ ] Edit and delete appear instantly and roll back on failure\n- [ ] Escape restores the original text\n- [ ] PR \"Interviews + notes\" is merged\n\n### Hints\n- Keep the draft text local to the row in edit mode; the cache holds only saved data.\n- Disable edit and delete on notes with a temporary id: they do not exist on the server yet.\n\n### Common mistakes\n- An `isEditing` boolean per row, so two rows can be editing at once.\n- Losing the user's draft when the save fails.\n\n### Check your understanding\n- Why store `editingId` in the parent instead of a flag in each row?\n- Why keep the draft out of the query cache?\n- What should happen to focus after a delete?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "lane": null,
+      "learn": null,
+      "title": "Explain Include vs projection and when cascade delete is dangerous; write an optimistic update with rollback from memory",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nExplain `Include` vs projection and when cascade delete is dangerous, then write an optimistic update with rollback from memory, in 25 minutes.\n\n### Rules\n- Part 1 (about 8 minutes): blank page, explain out loud with a small EF example for each point.\n- Part 2 (about 17 minutes): a new empty folder outside the JobHunt repo. A Vite React app with TanStack Query and a fake API function that waits and sometimes fails is enough.\n- The outline says from memory: docs closed for the first attempt; note every lookup if you make one.\n- No AI assistants and no copying from JobHunt.\n\n### Must include\n- Part 1: what `Include` loads vs what a `Select` projection loads, when each fits (write vs read), the cartesian explosion and split queries\n- Part 1: one dangerous cascade (deleting a parent wipes history) and the multiple cascade paths rule\n- Part 2: a `useQuery` list with a key factory and a `useMutation` that adds an item\n- `onMutate` with `cancelQueries`, a snapshot and `setQueryData`, returning context\n- `onError` restoring the snapshot and `onSettled` invalidating\n- A way to force the failure and watch the rollback\n\n### Self-check\n- [ ] Finished within 25 minutes\n- [ ] The rollback restores exactly the previous list\n- [ ] You can say why `cancelQueries` is needed\n- [ ] The cache update returns a new array instead of mutating\n- [ ] Your cascade example would really lose data\n- [ ] Zero lookups, or a list of exactly what to review\n\n### If you got stuck\n- Relationships and cascades: Monday, .NET part. Deleting children: Friday, .NET part.\n- Tabs and nested routes: Monday, React part. Query per tab: Tuesday, React part.\n- `Include` vs projection: Thursday, .NET part.\n- UTC and local display: Wednesday, both parts.\n- Optimistic add and rollback: Thursday, React part. Optimistic edit and delete: Friday, React part."
+    }
+  ]
+}

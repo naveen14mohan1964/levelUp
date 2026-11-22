@@ -1,27 +1,37 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Fire, HandWaving, Plant, RocketLaunch, Robot, ArrowRight } from '@phosphor-icons/react';
+import { CaretDown, Fire, HandWaving, Medal, Plant, RocketLaunch } from '@phosphor-icons/react';
 import { api } from '../api.js';
 import { formatLong, todayISO } from '../dates.js';
 import { refreshGame, useGame } from '../game.jsx';
-import { pickHeroTrack, minutesText } from '../lib/hero.js';
-import { ErrorBox, Loading, Md } from '../components/ui.jsx';
-import { EmptyState, TiltCard } from '../components/fx.jsx';
-import TodayRings from '../components/TodayRings.jsx';
+import { pickHeroTrack } from '../lib/hero.js';
+import { dayProgress, missionCandidates, pickMissions } from '../lib/priorities.js';
+import { quoteFor } from '../lib/quotes.js';
+import { burst } from '../lib/celebrate.js';
+import { ErrorBox, Loading, ProgressRing } from '../components/ui.jsx';
+import { EmptyState } from '../components/fx.jsx';
 import Timeline from '../components/Timeline.jsx';
-import DailyQuote from '../components/DailyQuote.jsx';
 import TodayHero from '../components/TodayHero.jsx';
-import WeekWins from '../components/WeekWins.jsx';
-import MentorCard from '../components/MentorCard.jsx';
+import Priorities from '../components/Priorities.jsx';
+import CheckIn from '../components/CheckIn.jsx';
+import ChallengeCard from '../components/ChallengeCard.jsx';
 
-// Which roadmap you picked for the hero today (per-viewer convenience: it's fine if storage is unavailable).
-const PICK_KEY = `levelup:hero:${todayISO()}`;
-const readPick = () => { try { return sessionStorage.getItem(PICK_KEY); } catch { return null; } };
-const savePick = (k) => { try { sessionStorage.setItem(PICK_KEY, k); } catch { /* ignore */ } };
+// Per-viewer conveniences for today only (fine if storage is unavailable): your pick for the third mission,
+// and whether the "all three done" celebration already played.
+const store = (name) => {
+  const key = `levelup:${name}:${todayISO()}`;
+  return {
+    get: () => { try { return localStorage.getItem(key); } catch { return null; } },
+    set: (v) => { try { localStorage.setItem(key, v); } catch { /* ignore */ } },
+  };
+};
+const thirdPick = store('mission3');
+const celebrated = store('day-done');
 
-function greeting() {
+function greeting(name) {
   const h = new Date().getHours();
-  return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  const hello = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  return name ? `${hello}, ${name}` : hello;
 }
 
 /** The encouraging line under the greeting: streak, welcome back, or a fresh start. Never a "streak lost". */
@@ -29,18 +39,28 @@ function streakLine(s) {
   if (!s) return null;
   if (s.todayActive) return [Fire, `Today counts. ${s.current} day streak${s.current >= 3 ? ', keep it rolling' : ''}.`];
   if (s.current > 0) return [Fire, `${s.current} day streak. Five minutes today keeps it going.`];
-  if (s.welcomeBack) return [HandWaving, `Welcome back. You had a ${s.welcomeBack.previousStreak} day streak, and five minutes today starts a new one.`];
-  return [Plant, 'Start your streak today: five minutes counts.'];
+  if (s.welcomeBack) return [HandWaving, 'Welcome back. Five minutes makes today count.'];
+  return [Plant, 'Five minutes makes today count.'];
 }
 
-// Today = "what do I do now?": the next lesson (one big card), wins this week, today's quote, then the day's schedule.
+function dayLine(missions) {
+  const done = missions.filter((m) => m.complete).length;
+  if (!missions.length) return 'Nothing is planned today. Rest counts too.';
+  if (done === missions.length) return 'All three missions done. That is a full day.';
+  if (done) return `${done} of ${missions.length} missions done. Nice work.`;
+  return 'Three missions today. The first one is ready.';
+}
+
+// Today = "what do I do now?": one next action, three missions, one ring for the day, this week's challenge and
+// a 10-second check-in. Everything else (the full schedule, other roadmaps) is one click away, not on screen.
 export default function Home() {
-  const { game } = useGame();
+  const { game, today, active, name } = useGame();
   const [meta, setMeta] = useState(null);
   const [schedule, setSchedule] = useState(null);
   const [error, setError] = useState(null);
   const [saveError, setSaveError] = useState(null);
-  const [pick, setPick] = useState(readPick);
+  const [choice, setChoice] = useState(thirdPick.get);
+  const dayCard = useRef(null);
 
   // Before the plan starts, preview Day 1 so the first screen still has a concrete plan.
   const date = meta && todayISO() < meta.startDate ? meta.startDate : todayISO();
@@ -69,90 +89,117 @@ export default function Home() {
     refreshGame();
   }
 
-  if (error) return <ErrorBox error={error} onRetry={load} />;
-  if (!meta || !schedule || !game) return <Loading />;
+  const ready = meta && schedule && game;
+  const { missions, swapTo } = ready ? pickMissions(missionCandidates(schedule, today, game), choice) : { missions: [], swapTo: null };
+  const pct = dayProgress(missions);
+  const allDone = isToday && missions.length > 0 && missions.every((m) => m.complete);
 
-  // Hero: a running timer wins; then your pick for today; then whatever the timeline has on now (else AI + FDE).
-  const auto = pickHeroTrack(game.tracks, schedule);
-  const heroKey = game.focus?.track || (pick && game.tracks.some((t) => t.key === pick && t.next) ? pick : auto?.key);
-  const hero = game.tracks.find((t) => t.key === heroKey);
-  const reason = game.focus ? 'Focus timer running' : heroKey === pick && pick !== auto?.key ? 'Your pick for today' : auto?.reason;
-  const others = game.tracks.filter((t) => t.next && t.key !== heroKey);
-  const choose = (k) => { savePick(k); setPick(k); };
-  const startFive = hero ? () => api.focusStart({ track: hero.key, ref: hero.next.ref, minutes: 5 }).then(refreshGame) : null;
+  // The completion moment: one short confetti burst the first time all three are done today, never again that day.
+  useEffect(() => {
+    if (!allDone || celebrated.get()) return;
+    celebrated.set('1');
+    burst(dayCard.current);
+  }, [allDone]);
+
+  if (error) return <ErrorBox error={error} onRetry={load} />;
+  if (!ready) return <Loading />;
+
+  // Next action: a running timer wins; otherwise whatever the timeline has on now, among your active tracks only.
+  const tracks = game.tracks.filter((t) => active.includes(t.key));
+  const auto = pickHeroTrack(tracks, schedule);
+  const heroKey = game.focus?.track || auto?.key;
+  const hero = game.tracks.find((t) => t.key === heroKey && t.next);
+  const reason = game.focus ? 'Focus timer running' : auto?.reason;
   const [StreakIcon, streakText] = streakLine(game.streak);
   const streakOn = game.streak.current > 0 || game.streak.todayActive;
+  const { player, growth } = game;
+  const consistency = growth?.consistency;
+  const nextMilestone = growth?.milestones.next[0];
+  const quote = quoteFor(todayISO());
+  const swap = () => { thirdPick.set(swapTo.key); setChoice(swapTo.key); };
+  const toggleHabit = (m) => toggle(() => api.setHabit(todayISO(), m.habit, !m.complete));
 
   return (
     <>
       {/* hero appear: date, greeting and streak settle in one after another (components/motion.jsx) */}
       <header className="today-head">
         <div className="today-date">
-          {formatLong(date)}{schedule.week ? ` · Week ${schedule.week}` : ''}{schedule.focus ? ` · ${schedule.focus}` : ''}
+          {formatLong(date)}{schedule.week ? ` · Week ${schedule.week}` : ''}{!isToday ? ' · Day 1 preview' : ''}
         </div>
-        <h1 className="today-title"><span className="text-gradient">{isToday ? greeting() : 'Day 1 preview'}</span></h1>
+        <h1 className="today-title"><span className="text-gradient">{greeting(name)}</span></h1>
         <div className={`today-streak${streakOn ? ' on' : ''}`} role="status">
           <StreakIcon size={16} weight={streakOn ? 'fill' : 'regular'} aria-hidden="true" /> {streakText}
+          {consistency?.active > 0 && <span className="today-consistency">Active {consistency.active} of the last {consistency.total} days</span>}
         </div>
       </header>
 
-      {/* wide: hero + schedule on the left, wins + quote + mentor in a sticky right column; narrow: hero, then the column, then the schedule */}
-      <div className="home-grid today-grid">
-        <div className="home-hero">
-          <TodayRings />
-          {hero ? (
-            <TodayHero key={hero.key} track={hero} reason={reason} focus={game.focus} />
-          ) : (
-            <section className="card"><EmptyState icon="🏆" title="Every roadmap is complete">Keep learning on Stay updated, and give yourself a well-earned break.</EmptyState></section>
-          )}
-          {others.length > 0 && (
-            <>
-              <h2 className="section-label">Up next on your other roadmaps</h2>
-              <div className="upnext">
-                {others.map((t) => (
-                  <TiltCard key={t.key} as="button" className="card upnext-card" onClick={() => choose(t.key)} aria-label={`Focus on ${t.label} today: ${t.next.title.replace(/`/g, '')}`}>
-                    <span className="upnext-track">{t.label} · Level {t.next.level}</span>
-                    <span className="upnext-title"><Md text={t.next.title} /></span>
-                    <span className="upnext-meta">~{minutesText(t.next.minutes)} <span className="upnext-go">Make this today's focus <ArrowRight size={14} aria-hidden="true" /></span></span>
-                  </TiltCard>
-                ))}
+      {/* wide: day + next action on the left, missions + challenge + check-in on the right.
+          narrow: one column in the order day, missions, next action, the rest (see .today-cols in styles-growth.css) */}
+      <div className="today-cols">
+        <div className="today-main">
+          <section ref={dayCard} className="card day-card t-day" aria-label="Today's progress">
+            <ProgressRing value={pct} total={100} size={84} stroke={8} />
+            <div className="day-text">
+              <div className="day-line">{isToday ? dayLine(missions) : 'Your plan starts tomorrow. Here is your first day.'}</div>
+              <div className="day-level">
+                <Link to="/me">Level {player.level}</Link>
+                <span className="day-xp" role="progressbar" aria-label="XP toward the next level" aria-valuemin={0} aria-valuemax={player.xpForNext} aria-valuenow={player.xpInLevel}>
+                  <span style={{ transform: `scaleX(${player.xpInLevel / player.xpForNext})` }} />
+                </span>
+                <span className="muted">{player.xpInLevel} of {player.xpForNext} XP{player.today ? ` · ${player.today} earned today` : ''}</span>
               </div>
-            </>
-          )}
+              {nextMilestone && (
+                <div className="day-milestone"><Medal size={14} aria-hidden="true" /> Next milestone: {nextMilestone.title} <span className="muted">({nextMilestone.value} of {nextMilestone.target})</span></div>
+              )}
+              <figure className="day-quote">
+                <blockquote>“{quote.text}”</blockquote>
+                <figcaption>{quote.author}</figcaption>
+              </figure>
+            </div>
+          </section>
+
+          <div className="t-hero">
+            {hero ? (
+              <TodayHero key={hero.key} track={hero} reason={reason} focus={game.focus} />
+            ) : (
+              <section className="card"><EmptyState icon="🏆" title="Your active roadmaps are complete">Bring the next one back from Journey, and give yourself a well-earned break.</EmptyState></section>
+            )}
+          </div>
+
+          <div className="t-rest">
+            <details className="schedule-more">
+              <summary>Full schedule for the day <CaretDown size={14} aria-hidden="true" /></summary>
+              <Timeline
+                schedule={schedule}
+                isToday={isToday}
+                onToggleTask={(it) => toggle(() => api.setTaskDone(it.id, !it.done))}
+                onToggleProject={(it) => toggle(() => api.updateProjectTask(it.id, it.step === 'learn' ? { learn_done: !it.done } : { done: !it.done }))}
+              />
+            </details>
+          </div>
         </div>
 
-        <aside className="home-aside">
-          <MentorCard />
-          <WeekWins week={game.week} onStart={!game.focus ? startFive : null} />
-          <DailyQuote />
-          {!isToday && (
-            <div className="card notice">
-              <RocketLaunch size={20} aria-hidden="true" />
-              <span>Your plan starts <strong>{formatLong(meta.startDate)}</strong>. Tonight: lay out workout clothes and sleep by 10:30.</span>
-            </div>
-          )}
-          {saveError && (
-            <div className="card notice">
-              <span><strong>Couldn't save:</strong> {saveError}</span>
-              <button className="link-btn" onClick={() => setSaveError(null)}>Dismiss</button>
-            </div>
-          )}
-          <Link to="/mentor?tab=plan" className="card mentor-cta">
-            <span className="mentor-cta-icon" aria-hidden="true"><Robot size={20} /></span>
-            <span><strong>Plan my day with your mentor</strong><span className="muted small"> Behind, tired, or short on time? It plans today again around your real timetable.</span></span>
-            <ArrowRight size={16} className="mentor-cta-go" aria-hidden="true" />
-          </Link>
+        <aside className="today-side">
+          <div className="t-missions">
+            <Priorities items={missions} preview={!isToday} swapTo={swapTo} onSwap={swap} onToggleHabit={toggleHabit} />
+          </div>
+          <div className="t-extra">
+            <ChallengeCard />
+            {isToday && <CheckIn />}
+            {!isToday && (
+              <div className="card notice">
+                <RocketLaunch size={20} aria-hidden="true" />
+                <span>Your plan starts <strong>{formatLong(meta.startDate)}</strong>. Tonight: lay out workout clothes and sleep by 10:30.</span>
+              </div>
+            )}
+            {saveError && (
+              <div className="card notice">
+                <span><strong>Couldn't save:</strong> {saveError}</span>
+                <button className="link-btn" onClick={() => setSaveError(null)}>Dismiss</button>
+              </div>
+            )}
+          </div>
         </aside>
-
-        <div className="home-rest">
-          <h2 className="section-label">Today's schedule</h2>
-          <Timeline
-            schedule={schedule}
-            isToday={isToday}
-            onToggleTask={(it) => toggle(() => api.setTaskDone(it.id, !it.done))}
-            onToggleProject={(it) => toggle(() => api.updateProjectTask(it.id, it.step === 'learn' ? { learn_done: !it.done } : { done: !it.done }))}
-          />
-        </div>
       </div>
     </>
   );

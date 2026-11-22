@@ -36,13 +36,13 @@ describe('plan data (generated from STUDY_PLAN.md)', () => {
   test('project roadmaps: learn + build per day and a checkpoint every week', () => {
     const by = Object.fromEntries(plan.projects.map((p) => [p.code, p.tasks]));
     assert.equal(by.snippetvault.length, 36);
-    assert.equal(by['jobhunt-api'].length, 84); // 14 assignment-weeks: 5 days + a checkpoint each
-    assert.equal(by['jobhunt-web'].length, 42);
+    assert.equal(by['jobhunt-fullstack'].length, 231); // 21 weeks: 5 days x (.NET + React) + a checkpoint each
+    assert.ok(!by['jobhunt-api'] && !by['jobhunt-web'], 'the separate .NET and React courses are replaced by the full-stack one');
     assert.equal(by.portfolio.length, 5);
-    for (const code of ['snippetvault', 'jobhunt-api', 'jobhunt-web']) {
+    for (const [code, perDay] of [['snippetvault', 1], ['jobhunt-fullstack', 2]]) {
       const builds = by[code].filter((t) => t.kind === 'build');
       assert.ok(builds.every((t) => t.learn), `${code}: every build has a learn topic`);
-      assert.equal(by[code].filter((t) => t.kind === 'checkpoint').length, builds.length / 5);
+      assert.equal(by[code].filter((t) => t.kind === 'checkpoint').length, builds.length / (5 * perDay));
     }
   });
 
@@ -61,8 +61,8 @@ describe('plan data (generated from STUDY_PLAN.md)', () => {
 
   test('doc-links.js covers every DSA week (6 days) and every project week (5 days, per project)', () => {
     for (let w = 1; w <= 13; w++) assert.equal(links.DSA_DAY_LINKS[w].length, 6, `DSA week ${w}`);
-    // per project: .NET weeks 1–14, React 15–21, Node 23–28
-    const weeks = { 'jobhunt-api': [1, 14], 'jobhunt-web': [15, 21], snippetvault: [23, 28] };
+    // Node weeks 23–28 (the full-stack course keeps its links beside its lessons, see the full-stack test below)
+    const weeks = { snippetvault: [23, 28] };
     for (const [code, [from, to]] of Object.entries(weeks)) {
       for (let w = from; w <= to; w++) assert.equal(links.PROJECT_LEARN_LINKS[code][w]?.length, 5, `${code} week ${w}`);
     }
@@ -270,5 +270,37 @@ describe('Home timeline (client/src/lib/timeline.js)', () => {
     assert.equal(blockStatus(sleep, 1400), 'now');
     assert.equal(blockStatus(sleep, 120), 'now');
     assert.equal(blockStatus(sleep, 600), 'upcoming');
+  });
+});
+
+describe('full-stack course (.NET and React in parallel every day)', () => {
+  const plan = require('../data/plan.json');
+  const course = plan.projects.find((p) => p.code === 'jobhunt-fullstack');
+
+  test('21 weeks; every day has a .NET lesson and a React lesson; a checkpoint on day 5; week details', () => {
+    assert.equal(course.area, 'fullstack');
+    assert.equal(course.weeks.length, 21);
+    for (let w = 1; w <= 21; w++) {
+      const rows = course.tasks.filter((t) => t.week === w);
+      for (const lane of ['api', 'web']) {
+        assert.deepEqual(rows.filter((t) => t.kind === 'build' && t.lane === lane).map((t) => t.dow), [0, 1, 2, 3, 4], `week ${w} ${lane}`);
+      }
+      assert.equal(rows.filter((t) => t.kind === 'checkpoint' && t.dow === 4 && !t.lane).length, 1, `week ${w} checkpoint`);
+      const info = course.weeks.find((x) => x.week === w);
+      assert.ok(info.objective && info.level && info.deliverable, `week ${w} details`);
+    }
+    assert.equal(plan.projects.find((p) => p.code === 'portfolio').area, 'fullstack');
+  });
+
+  test('every written lesson has a "done when", links and a brief with the standard sections', () => {
+    const briefs = require('../data/briefs/jobhunt-fullstack.json');
+    for (const t of course.tasks.filter((x) => x.kind === 'build')) {
+      const brief = briefs[`${t.week}-${t.dow}-${t.lane}`];
+      if (!brief) continue; // a week not written yet falls back to the syllabus
+      const at = `W${t.week} d${t.dow} ${t.lane}`;
+      assert.ok(t.doneWhen, `${at} done when`);
+      assert.ok(t.learnLinks.length > 0, `${at} links`);
+      for (const h of ['### Why this matters', '### Step by step', '### Acceptance criteria']) assert.ok(brief.includes(h), `${at}: ${h}`);
+    }
   });
 });

@@ -39,7 +39,8 @@ router.post('/mentor/ask', wrap(async (req, res) => {
     const result = await ask(req.body);
     res.json({ ...result, messages: (await loadThread(thread)).map(forDisplay) });
   } catch (err) {
-    if (err.status && err.status < 500) return res.status(err.status).json({ error: err.message });
+    // a known problem (bad input, AI not set up, quota used up) gets its own message instead of a bare "server error"
+    if (err.status && (err.status < 500 || err.status === 503)) return res.status(err.status).json({ error: err.message });
     throw err;
   }
 }));

@@ -20,6 +20,7 @@ import './styles-cards.css';
 import './styles-report.css';
 import './styles-mastery.css';
 import './styles-assignments.css';
+import './styles-growth.css';
 import './styles-motion.css';
 
 registerPwa();

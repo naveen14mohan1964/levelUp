@@ -6,6 +6,10 @@ const router = express.Router();
 const wrap = (fn) => (req, res, next) => fn(req, res, next).catch(next);
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
+// YouTube reference videos per lesson (scripts/dsa-videos.js), keyed by the plan's original date so shifts never matter.
+let VIDEOS = {};
+try { VIDEOS = require('../../data/dsa-videos.json'); } catch { /* not built yet: days simply have no videos */ }
+
 const PROBLEM_COLS = `CAST(p.id AS int) AS id, p.day_id, p.sort_order, p.source, p.lc_number, p.title, p.url, p.difficulty, p.topic,
   p.is_stretch, p.is_selftest, p.hint, p.status, p.attempts, p.time_taken_min, p.notes, p.confidence,
   p.interval_days, CONVERT(char(10), p.next_review, 23) AS next_review, p.solved_at`;
@@ -45,6 +49,7 @@ router.get('/day/:date', wrap(async (req, res) => {
   day.key_concepts = JSON.parse(day.key_concepts || '[]');
   day.links = JSON.parse(day.links || '[]');
   day.channels = JSON.parse(day.channels || '[]');
+  day.videos = VIDEOS[day.original_date] || [];
   const detail = await pool.request().input('id', sql.Int, day.id).query(`
     SELECT CAST(id AS int) AS id, sort_order, kind, title, minutes, done FROM dbo.tasks WHERE day_id = @id ORDER BY sort_order;
     SELECT ${PROBLEM_COLS} FROM dbo.problems p WHERE p.day_id = @id ORDER BY p.sort_order;`);

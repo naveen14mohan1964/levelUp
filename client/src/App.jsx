@@ -7,7 +7,6 @@ import Sidebar from './components/Sidebar.jsx';
 import LevelComplete from './components/LevelComplete.jsx';
 import CommandPalette from './components/CommandPalette.jsx';
 import FocusDock from './components/FocusDock.jsx';
-import BuddyCorner from './components/BuddyCorner.jsx';
 import { FocusProvider } from './focus.jsx';
 import { useAutoReveal } from './components/motion.jsx';
 import Home from './pages/Home.jsx';
@@ -32,6 +31,9 @@ import Patterns from './pages/Patterns.jsx';
 import Companies from './pages/Companies.jsx';
 import Drills from './pages/Drills.jsx';
 import Assignments from './pages/Assignments.jsx';
+import Journey from './pages/Journey.jsx';
+import Journal from './pages/Journal.jsx';
+import Me from './pages/Me.jsx';
 
 // The first path segment decides the accent colour (see [data-area] in styles.css).
 function useArea() {
@@ -57,6 +59,9 @@ export default function App() {
       <main className="content" id="main" ref={mainRef}>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/journey" element={<Journey />} />
+          <Route path="/journal" element={<Journal />} />
+          <Route path="/me" element={<Me />} />
           <Route path="/dsa" element={<DsaLayout />}>
             <Route index element={<Today />} />
             <Route path="day/:date" element={<Today />} />
@@ -69,8 +74,10 @@ export default function App() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/mentor" element={<Mentor />} />
           <Route path="/linkedin/*" element={<LinkedIn />} />
-          <Route path="/react/*" element={<ProjectPage area="react" />} />
-          <Route path="/dotnet/*" element={<ProjectPage area="dotnet" />} />
+          <Route path="/fullstack/*" element={<ProjectPage area="fullstack" />} />
+          {/* the old separate courses now live in the full-stack course */}
+          <Route path="/react/*" element={<Navigate to="/fullstack" replace />} />
+          <Route path="/dotnet/*" element={<Navigate to="/fullstack" replace />} />
           <Route path="/node/*" element={<ProjectPage area="node" />} />
           <Route path="/workout" element={<Workout />} />
           <Route path="/workout/day/:date" element={<Workout />} />
@@ -99,7 +106,6 @@ export default function App() {
       <Reminders />
       <CommandPalette />
       <FocusDock />
-      <BuddyCorner />
     </div>
     </FocusProvider>
     </GameProvider>

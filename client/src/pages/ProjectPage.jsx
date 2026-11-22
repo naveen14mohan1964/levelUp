@@ -11,8 +11,7 @@ import { refreshGame } from '../game.jsx';
 
 const ROADMAP_INTRO = {
   node: 'runtime + Express → MongoDB → auth + security → real API features → testing + real-time → production',
-  dotnet: 'C# → ASP.NET Core → EF Core → API quality → auth → testing → performance → caching → resilience → observability → messaging → security → deployment → capstone',
-  react: 'components + TypeScript → server state → forms → patterns + UX → testing → performance + a11y → production',
+  fullstack: '.NET + React every day, one feature a week: skeleton → domain → list → data + routing → search → forms → auth → authorization → related data → Kanban → tests → dashboard → caching → files + jobs → real-time → resilience → events → security → E2E → ship → capstone',
 };
 
 function daysBetween(a, b) {
@@ -30,7 +29,7 @@ function stepCounts(tasks) {
   return { done, total };
 }
 
-/** Shell for /react, /dotnet, /node: loads the area's projects once, shares them with both tabs. */
+/** Shell for /fullstack, /node: loads the area's projects once, shares them with both tabs. */
 export default function ProjectPage({ area }) {
   const meta = areaByKey[area];
   const { pathname } = useLocation();
@@ -40,7 +39,10 @@ export default function ProjectPage({ area }) {
 
   const load = () => {
     setError(null);
-    api.projects(area).then(setProjects).catch((e) => setError(e.message));
+    api.projects(area)
+      // until the full-stack migration has run (scripts/apply-fullstack.js), show the old .NET + React lessons here
+      .catch((e) => (area === 'fullstack' ? Promise.all([api.projects('dotnet'), api.projects('react')]).then(([a, b]) => [...a, ...b]) : Promise.reject(e)))
+      .then(setProjects).catch((e) => setError(e.message));
   };
   useEffect(() => {
     setProjects(null);
@@ -117,12 +119,19 @@ function Lesson({ area, projects, onUpdate }) {
   const goTo = (d) => navigate(d === today ? `/${area}` : `/${area}/day/${d}`);
 
   const build = tasks.find((t) => t.kind === 'build');
+  // the full-stack course has two lessons a day in parallel: lane 'api' (.NET) and lane 'web' (React)
+  const lanes = tasks.filter((t) => t.kind === 'build' && t.lane);
   const [mentorFor, setMentorFor] = useState(null);
   const mentorItem = build && { ...build, area: build.project.area };
   const checkpoint = tasks.find((t) => t.kind === 'checkpoint');
   const { done, total } = stepCounts(tasks);
   const project = tasks[0]?.project;
-  const weekTasks = all.filter((t) => t.week_no === build?.week_no && t.kind === 'build');
+  // one entry per day in the week strip (a parallel day has two lessons: it is done when both are)
+  const weekTasks = [...new Set(all.filter((t) => t.week_no === build?.week_no && t.kind === 'build').map((t) => t.plan_date))].map((d) => {
+    const day = all.filter((t) => t.plan_date === d && t.kind === 'build');
+    const full = day.every((t) => t.done && (!t.learn || t.learn_done));
+    return { id: d, plan_date: d, done: full, learn: null, learn_done: false, partial: !full && day.some((t) => t.done || t.learn_done) };
+  });
   // assignment weeks (.NET track): objective, level and deliverable for the week
   const week = project?.weeks.find((w) => w.week_no === (build?.week_no ?? checkpoint?.week_no));
 
@@ -165,7 +174,10 @@ function Lesson({ area, projects, onUpdate }) {
         </div>
 
         <ol className="steps">
-          {build?.learn && (
+          {lanes.map((t, i) => (
+            <LaneSteps key={t.id} task={t} first={i * 2 + 1} onUpdate={onUpdate} onMentor={() => setMentorFor({ ...t, area: t.project.area })} />
+          ))}
+          {!lanes.length && build?.learn && (
             <Step
               n="1" icon="📖" label="Learn" minutes="~20 min" done={build.learn_done}
               onToggle={() => onUpdate(build, { learn_done: !build.learn_done })}
@@ -180,7 +192,7 @@ function Lesson({ area, projects, onUpdate }) {
               <Md text={build.learn} />
             </Step>
           )}
-          {build && (
+          {!lanes.length && build && (
             <Step
               n={build.learn ? '2' : '1'} icon="🛠" label="Practice" minutes={build.learn ? '~40 min' : '1h'} done={build.done}
               onToggle={() => onUpdate(build, { done: !build.done })}
@@ -197,7 +209,7 @@ function Lesson({ area, projects, onUpdate }) {
           )}
           {checkpoint && (
             <Step
-              n="3" icon="✅" label="Weekly checkpoint" minutes="15–20 min · no docs" done={checkpoint.done}
+              n={lanes.length ? String(lanes.length * 2 + 1) : '3'} icon="✅" label="Weekly checkpoint" minutes="15–20 min · no docs" done={checkpoint.done}
               onToggle={() => onUpdate(checkpoint, { done: !checkpoint.done })}
               hint="Close every tab first. If you get stuck, note what you forgot; that's next week's review."
               extra={<TaskExtras task={checkpoint} onUpdate={onUpdate} noScratch />}
@@ -208,7 +220,9 @@ function Lesson({ area, projects, onUpdate }) {
         </ol>
 
         {/* the day written out in full: today's build open, the weekly drill below it */}
-        <AssignmentBrief md={build?.brief} title="Today's lesson, in full" open />
+        {lanes.length
+          ? lanes.map((t, i) => <AssignmentBrief key={t.id} md={t.brief} title={`${LANES[t.lane]?.label || 'Lesson'} lesson, in full`} open={i === 0} />)
+          : <AssignmentBrief md={build?.brief} title="Today's lesson, in full" open />}
         <AssignmentBrief md={checkpoint?.brief} title="Weekly checkpoint drill" open={!build?.brief} />
 
         {project?.resources?.length > 0 && (
@@ -227,12 +241,54 @@ function Lesson({ area, projects, onUpdate }) {
             {weekTasks.map((t) => (
               <li key={t.id} className={`${t.plan_date === date ? 'current' : ''}${t.done ? ' done' : ''}`}>
                 <button className="link-btn" onClick={() => goTo(t.plan_date)}>{formatShort(t.plan_date).split(',')[0]}</button>
-                <span className="week-strip-mark">{t.done && (!t.learn || t.learn_done) ? '✓' : t.done || t.learn_done ? '◐' : '○'}</span>
+                <span className="week-strip-mark">{t.done && (!t.learn || t.learn_done) ? '✓' : t.done || t.learn_done || t.partial ? '◐' : '○'}</span>
               </li>
             ))}
           </ul>
         </section>
       )}
+    </>
+  );
+}
+
+const LANES = {
+  api: { label: '.NET', icon: '🟣', note: "the API side of today's feature" },
+  web: { label: 'React', icon: '⚛️', note: "the screen side of today's feature" },
+};
+
+/** One lane of a parallel day: a small heading, then its Learn (~10 min) and Practice (~20 min) steps. */
+function LaneSteps({ task: t, first, onUpdate, onMentor }) {
+  const lane = LANES[t.lane] || { label: t.lane, icon: '•', note: '' };
+  return (
+    <>
+      <li className="lane-head"><span className="lane-label">{lane.icon} {lane.label}</span><span className="muted small">~30 min · {lane.note}</span></li>
+      {t.learn && (
+        <Step
+          n={String(first)} icon="📖" label="Learn" minutes="~10 min" done={t.learn_done}
+          onToggle={() => onUpdate(t, { learn_done: !t.learn_done })}
+          extra={
+            <>
+              <DocLinks links={t.learn_links} title="📚 Docs for this topic" />
+              <button className="mentor-chip top-gap" onClick={onMentor}>🤖 Explain this to me</button>
+            </>
+          }
+        >
+          <Md text={t.learn} />
+        </Step>
+      )}
+      <Step
+        n={String(first + (t.learn ? 1 : 0))} icon="🛠" label="Practice" minutes="~20 min" done={t.done}
+        onToggle={() => onUpdate(t, { done: !t.done })}
+        extra={
+          <>
+            <TaskExtras task={t} onUpdate={onUpdate} />
+            <button className="mentor-chip top-gap" onClick={onMentor}>🤖 Review my code / ask about this</button>
+          </>
+        }
+      >
+        <Md text={t.title} />
+        {t.done_when && <span className="done-when"><strong>✓ Done when:</strong> <Md text={t.done_when} /></span>}
+      </Step>
     </>
   );
 }
@@ -295,7 +351,9 @@ function TaskExtras({ task, onUpdate, noScratch }) {
 function RoadmapMap({ area, projects, onUpdate }) {
   const [track, setTrack] = useState(null);
   const [error, setError] = useState(null);
-  const load = () => api.gameTrack(area).then((r) => { setTrack(r.track); setError(null); }).catch((e) => setError(e.message));
+  const load = () => api.gameTrack(area)
+    .catch((e) => (area === 'fullstack' ? api.gameTrack('dotnet') : Promise.reject(e))) // before the full-stack migration
+    .then((r) => { setTrack(r.track); setError(null); }).catch((e) => setError(e.message));
   useEffect(() => { load(); }, [area, projects]); // eslint-disable-line react-hooks/exhaustive-deps
   if (error) return <ErrorBox error={error} onRetry={load} />;
   if (!track) return <Loading />;

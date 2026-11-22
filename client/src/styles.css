@@ -17,6 +17,7 @@
   --react: #22D3EE;
   --dotnet: #A5B4FC;
   --node: #2DD4BF;
+  --fullstack: #A5B4FC; /* the .NET + React course */
   --workout: #FB923C;
   --progress: #F9A8D4;
   --meals: #A3E635;
@@ -90,9 +91,11 @@
   color-scheme: dark;
 }
 [data-area='home'] { --area: var(--success); }
+[data-area='journey'] { --area: var(--dsa); }
+[data-area='journal'] { --area: var(--cards); }
+[data-area='me'] { --area: var(--report); }
 [data-area='dsa'] { --area: var(--dsa); }
-[data-area='react'] { --area: var(--react); }
-[data-area='dotnet'] { --area: var(--dotnet); }
+[data-area='fullstack'] { --area: var(--fullstack); }
 [data-area='node'] { --area: var(--node); }
 [data-area='workout'] { --area: var(--workout); }
 [data-area='meals'] { --area: var(--meals); }

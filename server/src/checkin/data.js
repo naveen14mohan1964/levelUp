@@ -26,6 +26,7 @@ async function mentorSettings() {
   return {
     enabled: str('mentor_enabled', '1') === '1',
     strictness: str('mentor_strictness', 'standard'),
+    escalation: str('mentor_escalation', '1') === '1', // off = the mentor never goes past the first, mildest level
     evalTime: str('mentor_eval_time', '23:00'),
     morning: str('mentor_morning', '1') === '1',
     morningTime: str('mentor_morning_time', '06:30'),
@@ -65,7 +66,7 @@ async function loadDay(pool, date, s, range) {
       WHERE started_ms >= DATEDIFF_BIG(ms, '1970-01-01', CAST(@lo AS datetime2)) AND started_ms < DATEDIFF_BIG(ms, '1970-01-01', CAST(@hi AS datetime2));
     SELECT 'ai' AS track, lesson_id, done_ms FROM dbo.ai_progress WHERE done_ms IS NOT NULL
     UNION ALL SELECT track, lesson_id, done_ms FROM dbo.learn_progress WHERE done_ms IS NOT NULL;
-    SELECT done, learn, learn_done FROM dbo.project_tasks WHERE plan_date = @d;
+    SELECT t.done, t.learn, t.learn_done FROM dbo.project_tasks t JOIN dbo.projects p ON p.code = t.project_code WHERE t.plan_date = @d AND p.area <> 'archived';
     SELECT item_key FROM dbo.workout_log WHERE log_date = @d;
     SELECT COUNT(*) AS meals, COALESCE(SUM(protein_g), 0) AS protein FROM dbo.meals WHERE log_date = @d;
     SELECT kind FROM dbo.rest_days WHERE rest_date = @d;`);
@@ -124,6 +125,7 @@ async function evaluateDay(pool, date, { final = false, s, range } = {}) {
   const covered = !!(await pool.request().input('d', sql.Date, date).query('SELECT 1 AS x FROM dbo.streak_freezes WHERE day = @d')).recordset.length;
   const today = { date, results, rest: input.rest, covered };
   const now = escalate([...past, today], s.categories);
+  if (!s.escalation) now.level = Math.min(now.level, 1);
   await pool.request().input('d', sql.Date, date).input('res', sql.NVarChar(sql.MAX), JSON.stringify(results))
     .input('mis', sql.NVarChar(sql.MAX), JSON.stringify(now.misses)).input('lvl', sql.TinyInt, input.rest ? 0 : now.level)
     .input('sh', sql.Bit, covered).input('fin', sql.Bit, final).input('ms', sql.BigInt, Date.now())
@@ -191,8 +193,8 @@ async function status(pool, now = Date.now()) {
       CASE WHEN NOT EXISTS (SELECT 1 FROM dbo.problems p WHERE p.day_id = d.id AND p.is_stretch = 0 AND p.status = 'todo')
            AND EXISTS (SELECT 1 FROM dbo.problems p WHERE p.day_id = d.id AND p.is_stretch = 0) THEN 1 ELSE 0 END AS done
     FROM dbo.days d;
-    SELECT CONVERT(char(10), plan_date, 23) AS date, MIN(CASE WHEN done = 1 AND (learn IS NULL OR learn_done = 1) THEN 1 ELSE 0 END) AS done
-    FROM dbo.project_tasks GROUP BY plan_date;
+    SELECT CONVERT(char(10), t.plan_date, 23) AS date, MIN(CASE WHEN t.done = 1 AND (t.learn IS NULL OR t.learn_done = 1) THEN 1 ELSE 0 END) AS done
+    FROM dbo.project_tasks t JOIN dbo.projects p ON p.code = t.project_code WHERE p.area <> 'archived' GROUP BY t.plan_date;
     SELECT (SELECT COUNT(*) FROM dbo.ai_progress WHERE done_ms IS NOT NULL) + (SELECT COUNT(*) FROM dbo.learn_progress WHERE done_ms IS NOT NULL) AS done;`);
   const [shields, rest, commitments, dsaDays, projDays, learnDone] = r.recordsets;
   const lessonTotal = ROADMAP.levels.reduce((n, lv) => n + lv.lessons.length, 0) + Object.values(MODULES).reduce((n, m) => n + m.roadmap.levels.reduce((k, lv) => k + lv.lessons.length, 0), 0);

@@ -13,11 +13,12 @@ const TRACKS = [
   { key: 'lld', label: 'LLD' },
   { key: 'hld', label: 'HLD' },
   { key: 'judge', label: 'Judgement' },
-  { key: 'react', label: 'React' },
-  { key: 'dotnet', label: '.NET' },
+  { key: 'fullstack', label: 'Full stack' },
   { key: 'node', label: 'Node.js' },
 ];
-const PROJECT_AREAS = ['react', 'dotnet', 'node'];
+// .NET and React are one full-stack course now; their old projects have area 'archived' and drop out here.
+const PROJECT_AREAS = ['fullstack', 'node'];
+const LANE_LABEL = { api: '.NET', web: 'React' };
 const LINKED_KINDS = ['practice', 'selftest']; // ticked automatically from their problems (progress.js): count the problems instead
 const PROBLEM_MINUTES = 20; // when you didn't log the time a problem took
 const ms = (d) => (d ? new Date(d).getTime() : null);
@@ -32,10 +33,10 @@ async function loadTracks(pool) {
     SELECT CAST(day_id AS int) AS day_id, kind, minutes, done, done_at FROM dbo.tasks;
     SELECT CAST(id AS int) AS id, CAST(day_id AS int) AS day_id, difficulty, is_stretch, status, time_taken_min,
            COALESCE(solved_at, updated_at) AS solved_at FROM dbo.problems;
-    SELECT CAST(t.id AS int) AS id, p.area, t.week_no, t.week_title, t.title, t.kind, t.learn, t.done, t.learn_done, t.done_at,
+    SELECT CAST(t.id AS int) AS id, p.area, t.week_no, t.week_title, t.title, t.kind, t.lane, t.learn, t.done, t.learn_done, t.done_at,
            CONVERT(char(10), t.plan_date, 23) AS plan_date
     FROM dbo.project_tasks t JOIN dbo.projects p ON p.code = t.project_code
-    ORDER BY t.plan_date, CASE t.kind WHEN 'build' THEN 0 ELSE 1 END, t.id;`);
+    ORDER BY t.plan_date, CASE t.kind WHEN 'build' THEN 0 ELSE 1 END, t.lane, t.id;`);
   const [aiRows, learnRows, weeks, days, tasks, problems, projectRows] = r.recordsets;
   const credits = [];
 
@@ -105,10 +106,10 @@ async function loadTracks(pool) {
       let lv = levels.find((x) => x.weekNo === t.week_no);
       if (!lv) levels.push((lv = { n: levels.length + 1, weekNo: t.week_no, title: t.week_title, lessons: [] }));
       const done = !!t.done && (!t.learn || !!t.learn_done);
-      const minutes = t.learn ? 60 : 30;
+      const minutes = t.lane ? 30 : t.learn ? 60 : 30; // a parallel-course lane is half the project hour
       const doneMs = done ? ms(t.done_at) : null;
       if (doneMs) credits.push({ ms: doneMs, track: area, ref: `t${t.id}`, minutes });
-      lv.lessons.push({ ref: `t${t.id}`, title: t.title, minutes, kind: t.kind, done, touched: !!t.done || !!t.learn_done, doneMs, planDate: t.plan_date });
+      lv.lessons.push({ ref: `t${t.id}`, title: t.lane ? `${LANE_LABEL[t.lane]}: ${t.title}` : t.title, lane: t.lane || null, minutes, kind: t.kind, done, touched: !!t.done || !!t.learn_done, doneMs, planDate: t.plan_date });
     }
     return { ...TRACKS.find((x) => x.key === area), levels };
   });

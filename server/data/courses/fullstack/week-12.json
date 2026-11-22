@@ -1,0 +1,217 @@
+{
+  "week": 12,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Aggregate queries with GroupBy",
+      "title": "GET /api/stats: applications per status and response rate",
+      "doneWhen": "`GET /api/stats` returns the total, a count for each of the four statuses (zeros included) and a response rate for the current user only, built from one `GROUP BY` query you have read in the SQL log",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Complex query operators",
+          "url": "https://learn.microsoft.com/en-us/ef/core/querying/complex-query-operators"
+        },
+        {
+          "label": "Microsoft Learn: Simple logging",
+          "url": "https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/simple-logging"
+        }
+      ],
+      "brief": "### Why this matters\nA dashboard is where people decide whether your app is useful. The naive way loads every row and counts in C#, which is fine for 20 rows and terrible for 20,000. A `GroupBy` that EF translates to SQL `GROUP BY` lets the database do the counting and send back four rows. Aggregates come up in every backend interview. Today's React part draws these numbers.\n\n### What you'll build\nOn a new branch `feature/dashboard`:\n- `StatsDto(Total, ByStatus, ResponseRate)` in Application, with `ByStatus` holding all four statuses\n- `IStatsQueries.GetAsync(ct)` in Application and `StatsQueries` in Infrastructure, scoped to the current user and hiding soft-deleted rows (the global filter does that)\n- `GET /api/stats` in its own route group with `RequireAuthorization()`\n- An integration test (week 11): an empty user gets zeros, a seeded user gets the expected counts\n\n### Step by step\n1. Define the response rate in writing first, for example \"share of applications no longer in `Applied`\". Metrics need definitions.\n2. Write the grouped query and read its SQL with `ToQueryString()` or the log.\n3. Fill missing statuses with zero in C#, after the query: a status with no rows has no group.\n4. Decide the rate for a user with zero applications, and handle it.\n5. Map the endpoint and write the two tests.\n\n```csharp\nvar byStatus = await apps\n    .GroupBy(a => a.Status)\n    .Select(g => new { Status = g.Key, Count = g.Count() })\n    .ToListAsync(ct);\n```\n\n### Acceptance criteria\n- [ ] Counting happens in SQL, not in memory\n- [ ] All four statuses are present, zeros included\n- [ ] Another user's data never counts\n- [ ] A new user gets a rate without dividing by zero\n\n### Hints\n- If EF cannot translate a `GroupBy`, it throws rather than silently loading everything. Simplify the key or the projection.\n- `Total` is the sum of the grouped counts; no second query needed.\n\n### Common mistakes\n- `ToListAsync()` before `GroupBy`, which groups in memory.\n- Returning a dictionary keyed by enum numbers instead of status names.\n\n### Check your understanding\n- How do you know the grouping ran in SQL?\n- Why are missing statuses filled in C# and not SQL?\n- What is your response rate, exactly?"
+    },
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Charts in React",
+      "title": "Dashboard page with a status breakdown chart",
+      "doneWhen": "`/dashboard` (in the nav) shows stat tiles for total, response rate as a percent and offers, plus an SVG bar chart with one labelled bar per status whose widths match the counts, each bar linking to the filtered list",
+      "learnLinks": [
+        {
+          "label": "MDN: SVG",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/SVG"
+        },
+        {
+          "label": "MDN: Intl.NumberFormat",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat"
+        }
+      ],
+      "brief": "### Why this matters\nCharts look like magic until you draw one yourself: a bar chart is rectangles whose widths come from data. Drawing a simple chart in SVG teaches you scales and labels, and you will understand any chart library better afterwards. It also keeps the bundle small. This page shows the stats from today's .NET part; if you start here, use a typed sample `StatsDto` until the endpoint exists.\n\n### What you'll build\n- `StatsDto` type, `getStats()` in `api.ts`, `statsKeys` and `useStats()`\n- A `/dashboard` route and nav link\n- `StatTile` components, with the rate formatted by `Intl.NumberFormat` as a percent\n- `StatusBreakdownChart` taking `ByStatus` as props: horizontal SVG bars, a visible count on each, your status colours\n- Each bar wrapped in a link to `/applications?status=...` (your week 5 URL filters)\n- Loading and empty states (\"Add your first application to see stats\")\n\n### Step by step\n1. Sketch the page: tiles on top, chart below.\n2. Build the hook and tiles first and check the numbers against the API.\n3. Compute bar widths from the largest count; guard against a max of zero.\n4. Use a `viewBox` so the chart scales with its container.\n5. Put a text label on every bar: colour alone must never carry meaning.\n6. Add the links and the states.\n\n```tsx\n<svg viewBox=\"0 0 300 120\" width=\"100%\">\n  {byStatus.map((s, i) => (\n    <rect key={s.status} y={i * 28} height={20} width={/* TODO */ 0} />\n  ))}\n</svg>\n```\n\n### Acceptance criteria\n- [ ] Bars scale with the data and the container\n- [ ] Every bar has a visible text label\n- [ ] Clicking a bar opens the filtered list\n- [ ] Empty and loading states render\n\n### Hints\n- Keep charts presentational (data in, SVG out) so week 11's tools test them easily.\n- A library such as Recharts is fine for complex charts later; know what it does for you.\n\n### Common mistakes\n- Formatting percentages by string concatenation.\n- Dividing by zero when every count is 0.\n\n### Check your understanding\n- How does a `viewBox` make the chart responsive?\n- Why must each bar carry a text label?\n- Why keep the chart free of data fetching?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Time-bucketed statistics",
+      "title": "Weekly activity series in the stats endpoint",
+      "doneWhen": "`GET /api/stats` also returns `WeeklyActivity`: exactly 12 entries (weeks starting Monday, oldest first, empty weeks as zeros) with applications sent and interviews scheduled, computed from at most two extra SQL queries",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Complex query operators",
+          "url": "https://learn.microsoft.com/en-us/ef/core/querying/complex-query-operators"
+        },
+        {
+          "label": "Microsoft Learn: Use TimeProvider",
+          "url": "https://learn.microsoft.com/en-us/dotnet/standard/datetime/timeprovider-overview"
+        }
+      ],
+      "brief": "### Why this matters\n\"How am I doing over time?\" needs a time series, and time series need careful definitions: which day starts a week, what time zone, what happens to an empty week. Getting this wrong gives charts that silently lie. Bucketing in SQL where it translates cleanly, and finishing in C# where it does not, is a practical pattern. Today's React part draws this series.\n\n### What you'll build\n- `WeeklyActivity` added to `StatsDto`: a list of `(WeekStart, ApplicationsSent, InterviewsScheduled)`\n- Applications grouped by `AppliedOn` day for the last 84 days in SQL, then bucketed into weeks in C#\n- Interviews grouped the same way by the date part of `ScheduledAt`\n- `TimeProvider` (week 9) for \"today\", so a test can fix the date\n- A test with a fake time provider and known dates in three different weeks\n\n### Step by step\n1. Write the definition in a comment: weeks start Monday, dates in UTC, 12 weeks ending this week.\n2. Compute the 12 week starts in C# first; that list drives the output.\n3. Group applications by day in SQL: a few dozen rows at most come back.\n4. Bucket each day into its week start and fill missing weeks with zeros.\n5. Do the same for interviews, then read both SQL statements in the log.\n6. Write the test with fixed dates.\n\n```csharp\nstatic DateOnly WeekStart(DateOnly d) =>\n    d.AddDays(-(((int)d.DayOfWeek + 6) % 7)); // Monday\n```\n\n### Acceptance criteria\n- [ ] Always 12 entries, oldest first\n- [ ] Empty weeks are zeros, not missing\n- [ ] \"Today\" comes from `TimeProvider`\n- [ ] The test does not depend on the real date\n\n### Hints\n- Grouping by day translates cleanly everywhere; week arithmetic in SQL is provider-specific.\n- Interview times are UTC (week 9); say so in the definition.\n\n### Common mistakes\n- Using `DateTime.Now`, making the test fail on Mondays.\n- Leaving empty weeks out, so the chart squeezes time.\n\n### Check your understanding\n- Why build the list of weeks before querying?\n- What changes if a user lives in UTC+10?\n- Which part runs in SQL and which in C#?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Accessible data visualisation",
+      "title": "Weekly activity chart with a table fallback and labels",
+      "doneWhen": "The dashboard shows a 12 week activity chart whose SVG has `role=\"img\"`, a title and a one-sentence summary, and a \"Show as table\" toggle renders the same data in a `<table>` with a caption and header cells; the status chart gets the same treatment",
+      "learnLinks": [
+        {
+          "label": "W3C WAI: Complex images",
+          "url": "https://www.w3.org/WAI/tutorials/images/complex/"
+        },
+        {
+          "label": "MDN: The table element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/table"
+        },
+        {
+          "label": "MDN: ARIA",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA"
+        }
+      ],
+      "brief": "### Why this matters\nA chart is a picture of data. A screen reader user hears nothing useful from a pile of `<rect>` elements, and a colour-blind user may not tell two series apart. An accessible chart has a name, a summary of what it shows, and the raw data available as a table. Interviewers at product companies notice this. This chart draws the series from today's .NET part.\n\n### What you'll build\n- `WeeklyActivityChart` taking `WeeklyActivity` as props: grouped bars or two lines, hand-built in SVG or with a library (write your choice in the PR)\n- Week labels on the x axis formatted with `Intl.DateTimeFormat` (for example \"3 Nov\")\n- On each chart: `role=\"img\"`, `aria-labelledby` pointing at a `<title>` and a `<desc>` with a summary sentence\n- A \"Show as table\" button (`aria-pressed`) swapping the chart for a `<table>` with `<caption>`, `<th scope=\"col\">` and one row per week\n- The two series told apart by pattern or label, not colour alone\n\n### Step by step\n1. Build the chart with sample data in the right shape before wiring the hook.\n2. Write the summary sentence from the data, for example \"Most active week: 3 Nov, 6 applications\".\n3. Add the title and description with ids, and point `aria-labelledby` at both.\n4. Build the table view from the same props.\n5. Add the toggle and keep focus on the button after toggling.\n6. Turn on Narrator and listen to both views.\n\n```tsx\n<svg role=\"img\" aria-labelledby=\"act-title act-desc\" viewBox=\"0 0 360 160\">\n  <title id=\"act-title\">Weekly activity, last 12 weeks</title>\n  {/* TODO: desc with a summary, then bars */}\n</svg>\n```\n\n### Acceptance criteria\n- [ ] Each chart has an accessible name and summary\n- [ ] The table view holds exactly the chart's data\n- [ ] Series are distinguishable without colour\n- [ ] Labels are readable at mobile width\n\n### Hints\n- A summary written for screen readers is often useful for everyone; consider showing it as visible text.\n- If you use a library, check what it renders for assistive technology and add your own summary anyway.\n\n### Common mistakes\n- Hard-coded ids, which collide when a chart renders twice; `useId()` fixes that.\n- A table built from different data than the chart.\n\n### Check your understanding\n- What does `role=\"img\"` change for a screen reader?\n- Why offer a table and not just a long description?\n- What does `useId` protect you from?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "api",
+      "learn": "The N+1 problem",
+      "title": "Find and fix one N+1 query, proven with the SQL log",
+      "doneWhen": "The SQL log shows the applications list going from 1 + N queries to a single query after your fix, with the before and after query counts for one page written in the PR notes",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Efficient querying",
+          "url": "https://learn.microsoft.com/en-us/ef/core/performance/efficient-querying"
+        },
+        {
+          "label": "Microsoft Learn: Simple logging",
+          "url": "https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/simple-logging"
+        }
+      ],
+      "brief": "### Why this matters\nN+1 is the most common ORM performance bug: one query for a list, then one more for every row. It is invisible with five rows in development and painful with fifty in production. \"What is N+1 and how do you fix it?\" is asked in almost every backend interview. You will create one on purpose, see it in the log, and remove it. Today's React part hunts the front-end equivalent: wasted renders.\n\n### What you'll build\n- Two new list fields on `ApplicationDto`: `NextInterviewAt?` and `NoteCount`, shown on the card\n- First the naive version, on purpose: after loading a page, call the week 9 interview and note queries once per application\n- Then the fix: both values computed inside the list projection as subqueries\n- Query counts before and after, in your PR notes\n\n### Step by step\n1. Turn on SQL logging in Development if it is off.\n2. Build the naive loop and load one page of 20. Count the queries: 1 + 2N.\n3. Rewrite as one projection: `NextInterviewAt` as the minimum future `ScheduledAt`, `NoteCount` as `a.Notes.Count()`.\n4. Read the new SQL: one statement with correlated subqueries.\n5. Load the page again and count.\n6. Add `NextInterviewAt` to the card in the web app (a small line, \"Next: Tue 14:30\").\n\n```csharp\n.Select(a => new ApplicationDto(\n    // ...\n    a.Interviews.Where(i => i.ScheduledAt > now).Min(i => (DateTimeOffset?)i.ScheduledAt),\n    a.Notes.Count()))\n```\n\n### Acceptance criteria\n- [ ] One SQL statement per page load for the list\n- [ ] No lazy loading anywhere\n- [ ] The list query still projects, no `Include`\n- [ ] Counts written down before and after\n\n### Hints\n- Lazy loading proxies make N+1 invisible in code. This course never enabled them; know why.\n- The nullable cast in `Min` keeps \"no interviews\" from throwing.\n\n### Common mistakes\n- Fixing N+1 with `Include`, loading every interview and note row just to count them.\n- Counting in C# after loading the collections.\n\n### Check your understanding\n- How do you spot N+1 without a profiler?\n- Why is a projection better than `Include` here?\n- When might two queries beat one?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Finding slow renders with the React Profiler",
+      "title": "Profile the board and the dashboard; record the slowest render",
+      "doneWhen": "The PR notes hold two React Profiler recordings, a drag on the board with about 100 cards and the dashboard table toggle, naming the slowest commit, its duration and the components that rendered in it",
+      "learnLinks": [
+        {
+          "label": "react.dev: React Developer Tools",
+          "url": "https://react.dev/learn/react-developer-tools"
+        },
+        {
+          "label": "react.dev: Profiler",
+          "url": "https://react.dev/reference/react/Profiler"
+        }
+      ],
+      "brief": "### Why this matters\n\"Make it faster\" without measuring is guessing. The React Profiler records every commit, how long it took, and which components rendered and why. Most performance fixes people add blindly (`memo` everywhere) do nothing; measuring first tells you where time really goes. Today is only the measurement; tomorrow fixes the slowest render. The .NET part does the same thing on the server: find the real problem first.\n\n### What you'll build\n- React DevTools installed, with \"Highlight updates when components render\" on for exploring\n- \"Record why each component rendered\" turned on in the Profiler settings\n- About 100 seeded applications for your user (a small dev script or the week 4 seed)\n- Recording 1: drag a card across two columns on the board\n- Recording 2: toggle the activity chart's table view on the dashboard\n- A short note per recording: slowest commit, duration, which components rendered and why\n\n### Step by step\n1. Run the dev server and open the Profiler tab.\n2. Turn on update highlighting and drag a card. Watch what flashes.\n3. Record the drag. In the flame graph, click the slowest commit and read \"Why did this render?\" for the cards.\n4. Switch to the ranked view to see the most expensive components.\n5. Record the dashboard toggle the same way.\n6. Write the notes. If nothing is slow, write that down: it is a valid result.\n\n### Acceptance criteria\n- [ ] Two recordings with numbers, not impressions\n- [ ] The slowest commit is named with its components\n- [ ] The cause of each re-render is written down\n- [ ] No code changed yet\n\n### Hints\n- Development builds are slower than production; compare recordings with each other, not with real users.\n- dnd-kit re-renders components that use its hooks during a drag. Notice which ones.\n- Throttling the CPU in DevTools makes small costs visible.\n\n### Common mistakes\n- Fixing before measuring.\n- Recording too long, so the slow commit is buried among hundreds.\n\n### Check your understanding\n- What is a commit in React?\n- What does \"rendered because the parent rendered\" mean?\n- Why measure before adding `memo`?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Execution plans and indexes for aggregates",
+      "title": "Index for the stats query, verified with the execution plan",
+      "doneWhen": "With 50,000 seeded applications, the actual execution plan for the stats queries shows an index seek with no key lookups after your migration, and the logical reads before and after (from `SET STATISTICS IO ON`) are in the PR notes",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Indexes",
+          "url": "https://learn.microsoft.com/en-us/ef/core/modeling/indexes"
+        },
+        {
+          "label": "Microsoft Learn: Display an actual execution plan",
+          "url": "https://learn.microsoft.com/en-us/sql/relational-databases/performance/display-an-actual-execution-plan"
+        }
+      ],
+      "brief": "### Why this matters\nAggregates read many rows by nature, so the right index decides whether the database touches a few pages or the whole table. You already have indexes from weeks 5 and 10, but the stats query also filters on the soft-delete flag and reads dates, which can force a key lookup per row. Reading a plan instead of guessing is a skill most developers lack. Today's React part fixes a measured slow render: same habit, other side.\n\n### What you'll build\n- A Development-only way to seed 50,000 applications for one test user (a SQL script or a dev command)\n- Before numbers for Monday's and Tuesday's stats queries: plan shape and logical reads\n- One index designed for them, for example on `(UserId, Status)` with the date columns included and filtered to rows that are not deleted, added in configuration with a migration\n- After numbers in the PR notes\n\n### Step by step\n1. Seed the rows. Copy the stats SQL from the log with a real user id.\n2. Run it in SSMS (or any tool with actual plans) with `SET STATISTICS IO ON`. Note logical reads and whether you see a scan or a seek plus key lookup.\n3. Design the index: equality columns first, then what the query reads.\n4. Add it with `HasIndex(...)`; for included columns and filters, check the SQL Server specific index options in the EF docs.\n5. Migrate, run again, compare.\n6. Delete the seed data from your dev database.\n\n```csharp\nbuilder.HasIndex(\"UserId\", nameof(JobApplication.Status))\n       .HasFilter(\"[IsDeleted] = 0\"); // TODO: included columns\n```\n\n### Acceptance criteria\n- [ ] Before and after numbers come from the same query\n- [ ] The plan shows a seek with no key lookups\n- [ ] The index lives in EF configuration, not hand-run SQL\n- [ ] Seed data is gone afterwards\n\n### Hints\n- Match the filter text to how EF writes the soft-delete column, or SQL Server will not use the filtered index.\n- Every index slows writes a little. Add only what a query proves it needs.\n\n### Common mistakes\n- Testing with 20 rows, where every plan looks fine.\n- Adding an index per column instead of one composite index.\n\n### Check your understanding\n- What is a key lookup, and why does it get expensive?\n- Why does column order matter in a composite index?\n- What does a filtered index buy you here?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "web",
+      "learn": "memo, useMemo and useCallback: when they help",
+      "title": "Fix the measured slow render and prove it with the profiler",
+      "doneWhen": "A new Profiler recording of the same board drag shows only the dragged card and the affected columns rendering after your fix, the before and after commit durations are in the PR notes, and memoisation that changed nothing has been removed",
+      "learnLinks": [
+        {
+          "label": "react.dev: memo",
+          "url": "https://react.dev/reference/react/memo"
+        },
+        {
+          "label": "react.dev: useMemo",
+          "url": "https://react.dev/reference/react/useMemo"
+        },
+        {
+          "label": "react.dev: useCallback",
+          "url": "https://react.dev/reference/react/useCallback"
+        }
+      ],
+      "brief": "### Why this matters\n`memo`, `useMemo` and `useCallback` are the most misused hooks in React. They only help when something expensive re-renders with props that did not really change, and only if every prop keeps the same identity. Used blindly they add noise and memory for nothing. Fixing a slow render you measured yesterday, and proving it, is exactly what interviewers want to hear. Today's .NET part proves its index the same way: before and after numbers.\n\n### What you'll build\n- The smallest fix for yesterday's slowest commit, most likely:\n  - `BoardCard` wrapped in `memo`\n  - The grouping of applications by status wrapped in `useMemo`\n  - Handlers passed to memoised children made stable with `useCallback`\n- A second recording with the same steps\n- Before and after durations and render counts in the PR notes, with one sentence on why the fix works\n\n### Step by step\n1. Re-read yesterday's \"why did this render\" notes for the cards.\n2. Wrap the card in `memo`, record again. If nothing changed, a prop is unstable.\n3. Check every prop: inline objects, arrays and arrow functions are new on every render.\n4. Stabilise them with `useMemo` or `useCallback`, or pass primitives instead.\n5. Record again and compare.\n6. Remove every memo or hook that did not change the numbers.\n\n```tsx\nexport const BoardCard = memo(function BoardCard({ application, onOpen }: BoardCardProps) {\n  // unchanged rendering\n});\n```\n\n### Acceptance criteria\n- [ ] The fix is measured, before and after\n- [ ] Every remaining memo has a reason\n- [ ] Cards that did not move do not re-render during a drag\n- [ ] Behaviour is unchanged\n\n### Hints\n- Keep dnd-kit's hooks in small components so their updates stay local.\n- The React Compiler can memoise automatically. If you try it later (week 21 stretch), profile again.\n\n### Common mistakes\n- `memo` on a component whose parent passes a new object every render.\n- `useMemo` around cheap calculations.\n\n### Check your understanding\n- When does `memo` skip a render?\n- Why does an inline arrow function defeat `memo`?\n- When is `useMemo` worth its cost?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Compiled queries and split queries",
+      "title": "Compare a split query with a single query for the detail page",
+      "doneWhen": "The PR notes compare the detail query as one query and as a split query (SQL statements, rows returned and time with interviews and notes seeded), name the one you kept and why, and the PR \"Dashboard\" is open",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Single vs. split queries",
+          "url": "https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries"
+        },
+        {
+          "label": "Microsoft Learn: Advanced performance topics",
+          "url": "https://learn.microsoft.com/en-us/ef/core/performance/advanced-performance-topics"
+        }
+      ],
+      "brief": "### Why this matters\nLoading an application with two collections in one query multiplies rows: 10 interviews times 30 notes is 300 rows for one application, the cartesian explosion. A split query sends one query per collection instead, at the cost of more round trips and no single snapshot. Compiled queries skip EF's query translation on hot paths. Knowing these trade-offs, and measuring them, is senior-level EF. This closes the .NET side of the PR \"Dashboard\".\n\n### What you'll build\n- A test application seeded with about 10 interviews and 30 notes\n- The detail read loaded both ways: one query with two collections, and the same with `AsSplitQuery()`\n- For each: the SQL statements, rows returned and elapsed time, in the PR notes\n- The version you keep, with one sentence on why\n- Optional: the detail lookup as a compiled query with `EF.CompileAsyncQuery`, timed against the normal one\n\n### Step by step\n1. If your detail endpoint projects, build a temporary `Include` version for the comparison (week 9 did a smaller one).\n2. Run the single query and count the rows SQL Server returns.\n3. Add `AsSplitQuery()` and read the separate statements.\n4. Time both with a `Stopwatch` over 50 runs after a warm-up.\n5. Decide: projection, single or split. Write the reason.\n6. Push and open the PR \"Dashboard\"; merge after today's React part.\n\n```csharp\nvar app = await db.Applications\n    .Include(a => a.Interviews).Include(a => a.Notes)\n    .AsSplitQuery()\n    .SingleOrDefaultAsync(a => a.Id == id, ct);\n```\n\n### Acceptance criteria\n- [ ] Both versions measured on the same data\n- [ ] The row counts explain the difference\n- [ ] The kept version is justified in writing\n- [ ] Temporary code is removed\n\n### Hints\n- Split queries need a stable ordering to be consistent; EF warns when it cannot guarantee one.\n- Compiled queries save translation time, usually microseconds. Use them only where the numbers say so.\n\n### Common mistakes\n- Making split queries the global default without measuring.\n- Timing a single cold run.\n\n### Check your understanding\n- What is a cartesian explosion?\n- What does a split query give up?\n- When is a compiled query worth it?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Code splitting with lazy and Suspense",
+      "title": "Lazy-load the dashboard and board routes and compare bundle sizes",
+      "doneWhen": "`vite build` shows the dashboard and board in their own chunks, the main chunk is smaller by an amount recorded in the PR, both routes load with a pending indicator on a throttled network, and PR \"Dashboard\" is merged",
+      "learnLinks": [
+        {
+          "label": "react.dev: lazy",
+          "url": "https://react.dev/reference/react/lazy"
+        },
+        {
+          "label": "React Router: Route object",
+          "url": "https://reactrouter.com/start/data/route-object"
+        },
+        {
+          "label": "Vite: Building for production",
+          "url": "https://vite.dev/guide/build"
+        }
+      ],
+      "brief": "### Why this matters\nEvery user downloads your whole app before seeing the first page, even the parts they never open. dnd-kit and the charts are only needed on two routes. Splitting them into chunks loaded on demand makes the first load faster. Measuring the bundle before and after turns \"it feels faster\" into a number. It ends the week with the PR \"Dashboard\", together with today's .NET part.\n\n### What you'll build\n- A baseline: `vite build` sizes before any change\n- A bundle treemap (for example `rollup-plugin-visualizer`)\n- The `/dashboard` and `/board` routes loaded lazily with React Router's route-level `lazy`\n- A pending indicator while a chunk loads, using the router's navigation state\n- Before and after sizes (raw and gzip) in the PR\n\n### Step by step\n1. Run `vite build` and record the main chunk size. Open the treemap and find dnd-kit.\n2. Read `lazy` on react.dev, then the route object's `lazy` in React Router data mode.\n3. Make each page module importable only from its lazy route. One static import elsewhere puts it back in the main chunk.\n4. Show pending UI with `useNavigation()` in the layout.\n5. Rebuild and compare sizes and the treemap.\n6. Throttle the network, open the list, then go to the board.\n7. Run all builds and tests, push, review and merge PR \"Dashboard\".\n\n```ts\n{\n  path: \"board\",\n  lazy: async () => {\n    // TODO: import the board module, return its Component (and loader)\n  },\n}\n```\n\n### Acceptance criteria\n- [ ] Dashboard and board are separate chunks\n- [ ] The main chunk shrank by a recorded amount\n- [ ] Navigation shows progress while loading\n- [ ] PR \"Dashboard\" is merged\n\n### Hints\n- Route `lazy` loads the module and data in parallel, avoiding the waterfall `React.lazy` inside an element can cause.\n- Barrel files that re-export everything quietly defeat code splitting.\n\n### Common mistakes\n- Splitting tiny routes that save nothing.\n- A leftover static import of the page.\n\n### Check your understanding\n- What does a chunk cost and what does it save?\n- Why can route `lazy` beat `React.lazy`?\n- How did you prove the split worked?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "lane": null,
+      "learn": null,
+      "title": "Explain the N+1 problem and fix one live, then explain when memo actually helps",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nExplain the N+1 problem and fix one live, then explain when `memo` actually helps, in 25 minutes.\n\n### Rules\n- Part 1 (about 15 minutes): a new empty folder outside the JobHunt repo. A console app or minimal API with EF Core, two entities in a one-to-many relationship, a few seeded rows and SQL logging on.\n- Part 2 (about 10 minutes): out loud or on paper, then a tiny Vite React example.\n- Docs allowed, but try without first and note every lookup. No AI assistants, no copying from JobHunt.\n\n### Must include\n- Part 1: a loop that queries children per parent, the 1 + N statements in the log, then one projection that returns the same data in a single statement\n- One sentence on why `Include` is not always the right fix\n- Part 2: a parent with state and a child list; show the child re-rendering on an unrelated state change\n- `memo` on the child, then an inline callback prop that breaks it, then `useCallback` that fixes it\n- One case where `memo` is not worth it\n\n### Self-check\n- [ ] Finished within 25 minutes\n- [ ] Showed the query count before and after\n- [ ] Explained why an inline function defeats `memo`\n- [ ] Named how you would measure, not guess\n- [ ] Zero lookups, or a list of exactly what to review\n\n### If you got stuck\n- Grouped queries: Monday, .NET part. N+1: Wednesday, .NET part.\n- Plans and indexes: Thursday, .NET part. Split queries: Friday, .NET part.\n- Profiling: Wednesday, React part. `memo` and friends: Thursday, React part.\n- Code splitting: Friday, React part."
+    }
+  ]
+}

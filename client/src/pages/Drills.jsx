@@ -23,7 +23,8 @@ export default function Drills() {
   useEffect(() => { load(); }, [load, id]);
   if (error) return <ErrorBox error={error} onRetry={load} />;
   if (!data) return <Loading />;
-  const openId = id || data.running?.id || null;
+  // A running drill opens by itself, unless you chose "All prompts" (?list=1): then the list stays put.
+  const openId = id || (params.get('list') ? null : data.running?.id) || null;
 
   return (
     <>
@@ -32,9 +33,10 @@ export default function Drills() {
           <h1>🏗️ System design drills</h1>
           <div className="muted small">35 minutes, six steps, then grade yourself against the key points. <Link to="/hld">← HLD roadmap</Link></div>
         </div>
-        {openId && <button className="btn" onClick={() => { setParams({}); load(); }}>All prompts</button>}
+        {openId && <button className="btn" onClick={() => { setParams({ list: '1' }); load(); }}>All prompts</button>}
+        {!openId && data.running && <button className="btn" onClick={() => setParams({ id: String(data.running.id) })}>Back to your drill</button>}
       </div>
-      {openId ? <DrillRun key={openId} id={openId} onExit={() => { setParams({}); load(); }} />
+      {openId ? <DrillRun key={openId} id={openId} onExit={() => { setParams({ list: '1' }); load(); }} />
         : <Overview data={data} onOpen={(drillId) => setParams({ id: String(drillId) })} />}
     </>
   );

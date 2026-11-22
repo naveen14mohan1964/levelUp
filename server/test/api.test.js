@@ -168,12 +168,15 @@ describe('daily timeline', () => {
     assert.equal(by.workout.detail, 'Strength A · Phase 1 · Foundation');
     assert.match(by['dsa-am'].items[0].title, /^Learn:/);
     assert.ok(by['dsa-pm'].items.some((i) => i.kind === 'problems' && i.total === 4));
-    assert.deepEqual(by.project.items.map((i) => i.step), ['learn', 'build']);
+    // the full-stack course: a .NET lesson and a React lesson every day, each learn + build
+    assert.deepEqual(by.project.items.map((i) => `${i.lane}:${i.step}`), ['api:learn', 'api:build', 'web:learn', 'web:build']);
+    assert.match(by.project.items[0].title, /^📖 \.NET: /);
+    assert.match(by.project.items[2].title, /^📖 React: /);
   });
 
   test('Friday adds the weekly checkpoint; Sunday has the self-test and no project hour', async () => {
     const fri = (await api('GET', '/schedule/2026-10-09')).body;
-    assert.deepEqual(fri.blocks.find((b) => b.area === 'project').items.map((i) => i.step), ['learn', 'build', 'checkpoint']);
+    assert.deepEqual(fri.blocks.find((b) => b.area === 'project').items.map((i) => i.step), ['learn', 'build', 'learn', 'build', 'checkpoint']);
     const sun = (await api('GET', '/schedule/2026-10-11')).body;
     assert.ok(!sun.blocks.some((b) => b.area === 'project'));
     assert.ok(sun.blocks.find((b) => b.key === 'dsa-am').items.some((i) => i.kind === 'problems' && i.selftest));
@@ -182,13 +185,16 @@ describe('daily timeline', () => {
 
 describe('project roadmaps', () => {
   test('each area returns its projects with learn topics, exact doc links and checkpoints', async () => {
-    for (const [area, n] of [['node', 36], ['dotnet', 84], ['react', 47]]) {
+    // full stack = 21 weeks x (5 days x .NET + React, + a checkpoint) + the 5 day portfolio week
+    for (const [area, n] of [['node', 36], ['fullstack', 236]]) {
       const { body } = await api('GET', `/projects/${area}`);
       const tasks = body.flatMap((p) => p.weeks.flatMap((w) => w.tasks));
       assert.equal(tasks.length, n, area);
       for (const t of tasks.filter((x) => x.learn)) assert.ok(Array.isArray(t.learn_links) && t.learn_links.length > 0, `${area} ${t.plan_date}`);
     }
     assert.equal((await api('GET', '/projects/python')).status, 400);
+    // the old separate courses are gone from the API (their rows are archived, never shown)
+    for (const old of ['dotnet', 'react', 'archived']) assert.equal((await api('GET', `/projects/${old}`)).status, 400, old);
   });
 
   test('YOUR TODO: PATCH /project-tasks/:id saves done / learn_done / built_from_scratch / notes', async (t) => {

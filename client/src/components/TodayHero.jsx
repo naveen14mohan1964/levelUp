@@ -14,7 +14,10 @@ import BuddyFire from './BuddyFire.jsx';
 import { STATUS_TEXT } from '../lib/focusRules.js';
 import SoundBar from './SoundBar.jsx';
 import { DISTRACTED, useFocus } from '../focus.jsx';
-import NeuroSprint from './NeuroSprint.jsx';
+
+// Soundscapes and the camera focus guard are retired from Today (simplification, 2026-11): one timer, nothing to configure.
+// Their code is kept; set this to true to bring both back.
+const FOCUS_EXTRAS = false;
 
 /** Re-renders every second while `active` (for the timer). */
 export function useNow(active) {
@@ -37,10 +40,10 @@ export const clock = (sec) => `${Math.floor(sec / 60)}:${String(Math.floor(sec %
 export default function TodayHero({ track, reason, focus }) {
   const lesson = track.next;
   const running = focus && focus.track === track.key ? focus : null;
+  const apiKey = track.apiKey || track.key; // the merged Full stack track before the server switch (see game.jsx mergeFullstack)
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const [xp, setXp] = useState(null);
-  const [showSprint, setShowSprint] = useState(false);
   const [wave, setWave] = useState(0); // click the buddy: he waves
   const doneBtn = useRef(null);
   const cardRef = useRef(null);
@@ -50,7 +53,7 @@ export default function TodayHero({ track, reason, focus }) {
   const buddy = useBuddyState({ distracted: f.distracted, watching: f.watching });
   const approve = f.watching && g.focusStreakMs >= 120_000 && g.focusStreakMs % 120_000 < 5000; // a 👍 every 2 focused minutes
   // the result of the last session on this roadmap ("🎉 25 focused minutes"), until you start again or dismiss it
-  const finished = f.lastStop && f.lastStop.track === track.key ? f.lastStop : null;
+  const finished = f.lastStop && (f.lastStop.track === track.key || f.lastStop.track === apiKey) ? f.lastStop : null;
   const celebrated = useRef(null);
   useEffect(() => {
     if (finished && finished.minutes >= 5 && celebrated.current !== finished.at) { celebrated.current = finished.at; burst(cardRef.current); }
@@ -62,7 +65,7 @@ export default function TodayHero({ track, reason, focus }) {
   }
   const start = (minutes) => act(async () => {
     f.clearLastStop();
-    await api.focusStart({ track: track.key, ref: lesson.ref, ...(minutes ? { minutes } : {}) });
+    await api.focusStart({ track: apiKey, ref: lesson.ref, ...(minutes ? { minutes } : {}) });
   });
   const [params, setParams] = useSearchParams();
   const autoStarted = useRef(false);
@@ -101,8 +104,8 @@ export default function TodayHero({ track, reason, focus }) {
       {running ? (
         <>
           <FocusPanel focus={running} busy={busy} onStop={stop} lessonTo={lessonLink(track.key, lesson)} />
-          <SoundBar running={!!running} />
-          <GuardBar f={f} />
+          {FOCUS_EXTRAS && <SoundBar running={!!running} />}
+          {FOCUS_EXTRAS && <GuardBar f={f} />}
         </>
       ) : finished ? (
         <div className="hero-finished" role="status">
@@ -118,7 +121,6 @@ export default function TodayHero({ track, reason, focus }) {
         <div className="hero-actions">
           <button className="btn primary btn-xl sheen" disabled={busy} onClick={() => start()}><Play size={18} weight="fill" aria-hidden="true" /> Start</button>
           <button className="btn btn-lg" disabled={busy} onClick={() => start(5)}><Lightning size={18} aria-hidden="true" /> Just 5 minutes</button>
-          <button type="button" className="btn btn-lg outline" style={{ border: '1px solid rgba(245, 158, 11, 0.5)', color: '#FBBF24', background: 'rgba(245, 158, 11, 0.08)' }} onClick={() => setShowSprint(true)}>⚡ NeuroSprint (120s)</button>
           <Link className="hero-open" to={lessonLink(track.key, lesson)}>Open lesson <ArrowRight size={14} aria-hidden="true" /></Link>
           {track.key === 'ai' && (
             <span className="xp-anchor">
@@ -132,14 +134,6 @@ export default function TodayHero({ track, reason, focus }) {
       </div>
       <div className="hero-buddy"><BuddyFire charged={!!running} /><button className="buddy-hit" onClick={() => setWave((n) => n + 1)} aria-label="Say hi to the study buddy"><Buddy state={buddy} size={230} gaze={f.camOn ? g.gaze : null} approve={approve} wave={wave} /></button></div>
       </div>
-      {showSprint && lesson && (
-        <NeuroSprint
-          lesson={lesson}
-          track={track.key}
-          onComplete={markDone}
-          onClose={() => setShowSprint(false)}
-        />
-      )}
     </section>
   );
 }

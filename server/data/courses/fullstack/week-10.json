@@ -1,0 +1,213 @@
+{
+  "week": 10,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "api",
+      "learn": "PATCH for state transitions",
+      "title": "PATCH /api/applications/{id}/status using the domain transition rules (422 when not allowed)",
+      "doneWhen": "`PATCH /api/applications/{id}/status` moves `Applied` to `Interviewing` with 200 and the updated DTO, returns 422 ProblemDetails with `from` and `to` for `Offer` to `Applied`, and repeating the same PATCH returns 200 with no change",
+      "learnLinks": [
+        {
+          "label": "MDN: PATCH",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/PATCH"
+        },
+        {
+          "label": "Microsoft Learn: Handle errors in ASP.NET Core APIs",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling-api"
+        },
+        {
+          "label": "MDN: 422 Unprocessable Content",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/422"
+        }
+      ],
+      "brief": "### Why this matters\nWeek 6 kept status out of PUT on purpose. A status change is not a field edit, it is a domain transition with rules (week 2). A PATCH that names the target status and goes through the domain methods keeps those rules in one place. \"PUT or PATCH?\" and \"400, 409 or 422?\" are classic API questions. Today's React part builds the board that will call this endpoint tomorrow.\n\n### What you'll build\nOn a new branch `feature/kanban`:\n- `ChangeStatusRequest(Status)` with a validator rejecting unknown values\n- `ChangeStatusAsync(id, target, ct)` mapping the target to `StartInterviewing()`, `ReceiveOffer()` or `Reject()`\n- `PATCH /api/applications/{id}/status`: 200 with the DTO, 404 when missing or not yours (week 8)\n- A same-status request treated as a no-op 200\n- `InvalidStatusTransitionException` mapped to 422 with a `type` URI and `from` and `to` extensions\n\n### Step by step\n1. Write a table for the PR: bad shape (400), broken business rule (422), stale write from another tab (409, tomorrow).\n2. Add the request, validator and command method; a `switch` expression on the target reads well.\n3. Map PATCH in the group with the week 6 validation filter.\n4. In the exception handler, match the transition exception and add `from` and `to` to `Extensions`.\n5. Test every row of the week 2 transition table in a `.http` file.\n\n```csharp\nAction change = target switch\n{\n    ApplicationStatus.Interviewing => app.StartInterviewing,\n    // TODO: Offer, Rejected, default\n};\n```\n\n### Acceptance criteria\n- [ ] Every legal transition returns 200, every illegal one 422\n- [ ] The endpoint never sets `Status` directly\n- [ ] Status code mapping lives in one place\n- [ ] Same-status PATCH changes nothing\n\n### Hints\n- A tiny `{ \"status\": \"Offer\" }` body on a `/status` sub-resource is clear and easy to validate.\n- Week 6's \"application is closed\" rule should already give 422 here; check it does.\n\n### Common mistakes\n- A generic `SetStatus` that bypasses the domain methods.\n- Leaking internal type names or stack traces in `detail`.\n\n### Check your understanding\n- When would you pick PATCH over PUT?\n- What separates 400, 409 and 422 in your API?\n- Why is a same-status PATCH a no-op and not an error?"
+    },
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "web",
+      "learn": "dnd-kit basics: draggable, droppable, sensors",
+      "title": "Board page with one column per status",
+      "doneWhen": "`/board` shows one column per status with every application as a card and a count, and dragging a card with the mouse logs the source and target status in `onDragEnd` while clicking a card still opens its detail page",
+      "learnLinks": [
+        {
+          "label": "dnd kit: Draggable (legacy docs for @dnd-kit/core)",
+          "url": "https://dndkit.com/legacy/api-documentation/draggable/"
+        },
+        {
+          "label": "dnd kit: Droppable (legacy docs for @dnd-kit/core)",
+          "url": "https://dndkit.com/legacy/api-documentation/droppable/"
+        },
+        {
+          "label": "dnd kit: Sensors (legacy docs for @dnd-kit/core)",
+          "url": "https://dndkit.com/legacy/api-documentation/sensors/"
+        }
+      ],
+      "brief": "### Why this matters\nA board is the natural view of a pipeline, and drag and drop is a common take-home feature. Native HTML drag and drop has weak touch and keyboard support. dnd-kit gives building blocks: sensors for input, draggables, droppables and an overlay. Today is the static mechanics; tomorrow a drop calls the PATCH from today's .NET part.\n\n### What you'll build\n- `@dnd-kit/core` installed (this course uses the stable core package; its docs now live under \"legacy\" on dndkit.com)\n- A `/board` route and a Board nav link\n- `useBoardApplications()` loading up to 100 applications with a key under `applicationKeys.lists()`\n- `BoardPage` with `DndContext` and sensors (`PointerSensor`, `KeyboardSensor`)\n- `BoardColumn` with `useDroppable({ id: status })` and `BoardCard` with `useDraggable({ id, data: { status, version } })`\n- A `DragOverlay` showing a copy of the dragged card\n\n### Step by step\n1. Group applications by status during render. All four columns always render.\n2. Build column and card as plain components first.\n3. Add `DndContext`, then `useDroppable` and `useDraggable`; apply `setNodeRef`, `listeners`, `attributes` and the transform.\n4. Give the pointer sensor a small distance constraint so clicks still navigate.\n5. Add `DragOverlay`, and dim the original card while dragging.\n6. In `onDragEnd`, ignore drops outside a column or on the same column, and log the rest.\n\n```tsx\nfunction handleDragEnd({ active, over }: DragEndEvent) {\n  if (!over) return;\n  // TODO: read from and to status, log the move\n}\n```\n\n### Acceptance criteria\n- [ ] Four columns always render with counts\n- [ ] Cards drag with mouse and touch\n- [ ] Clicking a card opens its detail page\n- [ ] Week 6 mutations also refresh the board (key under `lists()`)\n\n### Hints\n- Put what you need at drop time (status, version) in the draggable's `data`.\n- `version` arrives tomorrow; type it as optional for today.\n\n### Common mistakes\n- Spreading `listeners` over the card's link, so clicks become drags.\n- Storing the grouped board in `useState`, where it drifts from the cache.\n\n### Check your understanding\n- What does a sensor do in dnd-kit?\n- Why use a `DragOverlay` instead of moving the original element?\n- Why must the board key sit under `lists()`?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Optimistic concurrency with rowversion",
+      "title": "RowVersion on JobApplication; stale updates return 409",
+      "doneWhen": "Every application DTO includes a `version` string, PUT and PATCH require it, and two `.http` requests sending the same old version produce one 200 and one 409 ProblemDetails",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Handling concurrency conflicts",
+          "url": "https://learn.microsoft.com/en-us/ef/core/saving/concurrency"
+        },
+        {
+          "label": "MDN: 409 Conflict",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/409"
+        }
+      ],
+      "brief": "### Why this matters\nTwo tabs, one application. Tab A moves it to `Offer`, tab B, still showing `Interviewing`, rejects it. Without concurrency control the last write silently wins: the lost update. Optimistic concurrency detects it without locks: an update succeeds only if the row's version has not changed, and the loser gets 409. Today's React part sends this version with every move.\n\n### What you'll build\n- A `RowVersion` shadow property with `IsRowVersion()` (Domain stays persistence-free) and a migration\n- `Version` (base64) in the list and detail DTOs, read in projections with `EF.Property<byte[]>(...)`\n- `Version` required in `ChangeStatusRequest` and `UpdateApplicationRequest`\n- A repository method that sets the property's original value to the client's version\n- `DbUpdateConcurrencyException` translated in Infrastructure into an Application `ConcurrencyConflictException`, mapped to 409\n\n### Step by step\n1. Read the EF page: concurrency token vs `rowversion`.\n2. Configure the shadow property, add the migration, check the column type.\n3. Project the version into DTOs as base64.\n4. In commands: load, set the expected version, call the domain, save.\n5. Catch the EF exception where `SaveChangesAsync` lives and throw your own.\n6. Map it to 409 next to yesterday's 422.\n7. GET one application, copy its version, send two PATCHes with it.\n\n```csharp\nbuilder.Property<byte[]>(\"RowVersion\").IsRowVersion();\n```\n\n### Acceptance criteria\n- [ ] A stale version returns 409, never a silent overwrite\n- [ ] Domain has no `byte[]` or EF attributes\n- [ ] Application never sees `DbUpdateConcurrencyException`\n- [ ] A missing version returns 400\n\n### Hints\n- Setting the original value puts the client's version in the `UPDATE ... WHERE`.\n- The week 6 edit form breaks today until it sends `version`; today's React part fixes it.\n- HTTP's own version of this is `ETag` with `If-Match` and 412.\n\n### Common mistakes\n- Comparing versions by hand, leaving a race between load and save.\n- Retrying a 409 automatically: last write wins with extra steps.\n\n### Check your understanding\n- What is a lost update?\n- How does `rowversion` prevent it without locking?\n- Why 409 here and not 422?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Moving cards between columns",
+      "title": "Drag a card to another column to change its status",
+      "doneWhen": "Dropping a card on another column calls `PATCH /status` with the card's version and the board shows the new status after the response, and the edit form sends `version` again so saving still works",
+      "learnLinks": [
+        {
+          "label": "TanStack Query: useMutation",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/reference/useMutation"
+        },
+        {
+          "label": "TanStack Query: Query invalidation",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation"
+        }
+      ],
+      "brief": "### Why this matters\nYesterday's drop only logged. Today it changes real data. Starting with the simple version (wait for the server, then refresh) gives you a working baseline before tomorrow makes it instant. It uses Monday's PATCH and the `version` from today's .NET part; if you do this part first, finish the .NET part before testing the version.\n\n### What you'll build\n- `changeStatus(id, status, version)` in `api.ts`\n- `useChangeStatus()` invalidating `lists()` and the card's detail key on success\n- `onDragEnd` calling the mutation with the status and version from the draggable's `data`\n- An error message area on the board showing the ProblemDetails `title` for now\n- `version` added to the edit form's submitted values, taken from the loaded DTO\n\n### Step by step\n1. Add `version: string` to the TypeScript DTO types; fix every compile error it reveals.\n2. Write the API function and the hook.\n3. Call `mutate` from `onDragEnd`. Read `active.data.current` with a type guard, not a cast.\n4. While a card is saving, show a small \"Saving\" state on it.\n5. Add `version` to the edit form as a hidden value from the DTO, not a visible input.\n6. Drag a card through Applied, Interviewing, Offer; then try Offer to Applied and read the 422.\n\n### Acceptance criteria\n- [ ] A drop changes the status on the server\n- [ ] The board shows the new status without a reload\n- [ ] The edit form saves again\n- [ ] A 422 shows a readable message\n\n### Hints\n- The card stays in its old column until the response arrives. That lag is what tomorrow fixes.\n- `active.data.current` is typed loosely; a small `isCardData` guard keeps strict mode happy.\n\n### Common mistakes\n- Sending the status without the version, so every move is a 400.\n- Forgetting the detail key, so the detail page shows the old status.\n\n### Check your understanding\n- Where does the card's version come from at drop time?\n- Why invalidate both the list and the detail?\n- What does the user see between drop and response, and why is that a problem?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Returning the new state and version after a change",
+      "title": "Status endpoint returns the updated DTO with the new version",
+      "doneWhen": "`PATCH /status` and `PUT` return the updated DTO with a new `version`, and sending a second PATCH with the version from the first response succeeds while reusing the old one returns 409",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Handling concurrency conflicts",
+          "url": "https://learn.microsoft.com/en-us/ef/core/saving/concurrency"
+        },
+        {
+          "label": "Microsoft Learn: Create responses in Minimal API applications",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses"
+        }
+      ],
+      "brief": "### Why this matters\nA client that writes and does not get the new version back can only write once: its next request is stale by definition. Returning the new state and version after every change lets the client update its cache without another GET. Today's React part writes this response straight into the cache.\n\n### What you'll build\n- `ChangeStatusAsync` and `UpdateAsync` returning the updated `ApplicationDto` including the new version\n- The new `RowVersion` read after `SaveChangesAsync` (EF refreshes store-generated values on tracked entities)\n- Endpoints returning `TypedResults.Ok(dto)`\n- A `.http` sequence: GET, PATCH with that version, PATCH with the returned version, PATCH with the first version again\n\n### Step by step\n1. After saving, read the shadow property's current value through the change tracker in Infrastructure.\n2. Decide how to build the DTO: map the tracked entity, or re-query through `IApplicationQueries`. Write one line on the trade-off.\n3. Return the DTO from both write endpoints.\n4. Run the sequence and check: the second PATCH succeeds, the third gets 409.\n5. Make sure the version string format matches what the list and detail queries return.\n\n### Acceptance criteria\n- [ ] Every successful write returns the new version\n- [ ] Chained writes with returned versions all succeed\n- [ ] The returned DTO matches what a GET returns\n- [ ] Application code still knows nothing about `byte[]` row versions beyond a string\n\n### Hints\n- EF reads `rowversion` back in the same round trip as the `UPDATE`, so no extra query is needed if you use the tracked entity.\n- A re-query is simpler to keep identical to GET but costs one more round trip. Either is fine if you can defend it.\n\n### Common mistakes\n- Returning 204 from writes, so the client must GET before it can write again.\n- Encoding the version differently in write responses and reads.\n\n### Stretch (optional)\n- Also return the version as an `ETag` header.\n\n### Check your understanding\n- Why must writes return the new version?\n- Where does EF get the new `rowversion` value from?\n- What does a client do with the response instead of refetching?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Optimistic moves with rollback",
+      "title": "Card moves instantly and snaps back if the API refuses",
+      "doneWhen": "With the network throttled, a dropped card moves instantly, a 422 or 409 snaps it back to its column, illegal target columns look disabled while dragging, and two moves in a row succeed because the cache holds the returned version",
+      "learnLinks": [
+        {
+          "label": "TanStack Query: Optimistic updates",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates"
+        },
+        {
+          "label": "TanStack Query: Updates from mutation responses",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/updates-from-mutation-responses"
+        }
+      ],
+      "brief": "### Why this matters\nA board that waits after every drop feels broken. Week 9's optimistic pattern makes it instant, but now the server can refuse for two reasons: an illegal move (422) or a stale version (409). Either way the board must end up showing the truth. The response from today's .NET part carries the new version, so the next drag is not stale.\n\n### What you'll build\n- `canMoveTo(from, to)` in `features/applications/status.ts`, mirroring the domain rules\n- Columns the dragged card cannot enter disabled with `useDroppable({ disabled })`\n- `useChangeStatus()` upgraded:\n  - `onMutate`: cancel the board query, snapshot, move the card with `setQueryData`\n  - `onSuccess`: write the returned DTO (new status and version) into the board cache\n  - `onError`: restore the snapshot\n  - `onSettled`: invalidate the card's detail key\n\n### Step by step\n1. Write `canMoveTo` from week 2's table.\n2. Track the active card from `onDragStart` and disable columns it cannot enter.\n3. Upgrade the mutation with week 9's typed context.\n4. On success, replace the card in the cached array with the server DTO.\n5. Throttle the network, drop, and watch the card move before the response.\n6. Temporarily allow every column on the client to test the 422 rollback.\n\n```ts\nonError: (error, vars, context) => {\n  if (context) queryClient.setQueryData(boardKey, context.previous);\n},\n```\n\n### Acceptance criteria\n- [ ] Legal moves appear instantly and survive a reload\n- [ ] A refused move snaps back\n- [ ] Illegal targets are visibly disabled while dragging\n- [ ] Two quick moves of the same card both succeed\n\n### Hints\n- Snapshot before `setQueryData`, or rollback restores the optimistic state.\n- `canMoveTo` is a convenience copy of the rules; the server stays the source of truth.\n\n### Common mistakes\n- Invalidating the whole board on every success, which flickers and drops other optimistic moves.\n- Keeping the old version in the cache after success.\n\n### Check your understanding\n- Why write the response into the cache instead of refetching?\n- What does the client copy of the rules buy you, and what not?\n- Why snapshot before the optimistic write?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Testing concurrency conflicts",
+      "title": "Test that two updates with the same version produce one 409",
+      "doneWhen": "`dotnet test` runs a test in which two independent `DbContext` instances update the same application with the same version, and exactly one save succeeds while the other throws `ConcurrencyConflictException`",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Testing against your production database system",
+          "url": "https://learn.microsoft.com/en-us/ef/core/testing/testing-with-the-database"
+        },
+        {
+          "label": "Microsoft Learn: Handling concurrency conflicts",
+          "url": "https://learn.microsoft.com/en-us/ef/core/saving/concurrency"
+        }
+      ],
+      "brief": "### Why this matters\nConcurrency code is the code you cannot test by clicking: the race happens in milliseconds. A test that forces the conflict proves your 409 path works and keeps working. \"How would you test a race condition?\" is a strong interview question. Today's React part shows users what this conflict means.\n\n### What you'll build\n- A test project `JobHunt.Infrastructure.Tests` (xUnit), referencing Infrastructure\n- A test database on your local SQL Server (`JobHunt_Tests`), created and migrated by a small fixture\n- One test: arrange an application, open two contexts, load it in both, change status in both with the same version, save both\n- Assertions: one save succeeds, the other throws your `ConcurrencyConflictException`, and the stored status is the first writer's\n\n### Step by step\n1. Create the project and add it to the solution.\n2. Write a fixture that builds options for `JobHunt_Tests`, then runs `Database.EnsureDeleted()` and `Database.Migrate()` once.\n3. Arrange: seed one user and one application with a fresh context, then dispose it.\n4. Act: two contexts and two repositories or command services, both using the same original version.\n5. Assert the outcome and the final row.\n6. Run it three times in a row: it must be green every time.\n\n```csharp\nawait first.SaveChangesAsync();\nawait Assert.ThrowsAsync<ConcurrencyConflictException>(\n    () => /* TODO: save the second one */);\n```\n\n### Acceptance criteria\n- [ ] The test runs against real SQL Server, not the in-memory provider\n- [ ] Exactly one write wins\n- [ ] The test does not depend on timing or `Task.Delay`\n- [ ] The connection string is not production's\n\n### Hints\n- The EF in-memory provider does not generate `rowversion` values, so it cannot test this. That is why you use the real database.\n- Week 11 replaces this local database with a Testcontainers SQL Server and HTTP-level tests; keep the test logic easy to move.\n\n### Common mistakes\n- Using one context for both writers: it tracks one entity, so there is no conflict.\n- Starting both saves with `Task.WhenAll` and hoping they collide, which makes a flaky test.\n\n### Check your understanding\n- Why two contexts and not one?\n- Why is sequencing the saves more reliable than real parallelism?\n- What would this test miss that an HTTP test would catch?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Explaining conflicts to the user",
+      "title": "409 shows 'changed elsewhere' and reloads the card",
+      "doneWhen": "Moving the same card from two tabs shows \"This application was changed somewhere else\" in the stale tab and reloads the card, the edit form shows the same message on a 409 with a Reload button, and a 422 shows a different message",
+      "learnLinks": [
+        {
+          "label": "MDN: 409 Conflict",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/409"
+        },
+        {
+          "label": "TanStack Query: Query invalidation",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation"
+        }
+      ],
+      "brief": "### Why this matters\n\"Something went wrong\" after a conflict tells the user nothing. A conflict is normal in a multi-tab world: say what happened, show the latest data and let the user decide. Users deserve different messages for \"not allowed\" (422) and \"someone else changed it\" (409). This is the UI for the conflict today's .NET part proves in a test.\n\n### What you'll build\n- A `conflictMessage(error)` helper returning text for 409, 422 or other errors\n- Board: on 409, show \"This application was changed somewhere else. The board has been refreshed.\" and invalidate the board and the card's detail\n- Board: on 422, show the transition message from ProblemDetails\n- Edit form: on 409, a form-level message and a Reload button that refetches the detail and resets the form\n\n### Step by step\n1. Write `conflictMessage` using `ApiError.status`, falling back to the ProblemDetails `title`.\n2. In the board mutation's `onError`, after the rollback, show the message and invalidate on 409.\n3. In the edit form, catch 409 separately from the week 6 field errors.\n4. Reload: refetch the detail, then `reset(newValues)` so the form shows the latest data and version.\n5. Reproduce on the board: two tabs, move a card in A, then move the same card in B.\n6. Reproduce in the form: edit in tab A, save; edit the old data in tab B, save.\n\n### Acceptance criteria\n- [ ] 409 and 422 show different, calm messages\n- [ ] After a conflict the board matches the server\n- [ ] The form never overwrites newer data silently\n- [ ] Recovery needs no full page reload\n\n### Hints\n- Keep the user's typed values visible next to the reload choice if you can; losing work is worse than a conflict.\n- Say what happened and what the app already did about it.\n\n### Common mistakes\n- Retrying the write automatically with the new version: that is last write wins again.\n- Showing the conflict as a red error that looks like the user did something wrong.\n\n### Check your understanding\n- Why do 409 and 422 need different messages?\n- Why not retry automatically after a 409?\n- What should the user be able to do after a conflict in a form?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Ordering within a column",
+      "title": "Position field so cards keep their order inside a column",
+      "doneWhen": "Applications have a `Position`, the board query returns each column ordered by it, a new application goes to the end of its column, and `PATCH /status` accepts an optional position so a moved card keeps the place it was dropped",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Indexes",
+          "url": "https://learn.microsoft.com/en-us/ef/core/modeling/indexes"
+        },
+        {
+          "label": "Microsoft Learn: Efficient querying",
+          "url": "https://learn.microsoft.com/en-us/ef/core/performance/efficient-querying"
+        }
+      ],
+      "brief": "### Why this matters\nUsers expect cards to stay where they put them. Storing order is a small but classic design problem: renumbering every row on each move is slow and conflict-prone, while a fractional position touches only one row. Explaining that trade-off shows design thinking. This closes the .NET side of the PR \"Kanban\"; today's React part sorts cards by this field.\n\n### What you'll build\n- `Position` (a `double`) on `JobApplication`, set by the domain, with a migration and an index on `(UserId, Status, Position)`\n- New applications get the column's highest position plus 1\n- `ChangeStatusRequest` gains optional `Position`; the server validates it is a finite number\n- The board read ordered by `Status`, then `Position`, then `Id`\n\n### Step by step\n1. Write the two options in your notes: integer positions renumbered on every move, or a position halfway between the neighbours. Pick the second.\n2. Add the property, a domain method `MoveTo(status, position)`, and the migration. Backfill existing rows in order of `AppliedOn`.\n3. On create, read the column's maximum position and add 1.\n4. Accept the optional position on PATCH; when absent, put the card at the end of the target column.\n5. Order the board query and check the SQL uses the new index.\n6. Push and open the PR \"Kanban\"; merge after today's React part.\n\n### Acceptance criteria\n- [ ] A move updates one row only\n- [ ] Order survives a reload\n- [ ] `NaN` or infinity is rejected with 400\n- [ ] The board query is ordered and uses the index\n\n### Hints\n- Halving gaps eventually runs out of precision. A rare rebalance (renumber one column) fixes it; note when you would run it.\n- Position changes also bump the row version, so stale moves still get 409.\n\n### Common mistakes\n- Renumbering the whole column on every move.\n- Forgetting a tie-breaker, so equal positions shuffle between loads.\n\n### Check your understanding\n- Why does a fractional position touch only one row?\n- When would you need to rebalance?\n- Why include `UserId` first in the index?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Keyboard drag and drop and screen reader announcements",
+      "title": "Keyboard-accessible moves with live announcements",
+      "doneWhen": "With the mouse unplugged, you can pick up a card with Space, move it to another column with the arrow keys and drop it, names are announced instead of ids, every move is also possible through a Move to menu, and PR \"Kanban\" is merged",
+      "learnLinks": [
+        {
+          "label": "dnd kit: Accessibility (legacy docs for @dnd-kit/core)",
+          "url": "https://dndkit.com/legacy/guides/accessibility/"
+        },
+        {
+          "label": "MDN: ARIA",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA"
+        }
+      ],
+      "brief": "### Why this matters\nDrag and drop is a classic accessibility trap: if dragging is the only way, keyboard and screen reader users are locked out, and WCAG asks for an alternative to dragging. dnd-kit supports keyboard drags and announcements, but the defaults talk in ids. This polish is what product companies notice. It also ends the week with the PR \"Kanban\".\n\n### What you'll build\n- Cards sorted by `Position` from today's .NET part, and a drop sending the target position (end of column is fine)\n- `KeyboardSensor` with a coordinate getter that jumps to the next or previous column on Left and Right\n- Custom `announcements` and `screenReaderInstructions` on `DndContext`, using role, company and status names\n- A \"Move to\" menu on each card offering only legal targets, calling the same mutation\n- A board live region (`role=\"status\"`) announcing the server result: moved, refused or conflict\n\n### Step by step\n1. Try the board with only the keyboard and list every place you get stuck.\n2. Read the dnd-kit accessibility guide.\n3. Write the coordinate getter: find the next column's rectangle and return a point inside it.\n4. Write announcements as sentences: \"Picked up Frontend Engineer at Acme, in Applied.\"\n5. Add the Move to menu and the live region; keep the region mounted and change only its text.\n6. Test one full move with Narrator.\n7. Run all builds and tests, push, review and merge PR \"Kanban\".\n\n```tsx\nconst announcements: Announcements = {\n  onDragStart({ active }) { /* TODO: name the card and its column */ },\n  // TODO: onDragOver, onDragEnd, onDragCancel\n};\n```\n\n### Acceptance criteria\n- [ ] Every move works with the keyboard alone\n- [ ] Every move works without dragging at all\n- [ ] Announcements use names, not ids\n- [ ] PR \"Kanban\" is merged\n\n### Hints\n- dnd-kit renders its own live region for drag steps; yours is for the server outcome.\n- A region inserted with text already inside is often not announced.\n\n### Common mistakes\n- Removing focus outlines for looks.\n- A Move to menu offering illegal targets.\n\n### Stretch (optional)\n- Reorder within a column with `@dnd-kit/sortable`, sending the midpoint position.\n\n### Check your understanding\n- Why is a keyboard drag not enough on its own?\n- What is a live region, and why keep it mounted?\n- How do dnd-kit's announcements and your live region differ?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "lane": null,
+      "learn": null,
+      "title": "Explain how rowversion prevents a lost update and reproduce a 409 with two browser tabs",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nExplain how `rowversion` prevents a lost update, then reproduce a 409 with two browser tabs, in 25 minutes.\n\n### Rules\n- Part 1 (about 8 minutes): blank page, draw the timeline of two writers and explain it out loud.\n- Part 2 (about 17 minutes): a new empty folder outside the JobHunt repo. One entity with a `rowversion`, one minimal API PUT or PATCH endpoint and a tiny HTML or React page are enough.\n- Docs allowed, but try without first and note every lookup. No AI assistants, no copying from JobHunt.\n\n### Must include\n- Part 1: the lost update with two tabs, the `UPDATE ... WHERE Id = @id AND RowVersion = @original` idea, rows affected 0, and how that becomes a 409\n- Why 409 differs from 422 (stale data vs broken rule) and why you never auto-retry a 409\n- Part 2: the shadow property with `IsRowVersion()`, the version in the response as base64, the original value set from the request\n- `DbUpdateConcurrencyException` mapped to 409 ProblemDetails\n- Writes returning the new version\n- The repro: open two tabs, write in A, write the stale data in B, see the 409\n\n### Self-check\n- [ ] Finished within 25 minutes\n- [ ] The second tab got 409, and a write with the fresh version succeeded\n- [ ] Explained why no lock is needed\n- [ ] Mapped the exception in one place\n- [ ] Could say what the user should see after a conflict\n- [ ] Zero lookups, or a list of exactly what to review\n\n### If you got stuck\n- PATCH and 422: Monday, .NET part.\n- `rowversion` and 409: Tuesday, .NET part. Returning the new version: Wednesday, .NET part.\n- Testing the conflict: Thursday, .NET part.\n- Optimistic moves and rollback: Wednesday, React part.\n- Conflict messages and recovery: Thursday, React part."
+    }
+  ]
+}

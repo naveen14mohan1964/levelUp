@@ -1,0 +1,213 @@
+{
+  "week": 11,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "api",
+      "learn": "WebApplicationFactory integration tests",
+      "title": "Api.Tests project hitting the real pipeline for list, create and 404",
+      "doneWhen": "`dotnet test` runs `JobHunt.Api.Tests` green with three tests through `WebApplicationFactory<Program>`: the list returns 200, create returns 201 with a `Location` that resolves, and an unknown id returns 404",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Integration tests in ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests"
+        },
+        {
+          "label": "xUnit.net: Shared context between tests",
+          "url": "https://xunit.net/docs/shared-context"
+        }
+      ],
+      "brief": "### Why this matters\nDomain tests (week 2) say nothing about routing, filters, auth, JSON or SQL. An integration test sends real HTTP requests through the real pipeline in memory. \"How do you test an ASP.NET Core API?\" comes up in most .NET interviews, and `WebApplicationFactory` is the expected answer. Today's React part starts the same habit on the front end: test what the user sees.\n\n### What you'll build\nOn a new branch `feature/tests`:\n- `api/tests/JobHunt.Api.Tests` (xUnit) referencing Api, with `Microsoft.AspNetCore.Mvc.Testing`\n- `JobHuntApiFactory : WebApplicationFactory<Program>` using a `Testing` environment and the week 10 `JobHunt_Tests` database\n- A helper that registers and logs in a fresh user through the real auth endpoints and returns an `HttpClient` with the bearer token\n- Three tests: list 200, create 201 with `Location`, unknown id 404\n\n### Step by step\n1. Create the project, add it to the solution, reference Api. If tests cannot see `Program`, add `public partial class Program;` at the end of `Program.cs`.\n2. Override `ConfigureWebHost`: `UseEnvironment(\"Testing\")` and replace the connection string.\n3. Make sure Development-only code (the week 8 admin seeder, OpenAPI UI) does not run in `Testing`.\n4. Share the factory in a class with `IClassFixture<JobHuntApiFactory>`.\n5. Write the login helper (tomorrow brings a faster test auth handler).\n6. Write the tests with Arrange, Act, Assert. Deserialize with the API's JSON options (string enums).\n\n```csharp\npublic sealed class JobHuntApiFactory : WebApplicationFactory<Program>\n{\n    protected override void ConfigureWebHost(IWebHostBuilder builder)\n    {\n        // TODO: environment and connection string\n    }\n}\n```\n\n### Acceptance criteria\n- [ ] Requests go through routing, filters, auth and EF\n- [ ] Each test registers its own user, so tests never see each other's data\n- [ ] The test database is never your dev database\n- [ ] Tests pass in any order\n\n### Hints\n- Assert on status codes and body shape, not exact error wording.\n\n### Common mistakes\n- Pointing tests at the dev database and wiping your own data.\n- Using EF's in-memory provider, which hides SQL translation and constraint bugs.\n\n### Check your understanding\n- What does `WebApplicationFactory` start, and what does it skip?\n- What can an integration test catch that a domain test cannot?\n- Why does each test need its own user?"
+    },
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Vitest + React Testing Library: queries by role",
+      "title": "Component test for ApplicationCard and the list states",
+      "doneWhen": "`npm test` in `/web` runs Vitest with jsdom, and tests find `ApplicationCard`'s role, company and status by role or text, and prove `ApplicationList` renders its empty message and one card per item",
+      "learnLinks": [
+        {
+          "label": "Vitest: Getting started",
+          "url": "https://vitest.dev/guide/"
+        },
+        {
+          "label": "Testing Library: React Testing Library",
+          "url": "https://testing-library.com/docs/react-testing-library/intro/"
+        },
+        {
+          "label": "Testing Library: ByRole",
+          "url": "https://testing-library.com/docs/queries/byrole/"
+        }
+      ],
+      "brief": "### Why this matters\nA component test checks what a user sees: text, buttons, links. React Testing Library pushes you to query by role and label, the way assistive technology finds things, so good tests also catch accessibility gaps. Vitest reuses your Vite config, so setup is small. \"Write a test for this component\" is a common front-end interview task. Today's .NET part tests through HTTP; this tests through the DOM.\n\n### What you'll build\n- Dev dependencies: `vitest`, `jsdom`, `@testing-library/react`, `@testing-library/jest-dom`\n- A `test` block in `vite.config.ts` with `environment: \"jsdom\"` and a `setupFiles` entry\n- `src/test/setup.ts` importing the jest-dom matchers for Vitest and running cleanup after each test\n- `src/test/render.tsx` with `renderWithProviders(ui)`: a fresh `QueryClient` (retries off) and a memory router\n- `ApplicationCard.test.tsx` and `ApplicationList.test.tsx`\n- `test` and `test:watch` scripts\n\n### Step by step\n1. Install and configure. Add the Vitest types reference at the top of the config so the `test` key type-checks.\n2. Write the setup file. Without Vitest globals, register `cleanup` yourself in `afterEach`.\n3. Write `renderWithProviders`. A new `QueryClient` per test stops cache leaks.\n4. Card: render it with a fixture DTO, then assert the link by role and name and the status pill by text.\n5. List: one test with `[]` (empty message), one with two items (`getAllByRole(\"link\")` has length 2).\n6. Break the card on purpose and read the failure output.\n\n```tsx\ntest(\"shows the role as a link to the detail page\", () => {\n  renderWithProviders(<ApplicationCard application={fixture} />);\n  // TODO: getByRole(\"link\", { name: /frontend engineer/i })\n});\n```\n\n### Acceptance criteria\n- [ ] No `getByTestId` unless nothing else works\n- [ ] No test depends on CSS classes or component internals\n- [ ] Each test gets its own `QueryClient`\n- [ ] `npm test` exits non-zero when a test fails\n\n### Hints\n- If `getByRole` cannot find an element, the markup may be wrong. That is a real bug the test found.\n- `screen.debug()` prints the DOM when you are lost.\n\n### Common mistakes\n- Snapshot tests that nobody reads.\n- A shared `QueryClient` across tests.\n\n### Check your understanding\n- Why query by role instead of by test id?\n- `getBy`, `queryBy`, `findBy`: when do you use each?\n- Why turn retries off in the test `QueryClient`?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "api",
+      "learn": "A test authentication handler",
+      "title": "Tests for authenticated and anonymous requests (401) using a test auth handler",
+      "doneWhen": "A `TestAuthHandler` reading an `X-Test-User` header is the default scheme in tests, and the suite proves a request without the header gets 401, a request with it gets 200, and user B's list never contains user A's applications",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Integration tests in ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests"
+        },
+        {
+          "label": "Microsoft Learn: Overview of ASP.NET Core authentication",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/"
+        }
+      ],
+      "brief": "### Why this matters\nLogging in before every test is slow and couples tests to auth code. A test authentication handler lets a test say \"act as this user\" in one line while the real authorization pipeline still runs. Knowing when to fake auth and when not to is a good interview answer. Today's React part tests a form the same way: real behaviour, minimal fakes.\n\n### What you'll build\n- `TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>` that builds a `ClaimsPrincipal` from an `X-Test-User` header (a user id) and an optional `X-Test-Roles` header\n- The scheme registered and made the default in `ConfigureTestServices`\n- `factory.CreateClientFor(userId, roles)` as a small extension method\n- Tests: anonymous 401 on list, create and detail; authenticated 200; user isolation\n\n### Step by step\n1. Find the claim type `CurrentUser` reads (week 7); the handler must use it.\n2. No header: return `AuthenticateResult.NoResult()`, so the challenge produces 401.\n3. Header present: claims, identity with the scheme name, principal, ticket, `Success`.\n4. Register it with `AddAuthentication(\"Test\").AddScheme<...>(\"Test\", _ => { })`, and make sure policies use it too.\n5. Write a theory over the protected endpoints asserting 401 without the header.\n6. Create data as user A, list as user B, assert it is empty.\n\n```csharp\nprotected override Task<AuthenticateResult> HandleAuthenticateAsync()\n{\n    if (!Request.Headers.TryGetValue(\"X-Test-User\", out var id))\n        return Task.FromResult(AuthenticateResult.NoResult());\n    // TODO: claims, identity, principal, ticket\n}\n```\n\n### Acceptance criteria\n- [ ] 401 tests run through the real authorization middleware\n- [ ] The user id claim type matches production code\n- [ ] One test still logs in for real\n- [ ] Every protected endpoint has an anonymous test\n\n### Hints\n- Header roles let Thursday test the admin 403.\n- If a policy names the JWT scheme explicitly, the test scheme is ignored; check your policies.\n\n### Common mistakes\n- Returning `Fail` for a missing header, which hides what anonymous users really get.\n- A different claim type, so every request looks like a user with no id.\n\n### Check your understanding\n- Why `NoResult` and not `Fail` when the header is missing?\n- What would fake auth hide, and which test still covers it?\n- How does the handler plug into the pipeline?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "web",
+      "learn": "user-event and testing forms",
+      "title": "Form test: validation errors appear and submit is blocked",
+      "doneWhen": "A test types into the create form with `user-event`, proves an empty submit shows the required errors with `aria-invalid` and never calls `onSubmit`, and a valid submit calls `onSubmit` once with typed values",
+      "learnLinks": [
+        {
+          "label": "Testing Library: user-event",
+          "url": "https://testing-library.com/docs/user-event/intro"
+        },
+        {
+          "label": "Testing Library: About queries",
+          "url": "https://testing-library.com/docs/queries/about"
+        }
+      ],
+      "brief": "### Why this matters\nForms hold most of a front end's rules: required fields, cross-field checks, server errors. A form test that types and clicks like a person catches broken labels, missing errors and submits that should have been blocked. `user-event` simulates real interaction (focus, key presses, input), not single synthetic events. Today's .NET part makes auth cheap to fake; here the only fake is the submit callback.\n\n### What you'll build\n- `@testing-library/user-event` installed\n- `ApplicationForm.test.tsx` with three tests:\n  - empty submit shows the required messages, the inputs have `aria-invalid=\"true\"`, and `onSubmit` was not called\n  - salary minimum above maximum shows the week 6 cross-field error\n  - a valid submit calls `onSubmit` once with the parsed values\n\n### Step by step\n1. Call `userEvent.setup()` at the start of each test.\n2. Render the form with `onSubmit={vi.fn()}` through `renderWithProviders`.\n3. Find inputs with `getByLabelText` and the button with `getByRole(\"button\", { name: /save/i })`.\n4. `await user.click(...)`, then use `findByText` for errors that appear after validation.\n5. For the valid case, `await user.type(...)` each field and `await user.selectOptions(...)` for the status.\n6. Assert with `toHaveBeenCalledTimes(1)` and inspect the first argument.\n\n```tsx\ntest(\"blocks submit when required fields are empty\", async () => {\n  const user = userEvent.setup();\n  const onSubmit = vi.fn();\n  // TODO: render, click save, assert errors and onSubmit not called\n});\n```\n\n### Acceptance criteria\n- [ ] Every element is found by label or role\n- [ ] Every `user` call is awaited\n- [ ] One client rule and one cross-field rule are covered\n- [ ] The tests fail if you remove the Zod resolver\n\n### Hints\n- If the form needs a mutation, test the presentational form that takes `onSubmit` as a prop. Splitting it is a design improvement.\n- React Hook Form validates asynchronously, so errors need `findBy`, not `getBy`.\n\n### Common mistakes\n- Forgetting `await`, so assertions run before validation finishes.\n- Using `fireEvent.change`, which skips focus and key events.\n\n### Check your understanding\n- What does `user-event` do that `fireEvent` does not?\n- Why are errors found with `findBy`?\n- What does `aria-invalid` give screen reader users?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Testcontainers: a real SQL Server per run",
+      "title": "Integration tests running against a containerised SQL Server",
+      "doneWhen": "With Docker running and no local SQL Server needed, `dotnet test` starts one pinned SQL Server container, migrates it once, and the whole API suite is green against it",
+      "learnLinks": [
+        {
+          "label": "Testcontainers for .NET: MSSQL module",
+          "url": "https://dotnet.testcontainers.org/modules/mssql/"
+        },
+        {
+          "label": "Testcontainers for .NET: Home",
+          "url": "https://dotnet.testcontainers.org/"
+        },
+        {
+          "label": "Microsoft Learn: Testing against your production database system",
+          "url": "https://learn.microsoft.com/en-us/ef/core/testing/testing-with-the-database"
+        }
+      ],
+      "brief": "### Why this matters\nMonday's tests need a SQL Server you set up by hand, which breaks on a new laptop and in CI. Testcontainers starts a throwaway SQL Server in Docker from code, so every run gets a real, clean engine. Testing against the production engine catches what fakes cannot: rowversion conflicts, unique indexes, cascades. Today's React part makes the same move on the front end: fake the network, run the real code.\n\n### What you'll build\n- `Testcontainers.MsSql` in `JobHunt.Api.Tests`\n- `DatabaseFixture : IAsyncLifetime` that builds and starts an MS SQL container with a pinned image tag, migrates once, and disposes it at the end\n- A collection fixture (`[CollectionDefinition]` with `ICollectionFixture<DatabaseFixture>`) so every API test class shares one container\n- The factory taking its connection string from the fixture\n\n### Step by step\n1. Install Docker Desktop if needed and run one SQL Server container by hand to confirm it works.\n2. Read the MSSQL module page. Build the container with `MsSqlBuilder`, start it in `InitializeAsync`.\n3. Change the database name with `SqlConnectionStringBuilder` so migrations create `JobHunt_Tests`, not tables in `master`.\n4. Run `Database.MigrateAsync()` once in the fixture.\n5. Turn Monday's class fixture into the collection fixture and mark every API test class with `[Collection]`.\n6. Time the run: container start once, then fast tests.\n\n```csharp\nprivate readonly MsSqlContainer _sql = new MsSqlBuilder()\n    // TODO: pin the image tag\n    .Build();\n```\n\n### Acceptance criteria\n- [ ] No test depends on a database installed on your machine\n- [ ] The container starts once per run, not once per test\n- [ ] The image tag is pinned\n- [ ] The suite runs twice in a row with the same result\n\n### Hints\n- Tests in one collection run one after another, which is what a shared database needs.\n- Move the week 10 concurrency test onto the same fixture so nothing needs your local server.\n- Data still leaks between tests until tomorrow's reset; unique users per test keep you safe for now.\n\n### Common mistakes\n- Running migrations in every test.\n- An unpinned `latest` image that breaks on a random Tuesday.\n\n### Check your understanding\n- Why a real SQL Server instead of SQLite or in-memory?\n- Why share one container across classes?\n- What does a pinned tag protect you from?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "web",
+      "learn": "MSW: mocking the API at the network level",
+      "title": "MSW handlers so page tests exercise the real fetching code",
+      "doneWhen": "`ApplicationsPage` tests pass for loading then data, empty list and a 500 ProblemDetails error, using MSW handlers with the real `api.ts` and query hooks, and an unhandled request fails the test",
+      "learnLinks": [
+        {
+          "label": "MSW: Quick start",
+          "url": "https://mswjs.io/docs/quick-start"
+        },
+        {
+          "label": "MSW: Documentation",
+          "url": "https://mswjs.io/docs/"
+        }
+      ],
+      "brief": "### Why this matters\nMocking `fetch` or your hooks tests your mocks, not your app. Mock Service Worker intercepts requests at the network level, so your real `api.ts`, `ApiError` parsing and query hooks run unchanged. \"How do you test components that fetch?\" has a modern answer, and this is it. Today's .NET part fakes nothing but the container; here you fake nothing but the server.\n\n### What you'll build\n- `msw` installed\n- `src/test/msw/fixtures.ts` with two typed `ApplicationDto`s and a paged result in the API's exact shape\n- `src/test/msw/handlers.ts` using `http.get(...)` and `HttpResponse.json(...)` for the list, detail, `me` and refresh\n- `src/test/msw/server.ts` with `setupServer(...handlers)` from `msw/node`\n- The setup file: `listen({ onUnhandledRequest: \"error\" })` before all, `resetHandlers()` after each, `close()` after all\n- `ApplicationsPage.test.tsx` with loading, data, empty and error tests\n\n### Step by step\n1. Write the fixtures first, typed with your real DTO types.\n2. Write the happy-path handlers.\n3. Configure the server lifecycle in the setup file.\n4. Render the page inside a memory router at `/applications`. Assert the loading state, then `findByRole` for the first card.\n5. Override with `server.use(...)` for the empty case and for a 500 with a ProblemDetails body.\n6. Render at `/applications?status=Offer` and assert the handler saw the query string through `request.url`.\n\n```ts\nexport const handlers = [\n  http.get(\"*/api/applications\", () => HttpResponse.json(pagedFixture)),\n  // TODO: detail, me, refresh\n];\n```\n\n### Acceptance criteria\n- [ ] No mocking of `fetch`, `api.ts` or query hooks\n- [ ] An unexpected request fails the test loudly\n- [ ] The error test uses a real ProblemDetails body\n- [ ] Handlers reset between tests\n\n### Hints\n- Node's `fetch` needs absolute URLs. Set the week 3 base URL in a `.env.test` file and match handlers with a `*` prefix.\n- A page behind `ProtectedRoute` needs the auth start-up to succeed: the `me` and refresh handlers do that.\n\n### Common mistakes\n- Handlers returning a shape the real API never returns, so tests pass against fiction.\n- Wrapping actions in `waitFor` instead of using `findBy` for content that appears.\n\n### Check your understanding\n- Why mock at the network level instead of mocking `api.ts`?\n- What does `onUnhandledRequest: \"error\"` protect you from?\n- How would you test a slow response?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Resetting data between tests; test fixtures",
+      "title": "Clean database per test class and a 403/404 ownership test",
+      "doneWhen": "Each API test class starts from an empty database through one reset helper, and tests prove user B gets 404 for user A's application on GET, PUT and DELETE while a normal user gets 403 and an admin 200 on `/api/admin/stats`",
+      "learnLinks": [
+        {
+          "label": "xUnit.net: Shared context between tests",
+          "url": "https://xunit.net/docs/shared-context"
+        },
+        {
+          "label": "Microsoft Learn: Resource-based authorization in ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/resourcebased"
+        }
+      ],
+      "brief": "### Why this matters\nShared data makes tests flaky: one test's leftovers change another's counts. A known starting state per class makes failures repeatable. Ownership is also the most expensive bug a multi-user app can ship (broken object level authorization is first on the OWASP API list), so it deserves a test for every verb. Today's React part tests the other risky corner: the refresh wrapper.\n\n### What you'll build\n- A `ResetAsync()` on the database fixture that deletes rows in foreign key order: notes, interviews, applications, companies, refresh tokens, user roles, users\n- Each test class implementing `IAsyncLifetime` and calling the reset in `InitializeAsync`\n- A small arrange helper: `CreateApplicationAs(userId)` returning the new id\n- `OwnershipTests`: user B gets 404 on GET, PUT, PATCH status and DELETE of user A's application\n- `AdminTests`: anonymous 401, normal user 403, admin 200 on `/api/admin/stats`\n\n### Step by step\n1. List your tables and their foreign keys. Write the delete order once, in one place.\n2. Use `ExecuteDeleteAsync()` per table, or plain SQL. A library such as Respawn is fine too.\n3. Call the reset at the start of each class, not the end, so a crashed run cannot poison the next.\n4. Write the ownership theory over the four verbs.\n5. Write the admin tests using the `X-Test-Roles` header from Tuesday.\n6. Remove the role requirement from the admin group for a moment and watch the 403 test fail.\n\n### Acceptance criteria\n- [ ] One place knows the delete order\n- [ ] Not yours and does not exist return the same 404\n- [ ] 401, 403 and 200 are each asserted for the admin endpoint\n- [ ] The suite passes in any order\n\n### Hints\n- 404 for other users' applications (week 8) hides that the row exists; 403 is right for admin because the endpoint's existence is no secret.\n- Soft-deleted rows still need deleting in the reset; `IgnoreQueryFilters()` or SQL gets them.\n\n### Common mistakes\n- `EnsureDeleted` and migrate per class, which is slow.\n- Testing ownership on GET only.\n\n### Check your understanding\n- Why reset at the start and not the end?\n- Why 404 for ownership but 403 for admin?\n- What would break if two classes ran in parallel on one database?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Testing the refresh-and-retry wrapper",
+      "title": "Test that two parallel 401s trigger exactly one refresh",
+      "doneWhen": "An `api.test.ts` test fires two requests together with an expired token, and asserts that MSW saw exactly one refresh call and both original requests succeeded on their single retry",
+      "learnLinks": [
+        {
+          "label": "MSW: Documentation",
+          "url": "https://mswjs.io/docs/"
+        },
+        {
+          "label": "Vitest: Mocking",
+          "url": "https://vitest.dev/guide/mocking"
+        }
+      ],
+      "brief": "### Why this matters\nWeek 8's shared refresh is subtle: if two 401s each start a refresh, the second presents a token that was already rotated, reuse detection revokes the family, and the user is logged out. Clicking around cannot prove this works. A network-level test can, and it guards the most fragile code in your client. Today's .NET part tests ownership; this tests the session.\n\n### What you'll build\n- `src/lib/api.test.ts`\n- A per-test counter for refresh calls, reset in `beforeEach`\n- Handlers set with `server.use(...)`:\n  - `GET /api/applications` and `GET /api/auth/me` return 401 for the old token and 200 for the new one\n  - `POST /api/auth/refresh` increments the counter and returns a new token\n- Tests: two parallel requests cause one refresh; a failed refresh calls the unauthorized handler once and rejects with the original `ApiError`\n\n### Step by step\n1. Read how `api.ts` stores the token and exposes `refreshAccessToken()`. Set an \"old\" token through the same path the app uses.\n2. In handlers, read the `Authorization` header from `request.headers`.\n3. Fire both calls with `Promise.all` and await them.\n4. Assert the counter is 1 and both results hold data.\n5. Second test: make refresh return 401, register a `vi.fn()` as the unauthorized handler, assert it ran once.\n6. Break the wrapper on purpose (drop the shared promise) and watch the first test fail.\n\n```ts\nlet refreshCalls = 0;\nbeforeEach(() => { refreshCalls = 0; });\n// TODO: server.use(...) with the three handlers\n```\n\n### Acceptance criteria\n- [ ] Exactly one refresh for two concurrent 401s\n- [ ] Each original request is retried once, not in a loop\n- [ ] The failure path is covered\n- [ ] Module state (token, shared promise) is reset between tests\n\n### Hints\n- If `api.ts` keeps state in module variables, export a small reset function for tests, or use `vi.resetModules()` with a dynamic import.\n- Count requests per endpoint too, to prove each was called twice (401, then 200).\n\n### Common mistakes\n- Testing with requests in sequence, which never exercises the race.\n- Leaking the new token into the next test.\n\n### Check your understanding\n- Why would two refreshes log the user out?\n- What makes the second 401 wait for the first refresh?\n- Why test this at the network level?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Coverage and what to test where",
+      "title": "API coverage report and the slow vs fast test split",
+      "doneWhen": "`npm run test:api:fast` runs only the tests that need no Docker in seconds, `npm run coverage:api` produces one merged HTML report for all API test projects with migrations excluded, and the PR \"Tests\" description lists two tests you added because of the report",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Code coverage for unit testing",
+          "url": "https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-code-coverage"
+        },
+        {
+          "label": "Microsoft Learn: Run selected unit tests",
+          "url": "https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests"
+        }
+      ],
+      "brief": "### Why this matters\nYou now have fast tests (Domain) and slow ones (API and Infrastructure, with a container). If every change waits for Docker, people stop running tests. A fast/slow split keeps the inner loop quick, and coverage tells you where the gaps are, not whether tests are good. Explaining \"what do you test where, and why\" is a strong interview answer. This closes the .NET side of the PR \"Tests\"; today's React part writes the strategy down.\n\n### What you'll build\n- A `[Trait(\"Category\", \"Integration\")]` on every test class that needs the container\n- Root scripts: `test:api:fast` (filters out integration tests) and `test:api` (everything)\n- The week 2 coverage run extended to all test projects, merged into one HTML report with ReportGenerator\n- Migrations and generated code excluded from coverage\n- Two new tests at the right layer for the least-covered important code\n\n### Step by step\n1. Tag the container-based classes. Run the fast filter and check that no container starts.\n2. Add the scripts to the root `package.json` next to week 2's `coverage`.\n3. Collect coverage for every test project, then point ReportGenerator at all the Cobertura files with a wildcard.\n4. Exclude the `Migrations` namespace so the number means something.\n5. Find the least-covered important class in Application or Api. Write two tests for it at the right layer.\n6. Push and open the PR \"Tests\"; merge after today's React part.\n\n### Acceptance criteria\n- [ ] The fast run needs no Docker\n- [ ] One merged report covers all API projects\n- [ ] Migrations do not count in coverage\n- [ ] The two new tests were chosen from the report\n\n### Hints\n- The filter syntax depends on your test runner; the selective tests page shows the trait form.\n- Domain rules: unit tests. HTTP contract, auth and SQL: integration tests.\n\n### Common mistakes\n- Chasing a number with tests that assert nothing.\n- Testing a domain rule again through HTTP when one domain test covers it.\n\n### Check your understanding\n- What does line coverage not tell you?\n- Where do you test \"Offer is final\", and why only there?\n- Which of your tests would catch a broken unique index?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Coverage and the testing pyramid",
+      "title": "Web coverage report and a TESTING.md for both apps",
+      "doneWhen": "`npm test` at the repo root runs the API and web suites and fails if either fails, the web coverage report counts every file under `src`, `TESTING.md` explains the strategy for both apps, and PR \"Tests\" is merged",
+      "learnLinks": [
+        {
+          "label": "Vitest: Coverage",
+          "url": "https://vitest.dev/guide/coverage"
+        },
+        {
+          "label": "Testing Library: Guiding principles",
+          "url": "https://testing-library.com/docs/guiding-principles"
+        }
+      ],
+      "brief": "### Why this matters\nWithout a written strategy, people add the wrong kind of test: slow ones for pure logic, mocks where a real dependency is cheap. The testing pyramid gives each layer a job, and coverage points to gaps. A short `TESTING.md` is the page a reviewer or interviewer reads to see how you think. It ends the week with the PR \"Tests\", together with today's .NET part.\n\n### What you'll build\n- `@vitest/coverage-v8` with a `coverage` script, `include: [\"src/**\"]` and test files excluded\n- `coverage/` folders in `.gitignore`\n- A root `test` script running the API suite, then `vitest run` in `/web`, failing if either fails\n- `TESTING.md` at the repo root: the pyramid for JobHunt, what each layer tests, tools, how to run fast and full, and what is deliberately not tested yet (end to end comes in week 19)\n- One new web test chosen from the report\n\n### Step by step\n1. Install the provider and run coverage. Set `include` so untouched files show 0%, not nothing.\n2. Open the report and find the least-covered important file (often a hook or `api.ts` branch).\n3. Write one test for it with MSW, not by mocking the hook.\n4. Write the root script and break a test in each app to prove the exit code.\n5. Write `TESTING.md` in under a page: per layer, one example test name and typical run time.\n6. Run everything, push, review and merge PR \"Tests\".\n\n```json\n\"scripts\": {\n  \"test\": \"TODO: API tests, then vitest run in web; fail if either fails\"\n}\n```\n\n### Acceptance criteria\n- [ ] One command runs every test\n- [ ] Coverage reports are generated, never committed\n- [ ] `TESTING.md` fits on one page\n- [ ] PR \"Tests\" is merged\n\n### Hints\n- `&&` between commands stops at the first failure, which is what you want.\n- Presentational components and pure helpers: component or unit tests. Pages: MSW tests. Journeys: Playwright later.\n\n### Common mistakes\n- A script that reports success when the first suite failed.\n- Counting `src/test/**` helpers in coverage.\n\n### Stretch (optional)\n- Add coverage thresholds a little below today's numbers; week 20 enforces them in CI.\n\n### Check your understanding\n- What does each layer of your pyramid catch that the others miss?\n- Why include untouched files in coverage?\n- What would you test first in a codebase with no tests?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "lane": null,
+      "learn": null,
+      "title": "Write an integration test for a 403 case and an RTL test for a loading state, both from scratch",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nWrite an integration test for a 403 case and an RTL test for a loading state, both from scratch, in 30 minutes.\n\n### Rules\n- A new empty folder outside the JobHunt repo: a tiny minimal API with one admin-only endpoint, and a tiny Vite React app with one component that fetches.\n- About 17 minutes for the API test, 13 for the React test. Set a timer.\n- Docs allowed, but try without first and note every lookup. No AI assistants, no copying from JobHunt.\n\n### Must include\n- API: a policy requiring a role, an endpoint using it, a test project with `WebApplicationFactory<Program>`\n- A test authentication handler reading the user and roles from headers\n- Three asserts: 401 with no user, 403 without the role, 200 with it\n- React: a component fetching with `useQuery` that shows \"Loading\" then data\n- Vitest with jsdom, React Testing Library and an MSW handler\n- One test asserting the loading text first, then the data with a `findBy` query\n\n### Self-check\n- [ ] Finished within 30 minutes\n- [ ] The 403 test fails if you remove the role requirement\n- [ ] Explained why 403, not 404, is right for this endpoint\n- [ ] The React test queries by role or text, not test ids\n- [ ] The test `QueryClient` has retries off\n- [ ] Zero lookups, or a list of exactly what to review\n\n### If you got stuck\n- `WebApplicationFactory`: Monday, .NET part. Test auth handler: Tuesday, .NET part.\n- Containers and resetting data: Wednesday and Thursday, .NET part.\n- RTL queries: Monday, React part. `user-event`: Tuesday, React part.\n- MSW handlers and server lifecycle: Wednesday, React part.\n- Strategy and coverage: Friday, both parts."
+    }
+  ]
+}

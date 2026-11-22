@@ -40,7 +40,7 @@ const FIRST_TIMEOUT_MS = 15_000;
 const TIMEOUT_MS = 25_000;
 
 async function generate(parts, opts = {}) {
-  if (!isConfigured()) throw new Error('GEMINI_API_KEY is not set in server/.env');
+  if (!isConfigured()) throw Object.assign(new Error('AI is not set up: add GEMINI_API_KEY to tracker/server/.env and restart the app'), { status: 503 });
   let lastErr;
   let quotaErr;
   for (const [i, model] of modelChain().entries()) {

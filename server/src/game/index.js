@@ -7,6 +7,7 @@ const { XP, xpEvents, playerLevel } = require('./xp');
 const { dayMinutes, computeStreak } = require('./streak');
 const { localDay, weekStart, addDays } = require('./days');
 const { comebacks: comebacksFor } = require('../checkin/rules');
+const growthLayer = require('../growth');
 
 const MAX_SESSION_MIN = 240;
 const STALE_AFTER_MIN = 60; // a timer left running this long past its plan is closed at its planned length
@@ -62,9 +63,12 @@ async function computeGame(pool, now = Date.now()) {
   const tracks = raw.map(progress);
   const reviews = r.recordsets[5].map((x) => ({ ms: Number(x.reviewed_ms) }));
   const events = xpEvents({ tracks, problems: solved, sessions, comebacks, reviews });
-  const total = events.reduce((s, e) => s + e.xp, 0);
   const today = localDay(now);
   const minutes = dayMinutes(sessions.map((s) => ({ ...s, minutes: sessionMinutes(s, now) })), credits);
+  // The growth layer: XP for workouts, protein, reflection, habits and a won weekly challenge, plus the four stats
+  const { events: growthEvents, ...growth } = growthLayer.build({ events, minutes, extras: await growthLayer.loadExtras(pool), today });
+  events.push(...growthEvents);
+  const total = events.reduce((s, e) => s + e.xp, 0);
   const streak = computeStreak(minutes, frozen, today, shieldDays);
   // A shield saved the streak: record the covered day and spend the oldest shield in the bank
   for (const day of streak.newFreezes) {
@@ -114,6 +118,7 @@ async function computeGame(pool, now = Date.now()) {
     focus: running ? { id: running.id, track: running.track, ref: running.lesson_ref, startedMs: running.started_ms, plannedMin: running.planned_min, elapsedMin: sessionMinutes(running, now), camera: !!running.camera, distractedSec: running.distracted_sec || 0 } : null,
     focusToday: cameraFocus(sessions.filter((s) => localDay(s.started_ms) === today), now),
     cards: { due: r.recordsets[6][0].n, reviewedToday: reviews.filter((x) => localDay(x.ms) === today).length },
+    growth,
     byDay: activityByDay(events, minutes), // for the weekly report (left out of the API summary)
   };
 }

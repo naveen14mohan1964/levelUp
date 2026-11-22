@@ -29,6 +29,10 @@ async function wipe(pool) {
     DELETE FROM dbo.li_actions; DELETE FROM dbo.li_contacts; DELETE FROM dbo.li_lists;
     DELETE FROM dbo.mentor_messages; DELETE FROM dbo.tg_inbox; DELETE FROM dbo.meals; DELETE FROM dbo.body_log;
     DELETE FROM dbo.workout_log; DELETE FROM dbo.progress_photos;
+    IF OBJECT_ID('dbo.journal') IS NOT NULL DELETE FROM dbo.journal;
+    IF OBJECT_ID('dbo.habit_log') IS NOT NULL DELETE FROM dbo.habit_log;
+    IF OBJECT_ID('dbo.weekly_challenges') IS NOT NULL DELETE FROM dbo.weekly_challenges;
+    IF OBJECT_ID('dbo.life_goals') IS NOT NULL DELETE FROM dbo.life_goals;
     DELETE FROM dbo.project_tasks; DELETE FROM dbo.project_weeks; DELETE FROM dbo.projects;
     DELETE FROM dbo.review_log; DELETE FROM dbo.problems; DELETE FROM dbo.tasks;
     DELETE FROM dbo.days; DELETE FROM dbo.weeks; DELETE FROM dbo.settings; DELETE FROM dbo.study_log;
@@ -124,8 +128,9 @@ async function seedProjects(pool) {
           .input('code', sql.NVarChar, p.code).input('week', sql.Int, t.week).input('wt', sql.NVarChar, t.weekTitle)
           .input('dow', sql.TinyInt, t.dow).input('date', sql.Date, t.date).input('title', sql.NVarChar, t.title)
           .input('kind', sql.NVarChar, t.kind || 'build').input('learn', sql.NVarChar, t.learn || null).input('dw', sql.NVarChar, t.doneWhen || null)
-          .query(`INSERT INTO dbo.project_tasks (project_code, week_no, week_title, day_index, plan_date, title, kind, learn, done_when)
-                  VALUES (@code, @week, @wt, @dow, @date, @title, @kind, @learn, @dw)`);
+          .input('lane', sql.NVarChar, t.lane || null)
+          .query(`INSERT INTO dbo.project_tasks (project_code, week_no, week_title, day_index, plan_date, title, kind, learn, done_when, lane)
+                  VALUES (@code, @week, @wt, @dow, @date, @title, @kind, @learn, @dw, @lane)`);
       }
     }
     await tx.commit();
@@ -147,7 +152,7 @@ async function syncRoadmaps(pool) {
       const req = pool.request()
         .input('code', sql.NVarChar, p.code).input('week', sql.Int, t.week).input('dow', sql.TinyInt, t.dow)
         .input('title', sql.NVarChar, t.title).input('learn', sql.NVarChar, t.learn || null)
-        .input('wt', sql.NVarChar, t.weekTitle).input('date', sql.Date, t.date);
+        .input('wt', sql.NVarChar, t.weekTitle).input('date', sql.Date, t.date).input('lane', sql.NVarChar, t.lane || null);
       if (t.kind === 'checkpoint') {
         const r = await req.query(`
           IF NOT EXISTS (SELECT 1 FROM dbo.project_tasks WHERE project_code = @code AND week_no = @week AND kind = 'checkpoint')
@@ -157,7 +162,7 @@ async function syncRoadmaps(pool) {
       } else if (t.learn) {
         const r = await req.query(`
           UPDATE dbo.project_tasks SET learn = @learn
-          WHERE project_code = @code AND week_no = @week AND day_index = @dow AND kind = 'build' AND learn IS NULL`);
+          WHERE project_code = @code AND week_no = @week AND day_index = @dow AND kind = 'build' AND learn IS NULL AND ISNULL(lane, '') = ISNULL(@lane, '')`);
         learn += r.rowsAffected.reduce((a, b) => a + b, 0);
       }
     }
@@ -167,16 +172,19 @@ async function syncRoadmaps(pool) {
   for (const p of projects) {
     for (const t of p.tasks.filter((x) => x.kind === 'build' && x.doneWhen)) {
       await pool.request().input('code', sql.NVarChar, p.code).input('week', sql.Int, t.week).input('dow', sql.TinyInt, t.dow).input('dw', sql.NVarChar, t.doneWhen)
-        .query("UPDATE dbo.project_tasks SET done_when = @dw WHERE project_code = @code AND week_no = @week AND day_index = @dow AND kind = 'build'");
+        .input('lane', sql.NVarChar, t.lane || null)
+        .query("UPDATE dbo.project_tasks SET done_when = @dw WHERE project_code = @code AND week_no = @week AND day_index = @dow AND kind = 'build' AND ISNULL(lane, '') = ISNULL(@lane, '')");
     }
     // detailed daily briefs (Markdown) live beside the plan, one file per project: { "<week>-<dow>-<kind>": "..." }
     const briefs = loadBriefs(p.code);
     for (const [key, md] of Object.entries(briefs)) {
-      const [week, dow, kind] = key.split('-');
+      const [week, dow, part] = key.split('-');
+      const lane = part === 'api' || part === 'web' ? part : null; // parallel course: one brief per lane
+      const kind = lane ? 'build' : part;
       await pool.request().input('code', sql.NVarChar, p.code).input('week', sql.Int, Number(week)).input('dow', sql.TinyInt, Number(dow))
-        .input('kind', sql.NVarChar, kind).input('brief', sql.NVarChar(sql.MAX), md)
+        .input('kind', sql.NVarChar, kind).input('brief', sql.NVarChar(sql.MAX), md).input('lane', sql.NVarChar, lane)
         .query(`UPDATE dbo.project_tasks SET brief = @brief WHERE project_code = @code AND week_no = @week AND kind = @kind
-                AND (kind = 'checkpoint' OR day_index = @dow)`);
+                AND (kind = 'checkpoint' OR (day_index = @dow AND ISNULL(lane, '') = ISNULL(@lane, '')))`);
     }
     for (const w of p.weeks || []) {
       await pool.request().input('code', sql.NVarChar, p.code).input('week', sql.Int, w.week).input('title', sql.NVarChar, w.title)
@@ -308,9 +316,9 @@ async function syncLinks(pool) {
       for (const t of p.tasks.filter((x) => x.kind === 'build')) {
         await new sql.Request(tx)
           .input('code', sql.NVarChar, p.code).input('week', sql.Int, t.week).input('dow', sql.TinyInt, t.dow)
-          .input('links', sql.NVarChar(sql.MAX), JSON.stringify(t.learnLinks || []))
+          .input('links', sql.NVarChar(sql.MAX), JSON.stringify(t.learnLinks || [])).input('lane', sql.NVarChar, t.lane || null)
           .query(`UPDATE dbo.project_tasks SET learn_links = @links
-                  WHERE project_code = @code AND week_no = @week AND day_index = @dow AND kind = 'build'`);
+                  WHERE project_code = @code AND week_no = @week AND day_index = @dow AND kind = 'build' AND ISNULL(lane, '') = ISNULL(@lane, '')`);
       }
     }
     await new sql.Request(tx).input('v', sql.NVarChar(sql.MAX), JSON.stringify(plan.channels || [])).query(`

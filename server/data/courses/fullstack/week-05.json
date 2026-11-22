@@ -1,0 +1,217 @@
+{
+  "week": 5,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "api",
+      "learn": "IQueryable and deferred execution",
+      "title": "Filters for status, company and date range composed on IQueryable",
+      "doneWhen": "`GET /api/applications?status=Interviewing&company=acme&from=2026-01-01` returns only matching rows, and the logged SQL is one query whose WHERE contains only the supplied filters as parameters",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Deferred execution and lazy evaluation",
+          "url": "https://learn.microsoft.com/en-us/dotnet/standard/linq/deferred-execution-lazy-evaluation"
+        },
+        {
+          "label": "Microsoft Learn: How queries work (EF Core)",
+          "url": "https://learn.microsoft.com/en-us/ef/core/querying/how-query-works"
+        },
+        {
+          "label": "Microsoft Learn: Parameter binding in Minimal API apps",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/parameter-binding"
+        }
+      ],
+      "brief": "### Why this matters\nFiltering in memory works with ten rows and falls over with ten thousand. `IQueryable` lets you compose a query step by step and send one SQL statement at the end. \"When does the SQL actually run?\" is one of the most common EF interview questions.\n\n### What you'll build\nOn a branch `feature/search-paging`:\n- `ApplicationListQuery` record in Application: `Status?`, `Company?`, `From?`, `To?` (`DateOnly`)\n- The list endpoint binding it with `[AsParameters]`\n- `ApplicationQueries.ListAsync(query)` that adds a `Where` only for filters with a value\n\n### Step by step\n1. Read the deferred execution page. List which LINQ methods build a query and which execute it.\n2. Create the record with nullable properties so \"not provided\" is clear.\n3. Bind it with `[AsParameters]` and pass it to the queries interface.\n4. Start from `db.JobApplications.AsNoTracking()`, add each filter with an `if`, then `Select` and `ToListAsync`.\n5. Match company text on `Company.Name` with `Contains`.\n6. Call the endpoint with several combinations and read the logged SQL.\n\n```csharp\nvar q = db.JobApplications.AsNoTracking();\nif (query.Status is { } status) q = q.Where(a => a.Status == status);\n// TODO: company, from, to\n```\n\n### Acceptance criteria\n- [ ] One SQL query per request\n- [ ] Nothing calls `ToList` before the filters are applied\n- [ ] Filters combine with AND\n- [ ] Values are SQL parameters, not concatenated text\n\n### Hints\n- `IQueryable<T>` holds an expression tree; `IEnumerable<T>` holds code. After `AsEnumerable()`, the rest runs in memory.\n- SQL runs on `ToListAsync`, `FirstOrDefaultAsync`, `CountAsync`, `foreach` and similar.\n- Case sensitivity of `Contains` depends on the database collation; check yours.\n\n### Common mistakes\n- A helper that returns `IEnumerable<T>`, so filtering pulls every row first.\n- `ToLower()` on both sides of a comparison, which can stop index use.\n\n### Stretch (optional)\n- A `q` free-text filter across role title and company name.\n\n### Check your understanding\n- At which exact line does SQL run in your method?\n- What is the difference between `IQueryable` and `IEnumerable` for a `Where`?\n- Why does `AsEnumerable()` in the middle of a query matter?"
+    },
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "web",
+      "learn": "TanStack Query: queries, query keys and caching",
+      "title": "Applications list moved to useQuery with a query key per filter set",
+      "doneWhen": "The list loads through `useQuery`, and TanStack Query Devtools shows one cache entry per status you click, with a revisited status rendering instantly",
+      "learnLinks": [
+        {
+          "label": "TanStack Query: Overview",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/overview"
+        },
+        {
+          "label": "TanStack Query: Query keys",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-keys"
+        },
+        {
+          "label": "TanStack Query: Important defaults",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/important-defaults"
+        }
+      ],
+      "brief": "### Why this matters\nIn week 3 you wrote loading, error and abort logic by hand. TanStack Query replaces it with a cache keyed by what you asked for. \"How does a query key decide what is cached?\" is half of this week's checkpoint. Today the list starts sending the filters from today's .NET part.\n\n### What you'll build\n- `@tanstack/react-query` and its Devtools installed; one `QueryClient` and a `QueryClientProvider` around the router\n- `features/applications/queries.ts` with a key factory: `all`, `lists()`, `list(filters)`, `detail(id)`\n- `useApplications(filters)` calling `useQuery` and passing `signal` to `api.ts`\n- `getApplications(filters, signal)` building a query string with `URLSearchParams`\n- A deliberate `staleTime` (for example 30 seconds) with a comment\n\n### Step by step\n1. Read \"Important defaults\": stale immediately, refetch on focus, three retries, `gcTime` five minutes.\n2. Create the client at module level and wrap the router. Add the Devtools in development.\n3. Write the key factory. The filter object goes last in the array.\n4. Write `useApplications`. The `queryFn` receives `{ signal }`; pass it on.\n5. Replace the effect and state in `ApplicationsPage` with the hook, mapping `isPending`, `isError` and `data` to your four states.\n6. Send the week 2 status filter to the API instead of filtering in memory.\n\n```ts\nexport const applicationKeys = {\n  all: [\"applications\"] as const,\n  lists: () => [...applicationKeys.all, \"list\"] as const,\n  // TODO: list(filters), detail(id)\n};\n```\n\n### Acceptance criteria\n- [ ] No fetching `useEffect` left in the list page\n- [ ] Every filter value is in the query key\n- [ ] Keys come from the factory only\n- [ ] `staleTime` is set on purpose\n\n### Hints\n- Keys are hashed deterministically: `{ status, page }` and `{ page, status }` match.\n- `isPending` means no data yet; `isFetching` means a request is in flight.\n\n### Common mistakes\n- A filter missing from the key, so two filters share one cache entry.\n- Creating the `QueryClient` inside a component.\n- Copying query data into `useState`.\n\n### Check your understanding\n- What is the difference between `staleTime` and `gcTime`?\n- Why does refetch on window focus exist?\n- What happens when two components use the same key at once?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Sorting safely from user input",
+      "title": "Sort parameter with an allow-list of sortable fields",
+      "doneWhen": "`sort` accepts only `appliedOn`, `-appliedOn`, `roleTitle`, `-roleTitle`, `company` and `-company`, every order has an `Id` tie-breaker, and any other value never reaches the query",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Complex query operators",
+          "url": "https://learn.microsoft.com/en-us/ef/core/querying/complex-query-operators"
+        },
+        {
+          "label": "Microsoft Learn: Web API design best practices",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design"
+        }
+      ],
+      "brief": "### Why this matters\nLetting users sort by any column name is tempting and dangerous: dynamic expressions from user input can expose fields you never meant to, or fail at run time on columns without indexes. An explicit allow-list keeps sorting safe and predictable, and a tie-breaker keeps order stable for paging on Wednesday.\n\n### What you'll build\n- A `Sort` string on `ApplicationListQuery`, default `-appliedOn`\n- A `switch` (or a dictionary of key to ordering) that maps each allowed value to `OrderBy`/`OrderByDescending`\n- `ThenBy(a => a.Id)` in every case\n- An `ApplicationSort` static class holding the allowed values so Friday's validation and the React part can reuse the list\n\n### Step by step\n1. Write the allowed values as constants.\n2. Write a private `ApplySort(IQueryable<JobApplication> q, string sort)` that returns an `IOrderedQueryable`.\n3. Use `-` as the descending prefix and strip it once.\n4. Add the `Id` tie-breaker everywhere.\n5. Apply the sort after filters and before `Select`.\n6. For now, fall back to the default for unknown values; Friday turns that into a 400.\n\n```csharp\nq = sort switch\n{\n    \"appliedOn\" => q.OrderBy(a => a.AppliedOn).ThenBy(a => a.Id),\n    // TODO: the rest, plus a default\n};\n```\n\n### Acceptance criteria\n- [ ] Only allow-listed values change the order\n- [ ] Every ordering has a tie-breaker\n- [ ] Sorting happens in SQL (`ORDER BY` in the log)\n- [ ] Allowed values live in one place\n\n### Hints\n- Sorting by `a.Company.Name` inside the query is fine; EF writes the join.\n- Without an explicit order, SQL Server may return rows in any order.\n\n### Common mistakes\n- Building `OrderBy` from a property name with reflection and no allow-list.\n- Sorting after `ToListAsync`, which sorts only what was loaded.\n\n### Check your understanding\n- Why is an allow-list safer than dynamic sorting?\n- Why do you need a tie-breaker column?\n- Which sorts will need an index on Thursday?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "web",
+      "learn": "URL search params as state",
+      "title": "Filter bar (status, company, sort) kept in the URL",
+      "doneWhen": "Changing status, company or sort updates the URL, reloading restores the same filters and results, and Back returns to the previous filter",
+      "learnLinks": [
+        {
+          "label": "React Router: useSearchParams",
+          "url": "https://reactrouter.com/api/hooks/useSearchParams"
+        },
+        {
+          "label": "MDN: URLSearchParams",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams"
+        }
+      ],
+      "brief": "### Why this matters\nFilters kept only in component state vanish on reload and cannot be shared. In the URL they are bookmarkable, linkable and work with Back, and the URL becomes the single source of truth that feeds the query key. The sort values come from today's .NET allow-list.\n\n### What you'll build\n- `useApplicationFilters()` that reads `useSearchParams()` and returns typed filters plus `setFilters(partial)`\n- A pure `parseFilters(searchParams)` with validation and defaults (status `All`, sort `-appliedOn`)\n- `FilterBar` with a status `<select>`, a company input and a sort `<select>`\n- URL → filters → query key → request\n\n### Step by step\n1. Match URL names (`status`, `company`, `sort`) to the API parameters.\n2. Write `parseFilters`. Unknown values fall back to defaults.\n3. Write `setFilters`: copy the current params, apply the change, delete empty values, call `setSearchParams`.\n4. Build `FilterBar` as a controlled component: values come from the filters, not local state.\n5. Replace the week 2 `StatusFilter` with `FilterBar` and feed `useApplications` from the hook.\n6. Test reload, a copied URL in a new tab, and Back/Forward.\n\n```ts\nexport function parseFilters(sp: URLSearchParams): ApplicationFilters {\n  // TODO: read, validate, apply defaults\n}\n```\n\n### Acceptance criteria\n- [ ] The URL is the only source of filter state\n- [ ] Invalid params never crash the page\n- [ ] Empty filters are removed from the URL\n- [ ] No `useState` mirrors the URL\n\n### Hints\n- The setter accepts a function receiving the previous params.\n- `replace: true` avoids a history entry per keystroke.\n\n### Common mistakes\n- Mirroring the URL into `useState` and syncing with an effect.\n- `Number(sp.get(\"page\"))` without handling `NaN`.\n\n### Check your understanding\n- Which state belongs in the URL, and which never does?\n- How does a URL change become a new API request?\n- What does `parseFilters` protect you from?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Pagination: offset vs keyset; stable ordering",
+      "title": "Paged response { items, page, pageSize, total }",
+      "doneWhen": "The list endpoint returns `{ items, page, pageSize, total }`, `total` counts the filtered rows, and walking every page with `pageSize=3` returns each row exactly once",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Pagination in EF Core",
+          "url": "https://learn.microsoft.com/en-us/ef/core/querying/pagination"
+        },
+        {
+          "label": "Microsoft Learn: Web API design best practices",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design"
+        }
+      ],
+      "brief": "### Why this matters\nEvery real list is paged. Doing it badly gives duplicates or missing rows between pages and slow counts. Offset vs keyset paging is a classic database interview question: you will build one and explain the other.\n\n### What you'll build\n- `PagedResult<T>` record in Application: `Items`, `Page`, `PageSize`, `Total`\n- `Page` (default 1) and `PageSize` (default 20) on `ApplicationListQuery`\n- `CountAsync` on the filtered query, then sort, `Skip`, `Take` and project\n- Two lines in the README on why offset paging fits this list\n\n### Step by step\n1. Read the EF pagination page, including keyset paging.\n2. Create `PagedResult<T>` and change the endpoint's return type.\n3. After filters: `var total = await q.CountAsync(ct);`\n4. Then sort (Tuesday), `Skip((page - 1) * pageSize)`, `Take(pageSize)`, `Select`, `ToListAsync`.\n5. Update the TypeScript side with a generic `PagedResult<T>` and read `data.items` so the page keeps working.\n6. Walk every page with a small page size and check for duplicates.\n\n### Acceptance criteria\n- [ ] Response shape is `{ items, page, pageSize, total }`\n- [ ] Two SQL queries per request: one count, one page\n- [ ] `total` ignores paging but respects filters\n- [ ] No row appears on two pages\n\n### Hints\n- Paging without a stable order is meaningless; Tuesday's tie-breaker is what makes this work.\n- Keyset paging asks for \"rows after this sort value and id\" and stays fast for deep pages and infinite feeds.\n- Friday validates `page` and `pageSize`; today trust the defaults.\n\n### Common mistakes\n- Counting after `Skip`/`Take`, so `total` equals the page size.\n- Sorting after paging.\n- Returning a bare array, so the client cannot know how many pages exist.\n\n### Stretch (optional)\n- Add `hasNextPage` to the envelope and decide if it is worth the extra field.\n\n### Check your understanding\n- What does deep offset paging cost the database?\n- When is keyset paging the better choice?\n- Why count the filtered query and not the paged one?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Controlled inputs and resetting the page when filters change",
+      "title": "Changing a filter resets to page 1 and updates the URL once",
+      "doneWhen": "Changing any filter sets `page` to 1 in the same URL update (one history entry), and typing in the company box does not add a history entry per keystroke",
+      "learnLinks": [
+        {
+          "label": "React Router: useSearchParams",
+          "url": "https://reactrouter.com/api/hooks/useSearchParams"
+        },
+        {
+          "label": "react.dev: Reacting to input with state",
+          "url": "https://react.dev/learn/reacting-to-input-with-state"
+        }
+      ],
+      "brief": "### Why this matters\n\"I filtered and got an empty page 4\" is a real bug in many products. Resetting the page with the filter change, in one update, keeps the URL and the results consistent. Deciding when a text input commits is a classic controlled input question. The page number now matches the `page` parameter from today's .NET part.\n\n### What you'll build\n- `page` added to `parseFilters` (default 1, invalid or below 1 falls back to 1)\n- `setFilters` that resets `page` to 1 whenever anything other than `page` changes\n- A company input with a local draft that commits on submit or blur\n- `useApplications` sending `page` and `pageSize`\n\n### Step by step\n1. Add `page` to the filter type and parser.\n2. In `setFilters`, if the partial update has no `page`, delete `page` from the params.\n3. Make sure each change calls `setSearchParams` once, never twice in a row.\n4. Give the company input a `draft` state initialised from the URL; commit it inside a `<form>` `onSubmit` and on blur.\n5. Keep the draft in sync when the URL changes from outside (Back button): reset it with a `key` on the input or compare during render.\n6. Test: go to page 2, change status, press Back once and land on page 2 of the old status.\n\n### Acceptance criteria\n- [ ] Any filter change lands on page 1\n- [ ] One history entry per change\n- [ ] Typing does not request on each keystroke\n- [ ] Back restores both the filter and the page\n\n### Hints\n- Two quick `setSearchParams` calls can overwrite each other; build the whole new params object first.\n- The draft is local UI state; the committed value is URL state. Both are fine in their place.\n\n### Common mistakes\n- Resetting the page in a `useEffect` that watches filters, which causes two URL updates and two requests.\n- A draft that never updates after Back, so the box shows an old value.\n\n### Stretch (optional)\n- Debounce the company input instead of committing on submit (week 13 covers this properly).\n\n### Check your understanding\n- Why reset the page in the same update rather than in an effect?\n- What is the difference between draft state and committed state?\n- How would you test the Back button behaviour?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Indexes for filters and sorts",
+      "title": "Indexes for status, company and applied date, checked with the query plan",
+      "doneWhen": "A migration adds indexes for status, company and applied date, and the actual execution plan for a filtered, sorted list query shows an index seek instead of a table scan",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Indexes",
+          "url": "https://learn.microsoft.com/en-us/ef/core/modeling/indexes"
+        },
+        {
+          "label": "Microsoft Learn: Display an actual execution plan",
+          "url": "https://learn.microsoft.com/en-us/sql/relational-databases/performance/display-an-actual-execution-plan"
+        }
+      ],
+      "brief": "### Why this matters\nFilters and sorts are only fast when the database can find rows without reading the whole table. Choosing an index from your real queries, and proving it with a plan, is what separates \"I added an index\" from \"I fixed the slow query\". Interviewers love the follow-up: \"what does an index cost?\"\n\n### What you'll build\n- About 2,000 extra seed rows in a Development-only script so plans are meaningful\n- Indexes configured with `HasIndex` in the configuration classes: `Status`, `CompanyId`, and a composite one for the default list order (`AppliedOn`, `Id`)\n- A migration `AddListIndexes`\n- Before and after plans saved as screenshots or notes\n\n### Step by step\n1. Add the bulk seed (guarded so it runs once) and apply.\n2. Copy the SQL for a typical request (status filter, default sort, page 1) from the log.\n3. Run it in SSMS or Azure Data Studio with the actual plan on. Note scans and the estimated cost.\n4. Add the indexes in configuration and run `migrations add AddListIndexes`. Read the generated SQL.\n5. Apply and run the same query again. Compare the plans.\n6. Try a composite index `(Status, AppliedOn)` and decide whether it beats the single-column one for your default query.\n\n### Acceptance criteria\n- [ ] Indexes are configured in Fluent code, not created by hand\n- [ ] The plan uses an index for the filtered query\n- [ ] You can say which query each index exists for\n- [ ] Before and after notes are saved for the PR\n\n### Hints\n- Column order in a composite index matters: equality filters first, then the sort column.\n- Foreign keys get an index by EF convention; check whether `CompanyId` already has one.\n- `Contains` on text (a `LIKE '%x%'`) cannot use a normal index seek. That is expected.\n\n### Common mistakes\n- Indexing every column \"just in case\": each index slows writes and takes space.\n- Judging plans on ten rows, where a scan is always cheapest.\n\n### Check your understanding\n- What does an index cost on insert and update?\n- Why does column order matter in a composite index?\n- Why can `LIKE '%acme%'` not seek?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "web",
+      "learn": "placeholderData: keepPreviousData; isPlaceholderData",
+      "title": "Pager that keeps the current page visible while the next loads",
+      "doneWhen": "With the network throttled, clicking Next keeps the current page visible and dimmed until the next page arrives, Next is disabled while `isPlaceholderData` is true, and the pager shows \"Page X of Y\"",
+      "learnLinks": [
+        {
+          "label": "TanStack Query: Paginated queries",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/paginated-queries"
+        },
+        {
+          "label": "TanStack Query: useQuery",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/reference/useQuery"
+        }
+      ],
+      "brief": "### Why this matters\nNaive paging flashes a spinner and collapses the layout on every page change. Keeping the previous page visible while the next loads feels faster. In TanStack Query v5 the old `keepPreviousData` option is gone; you use `placeholderData: keepPreviousData`, and knowing that shows you work with current versions.\n\n### What you'll build\n- `placeholderData: keepPreviousData` in `useApplications`\n- A `Pager` with Previous, Next, \"Page X of Y\" and the total count\n- The list dimmed (not replaced) while `isPlaceholderData` is true\n- Page changes written to the URL with `setFilters({ page })`\n\n### Step by step\n1. Read the paginated queries guide and note what `isPlaceholderData` means.\n2. Import the `keepPreviousData` helper from `@tanstack/react-query` and set `placeholderData`.\n3. Compute `totalPages` with `Math.max(1, Math.ceil(total / pageSize))`.\n4. Build `Pager` with typed props: `page`, `totalPages`, `onPageChange`, `disabled`.\n5. Disable Next on the last page and while placeholder data is shown.\n6. Dim the list with a CSS class and add a polite status message such as \"Loading page 3\".\n7. Throttle the network and check for flashes or layout jumps.\n\n```ts\nreturn useQuery({\n  queryKey: applicationKeys.list(filters),\n  queryFn: ({ signal }) => getApplications(filters, signal),\n  // TODO: placeholderData\n});\n```\n\n### Acceptance criteria\n- [ ] No spinner replaces the list during page changes\n- [ ] Next is disabled at the end and while loading\n- [ ] Totals use `total`, not `items.length`\n- [ ] The pager is a `<nav aria-label=\"Pagination\">`\n\n### Hints\n- Placeholder data is not written to the cache under the new key; it only fills the gap.\n- `aria-live=\"polite\"` announces the loading message without interrupting.\n\n### Common mistakes\n- Using the removed v4 option `keepPreviousData: true` from old tutorials.\n- Leaving Next enabled while loading, allowing skipped pages.\n\n### Stretch (optional)\n- Prefetch the next page with `queryClient.prefetchQuery`.\n\n### Check your understanding\n- How is `isPlaceholderData` different from `isFetching`?\n- Why is the placeholder not stored under the new key?\n- What would change with keyset paging?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Validating query parameters",
+      "title": "400 ProblemDetails for bad page size, unknown sort or reversed dates",
+      "doneWhen": "`pageSize=0`, `pageSize=500`, `page=0`, `sort=salary` and `from` after `to` each return 400 ProblemDetails with an `errors` entry naming the bad parameter",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Create responses in Minimal API applications",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses"
+        },
+        {
+          "label": "Microsoft Learn: Parameter binding in Minimal API apps",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/parameter-binding"
+        },
+        {
+          "label": "Microsoft Learn: Handle errors in ASP.NET Core APIs",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling-api"
+        }
+      ],
+      "brief": "### Why this matters\nAn API that silently ignores a bad parameter hides bugs in its clients; one that throws a 500 looks broken. A 400 that names the exact parameter is what good public APIs do, and the React part today shows these messages. This closes the .NET side of the PR \"Search + paging\".\n\n### What you'll build\n- A `Validate()` method on `ApplicationListQuery` (or a small static validator) returning a dictionary of field name to messages\n- Rules: `page >= 1`, `pageSize` between 1 and 100, `sort` in the Tuesday allow-list, `from <= to`\n- The handler returning `TypedResults.ValidationProblem(errors)` when the dictionary is not empty\n- The handler's return type updated to include `ValidationProblem`\n\n### Step by step\n1. Write the rules as plain C# returning `Dictionary<string, string[]>`.\n2. Use camelCase keys that match the query string names.\n3. In the handler, validate first and return early on errors.\n4. Add `ValidationProblem` to the `Results<...>` return type.\n5. Remove Tuesday's silent fallback for unknown sorts.\n6. Add the five bad requests to your `.http` file and check each body.\n7. Try `status=Banana` and note that binding already returns 400 before your code runs.\n\n### Acceptance criteria\n- [ ] Each bad parameter returns 400, never 500 or a silent default\n- [ ] The `errors` object names the parameter\n- [ ] The allowed sort list is reused, not copied\n- [ ] Valid requests behave as before\n\n### Hints\n- `ValidationProblem` produces the standard `errors` shape that week 6 reuses with FluentValidation.\n- Validate before touching the database.\n\n### Common mistakes\n- Clamping `pageSize=500` silently today and rejecting it tomorrow: pick one rule and document it (this course rejects).\n- Throwing an exception for bad input and relying on the global handler.\n\n### Check your understanding\n- When is a 400 better than a silent default?\n- What is the difference between a binding failure and a validation failure?\n- What does the `errors` object look like, and who reads it?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Showing filter errors and an empty filtered result",
+      "title": "Clear-filters button and a helpful 'no matches' state",
+      "doneWhen": "A filter with no results shows \"No applications match these filters\" with a Clear filters button that resets the URL, a 400 from the API shows its message, and PR \"Search + paging\" is merged",
+      "learnLinks": [
+        {
+          "label": "react.dev: Conditional rendering",
+          "url": "https://react.dev/learn/conditional-rendering"
+        },
+        {
+          "label": "TanStack Query: Query retries",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-retries"
+        }
+      ],
+      "brief": "### Why this matters\n\"No results\" is not the same as \"no data yet\", and users need a way out of a dead end. Showing the API's validation message instead of a generic failure, and not retrying a 400 three times, is the polish reviewers notice. Today also ends the week with the PR \"Search + paging\".\n\n### What you'll build\n- Two different empty states: \"No applications yet\" (no filters) and \"No applications match these filters\" (filters active)\n- A Clear filters button, shown only when a filter is active, that removes every filter param\n- 400 errors shown with the first message from the ProblemDetails `errors` object\n- `retry` configured so 4xx errors are not retried\n\n### Step by step\n1. Write `hasActiveFilters(filters)` comparing against the defaults.\n2. Pick the empty state with it.\n3. Add the Clear button: `setSearchParams({})` (or keep only what you want).\n4. Extend `ProblemDetails` with an optional `errors: Record<string, string[]>` and show the first message in the error state.\n5. Set `retry` on the `QueryClient` defaults: retry only when the error is not an `ApiError` with a 4xx status, up to a small limit.\n6. Type `?pageSize=500` into the URL and check the message appears at once, without three retries.\n7. Run all checks, push, open the PR \"Search + paging\" with Monday to Thursday's notes, review and merge.\n\n### Acceptance criteria\n- [ ] Two distinct empty states\n- [ ] Clear filters appears only when needed and lands on page 1\n- [ ] 400 messages come from the API, not hard-coded text\n- [ ] 4xx errors are not retried\n- [ ] PR \"Search + paging\" is merged\n\n### Hints\n- `retry` can be a function `(failureCount, error) => boolean`.\n- `parseFilters` should already keep most bad values away from the API; the 400 is your safety net.\n\n### Common mistakes\n- One empty message for both cases, which tells users nothing.\n- Retrying validation errors, which triples the wait for a guaranteed failure.\n\n### Check your understanding\n- Why is \"no results\" different from \"no data yet\"?\n- Which errors are worth retrying, and which are not?\n- Where do you keep the default filter values so both functions agree?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "lane": null,
+      "learn": null,
+      "title": "Explain when SQL runs for an IQueryable and how a query key decides what TanStack Query caches; then add a new filter end to end without docs",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nExplain out loud when SQL runs for an `IQueryable` and how a query key decides what TanStack Query caches. Then add a new filter (for example \"has interviews\" or \"applied in the last N days\") end to end in JobHunt, in 30 minutes.\n\n### Rules\n- Part 1 (about 8 minutes): blank page, no code open. Record yourself if you can.\n- Part 2 (about 22 minutes): new branch in JobHunt. The outline says without docs, so keep them closed; if you must look something up, note it.\n- No AI assistants. One 30 minute timer for both parts.\n\n### Must include\n- Part 1: three LINQ methods that build a query and three that execute it; what `AsEnumerable()` does mid-query; what a query key is made of; two components using the same key; `staleTime` vs `gcTime`; what `placeholderData` does on a key change\n- Part 2 API: a nullable property on `ApplicationListQuery`, applied on the `IQueryable`, validated with a 400, visible in the logged SQL\n- Part 2 web: parsed in `parseFilters`, a control in `FilterBar`, part of the query key, resets `page`\n\n### Self-check\n- [ ] Finished both parts within 30 minutes\n- [ ] You named the exact line where SQL runs in your list query\n- [ ] The new filter is one SQL query, not an in-memory filter\n- [ ] A bad value returns a 400 that the page shows\n- [ ] Reloading keeps the new filter\n- [ ] Devtools shows a separate cache entry for it\n- [ ] You did not open earlier code to remember the pattern\n\n### If you got stuck\n- Deferred execution: Monday, .NET part.\n- Query keys and the provider: Monday, React part.\n- URL state: Tuesday, React part.\n- Count and paging: Wednesday, .NET part.\n- Page reset: Wednesday, React part.\n- Validation: Friday, .NET part."
+    }
+  ]
+}

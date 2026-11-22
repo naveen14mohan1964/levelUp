@@ -791,3 +791,65 @@ GO
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ai_news_posts_news')
 CREATE INDEX IX_ai_news_posts_news ON dbo.ai_news_posts (news_id, created_ms DESC);
 GO
+
+-- Daily check-in + journal: one row per day. Today uses mood + note; the Journal page fills the four reflections.
+-- Everything is optional: a skipped day simply has no row (nothing counts as missed).
+IF OBJECT_ID('dbo.journal') IS NULL
+CREATE TABLE dbo.journal (
+  entry_date   DATE           NOT NULL PRIMARY KEY,
+  mood         TINYINT        NULL, -- 1 tough | 2 okay | 3 great
+  note         NVARCHAR(500)  NULL,
+  accomplished NVARCHAR(1000) NULL,
+  learned      NVARCHAR(1000) NULL,
+  improve      NVARCHAR(1000) NULL,
+  grateful     NVARCHAR(1000) NULL,
+  updated_ms   BIGINT         NOT NULL
+);
+GO
+
+-- Full-stack course: two lessons a day in parallel, lane 'api' (.NET) and 'web' (React); NULL for single-lesson courses
+IF COL_LENGTH('dbo.project_tasks', 'lane') IS NULL
+ALTER TABLE dbo.project_tasks ADD lane NVARCHAR(10) NULL;
+GO
+
+-- Tiny daily habits (growth layer): one row per habit per day it was done
+IF OBJECT_ID('dbo.habit_log') IS NULL
+CREATE TABLE dbo.habit_log (
+  log_date  DATE         NOT NULL,
+  habit_key NVARCHAR(30) NOT NULL, -- spend | review
+  done_ms   BIGINT       NOT NULL,
+  CONSTRAINT PK_habit_log PRIMARY KEY (log_date, habit_key)
+);
+GO
+
+-- The weekly challenge you chose (one per Mon–Sun week); its progress is computed from real activity
+IF OBJECT_ID('dbo.weekly_challenges') IS NULL
+CREATE TABLE dbo.weekly_challenges (
+  week_start    DATE         NOT NULL PRIMARY KEY, -- the Monday
+  challenge_key NVARCHAR(30) NOT NULL, -- workouts | problems | active
+  target        INT          NOT NULL,
+  created_ms    BIGINT       NOT NULL
+);
+GO
+
+-- Your goals (Journey): at most 3 active at once, each broken into small steps
+IF OBJECT_ID('dbo.life_goals') IS NULL
+CREATE TABLE dbo.life_goals (
+  id          INT IDENTITY(1,1) PRIMARY KEY,
+  title       NVARCHAR(200) NOT NULL,
+  stat        NVARCHAR(20)  NOT NULL, -- career | fitness | knowledge | discipline
+  target_date DATE          NULL,
+  status      NVARCHAR(10)  NOT NULL DEFAULT 'active', -- active | paused | done
+  created_ms  BIGINT        NOT NULL,
+  done_ms     BIGINT        NULL
+);
+GO
+IF OBJECT_ID('dbo.life_goal_steps') IS NULL
+CREATE TABLE dbo.life_goal_steps (
+  id         INT IDENTITY(1,1) PRIMARY KEY,
+  goal_id    INT           NOT NULL REFERENCES dbo.life_goals(id) ON DELETE CASCADE,
+  title      NVARCHAR(200) NOT NULL,
+  done_ms    BIGINT        NULL,
+  sort_order INT           NOT NULL DEFAULT 0
+);
+GO

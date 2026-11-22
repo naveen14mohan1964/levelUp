@@ -1,0 +1,217 @@
+{
+  "week": 15,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "api",
+      "learn": "SignalR hubs, groups and connection lifetime",
+      "title": "NotificationsHub with a group per user",
+      "doneWhen": "An integration test connects to `/hubs/notifications` with the .NET SignalR client over long polling as users A and B, and a message sent to A's `user:{id}` group through `IHubContext` reaches A's connection but not B's",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Overview of ASP.NET Core SignalR",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/introduction"
+        },
+        {
+          "label": "Microsoft Learn: Manage users and groups in SignalR",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/groups"
+        },
+        {
+          "label": "Microsoft Learn: Use hubs in SignalR",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/hubs"
+        }
+      ],
+      "brief": "### Why this matters\nPolling asks \"anything new?\" every minute, mostly to hear \"no\". SignalR keeps one connection open (WebSockets when possible) so the server can push the moment something happens. A group per user means one message reaches all of that user's tabs and nobody else's. Today's React part opens the connection from the browser.\n\n### What you'll build\nOn a new branch `feature/realtime`:\n- `AddSignalR()` and a strongly typed `NotificationsHub : Hub<INotificationsClient>` at `/hubs/notifications` with `RequireAuthorization()`\n- `INotificationsClient` with the events the server can send: `ReminderCreated`, `ApplicationChanged`, `RemindersRead`\n- `OnConnectedAsync` adding the connection to `user:{userId}`, using the same claim as `CurrentUser` (week 7)\n- `/hubs` in the Vite proxy with `ws: true`\n- An integration test using `Microsoft.AspNetCore.SignalR.Client` against the week 11 factory\n\n### Step by step\n1. Read the overview: write down the three transports and the order SignalR tries them.\n2. Register SignalR and map the hub. It has no client-callable methods yet; it only joins the group.\n3. Join the group in `OnConnectedAsync`. Groups are not stored: every connection, including a reconnect, joins again.\n4. Add the proxy entry.\n5. In the test, build a `HubConnection` with long polling, the test server's handler, and the week 11 `X-Test-User` header.\n6. Connect A and B, send to A's group through `IHubContext`, assert only A's handler ran.\n\n```csharp\npublic override async Task OnConnectedAsync()\n{\n    var userId = /* TODO: same claim as CurrentUser */;\n    await Groups.AddToGroupAsync(Context.ConnectionId, $\"user:{userId}\");\n    await base.OnConnectedAsync();\n}\n```\n\n### Acceptance criteria\n- [ ] Anonymous connections are refused\n- [ ] A message to one user's group reaches only that user\n- [ ] Group names come from the user id claim, never from the client\n\n### Hints\n- `Clients.User(id)` also targets all of a user's connections. Groups are more explicit; pick one and write why.\n- Browsers cannot send an `Authorization` header on a WebSocket; tomorrow fixes that.\n\n### Common mistakes\n- Letting the client pass its own user id to join a group.\n- Expecting group membership to survive a reconnect.\n\n### Check your understanding\n- What are the three transports, in order?\n- Why a group per user?\n- Why must every reconnect rejoin the group?"
+    },
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "web",
+      "learn": "The SignalR JavaScript client",
+      "title": "useSignalR hook that connects and shows connection status",
+      "doneWhen": "A `RealtimeProvider` inside the protected layout opens one connection to `/hubs/notifications`, the header shows its status in text (Connecting, Live, Reconnecting, Offline), and stopping and restarting the API moves through those states",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: ASP.NET Core SignalR JavaScript client",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/javascript-client"
+        },
+        {
+          "label": "react.dev: Synchronizing with Effects",
+          "url": "https://react.dev/learn/synchronizing-with-effects"
+        }
+      ],
+      "brief": "### Why this matters\nA connection is an external system, which is exactly what effects are for: connect on mount, disconnect on cleanup. Getting lifetime right (one connection, not one per component; stopped on logout; safe under Strict Mode) is the hard part of real-time UIs. Users also deserve to know when live updates are off. This connects to the hub from today's .NET part.\n\n### What you'll build\n- `@microsoft/signalr` installed\n- `RealtimeProvider` building one `HubConnection` with `withUrl(\"/hubs/notifications\", { accessTokenFactory })` and `withAutomaticReconnect()`, kept in a ref\n- A `status` value: `connecting`, `live`, `reconnecting`, `offline`\n- `useRealtime()` returning the status and `useRealtimeEvent(name, handler)` that calls `connection.on` and `connection.off`\n- A header indicator with text, not only a coloured dot\n- The connection stopped on logout, including the week 8 BroadcastChannel logout\n\n### Step by step\n1. For today, `accessTokenFactory` returns the in-memory token as it is; tomorrow routes it through the refresh helper.\n2. Build the connection in an effect and register handlers before `start()`.\n3. Strict Mode runs the effect twice: keep the start promise and make cleanup wait for it before `stop()`.\n4. Wire `onreconnecting`, `onreconnected` and `onclose` to the status.\n5. Stop the connection on logout, before clearing the token.\n6. Stop and start the API and watch the states.\n\n```ts\nconst connection = new HubConnectionBuilder()\n  .withUrl(\"/hubs/notifications\", { accessTokenFactory: () => getAccessToken() ?? \"\" })\n  .withAutomaticReconnect()\n  .build();\n// TODO: status handlers, start, cleanup that waits for start\n```\n\n### Acceptance criteria\n- [ ] Exactly one connection per tab, even in Strict Mode\n- [ ] Status is shown as text\n- [ ] Logout stops the connection\n- [ ] Handlers are removed on unmount\n\n### Hints\n- Until tomorrow's .NET part reads the query string token, the WebSocket attempt is refused and the client falls back to another transport. Expected today.\n\n### Common mistakes\n- Creating a connection per component that needs events.\n- Calling `stop()` while `start()` is still running.\n\n### Check your understanding\n- Why does the connection live in a provider and not a page?\n- What does Strict Mode reveal about your cleanup?\n- Why tell users when updates are off?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Authenticating SignalR connections with JWT",
+      "title": "Hub requires auth; the token is read for WebSocket connections",
+      "doneWhen": "The browser's connection to `/hubs/notifications` uses WebSockets with the token from the `access_token` query string (only for `/hubs` paths), an anonymous connection gets 401, and request logs never show that query string",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Authentication and authorization in SignalR",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/authn-and-authz"
+        },
+        {
+          "label": "Microsoft Learn: Overview of ASP.NET Core SignalR",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/introduction"
+        }
+      ],
+      "brief": "### Why this matters\nThe browser WebSocket API cannot set headers, so a bearer token cannot travel the usual way. SignalR's JavaScript client puts it in an `access_token` query string, and the server must read it there, but only for hub paths, or every endpoint would accept tokens in URLs. Query strings end up in logs, which is why this needs care. Today's React part makes sure the token sent is always fresh.\n\n### What you'll build\n- A `JwtBearerEvents.OnMessageReceived` handler copying `access_token` into `context.Token` when the path starts with `/hubs`\n- An integration test: no token gives 401 on negotiate, a valid one connects\n- Request logging (if any) configured so `/hubs` query strings are not written; week 16 adds Serilog and keeps this rule\n- A note in the PR: what happens when the access token expires during a long connection\n\n### Step by step\n1. Read the SignalR authentication page, section on bearer tokens with WebSockets.\n2. Add the event handler in the existing JWT bearer options. Match the path with `StartsWithSegments(\"/hubs\")`.\n3. Connect from the browser and check the Network tab: the WebSocket request now succeeds.\n4. Write the negotiate tests with and without a token.\n5. Search your logs for `access_token` and fix any line that shows it.\n6. Write the expiry note: the token is checked when the connection starts, not on every message.\n\n```csharp\noptions.Events = new JwtBearerEvents\n{\n    OnMessageReceived = ctx =>\n    {\n        // TODO: read access_token only for /hubs paths\n        return Task.CompletedTask;\n    }\n};\n```\n\n### Acceptance criteria\n- [ ] Only `/hubs` accepts a token in the query string\n- [ ] Anonymous connections are refused\n- [ ] Tokens never appear in logs\n- [ ] The expiry behaviour is written down\n\n### Hints\n- A connection outlives a 15 minute access token. That is accepted; reconnects get a fresh one through tomorrow's helper.\n- Short access token lifetimes (week 8) limit the damage of a leaked URL.\n\n### Common mistakes\n- Reading the query token for every path.\n- Logging full URLs at `Information`.\n\n### Check your understanding\n- Why can't a WebSocket send an `Authorization` header?\n- Why limit query tokens to `/hubs`?\n- When is the token checked on a SignalR connection?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "web",
+      "learn": "accessTokenFactory through the refresh wrapper",
+      "title": "Connection gets a fresh token through the week 8 refresh helper",
+      "doneWhen": "With a 1 minute access token, a reconnect after expiry makes exactly one `POST /api/auth/refresh` before negotiating, even when failing queries need a refresh at the same moment, and a failed refresh logs the user out once",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: ASP.NET Core SignalR JavaScript client",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/javascript-client"
+        },
+        {
+          "label": "MSW: Documentation",
+          "url": "https://mswjs.io/docs/"
+        }
+      ],
+      "brief": "### Why this matters\n`accessTokenFactory` runs before every connect and reconnect. If it hands over an expired token, the reconnect fails; if it starts its own refresh, it races the week 8 shared refresh and reuse detection revokes the session. Routing it through the same helper keeps \"one refresh at a time\" true for the whole app. This sends the token that today's .NET part reads from the query string.\n\n### What you'll build\n- The access token's expiry stored next to the token in `api.ts` (from the login and refresh responses)\n- `getFreshAccessToken()`: returns the token if it has more than 30 seconds left, otherwise awaits `refreshAccessToken()` and its shared `refreshPromise`\n- `accessTokenFactory: getFreshAccessToken` in the provider\n- A failed refresh in the factory going through the week 7 unauthorized handler, so the user is logged out once\n- A Vitest test with MSW: a token close to expiry plus two queries returning 401 at once still make one refresh call\n\n### Step by step\n1. Find where `api.ts` stores the token; store the expiry beside it without decoding the JWT (the response can carry `expiresIn`).\n2. Write `getFreshAccessToken()` reusing the shared promise; never call the refresh endpoint directly.\n3. Switch the provider to it.\n4. Set the API's token lifetime to 1 minute. Stop the API for 70 seconds, start it, watch the Network tab during the reconnect.\n5. Extend week 11's refresh test: call `getFreshAccessToken()` and two failing requests together, assert one refresh.\n6. Restore the normal lifetime.\n\n```ts\nexport async function getFreshAccessToken(): Promise<string> {\n  // TODO: return the token if it has 30 s left, else await refreshAccessToken()\n}\n```\n\n### Acceptance criteria\n- [ ] Reconnects never use an expired token\n- [ ] One refresh at a time across queries and the hub\n- [ ] A failed refresh logs out once\n- [ ] The test covers the concurrent case\n\n### Hints\n- The 30 second margin covers clock skew and the time the connection takes to start.\n- `refreshAccessToken()` already clears its promise in `finally`.\n\n### Common mistakes\n- Calling `fetch(\"/api/auth/refresh\")` from the factory.\n- Decoding the JWT in the browser to read `exp`, when the server can tell you.\n\n### Check your understanding\n- When does `accessTokenFactory` run?\n- What would two parallel refreshes do to the session?\n- Why refresh slightly before expiry?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Publishing from application code with IHubContext",
+      "title": "Reminder job and status changes push events to the user's group",
+      "doneWhen": "A test with a recording fake publisher proves `FollowUpReminderJob` publishes once per new reminder and nothing on a second run, and a status change publishes `ApplicationChanged` only after the save succeeds",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Send messages from outside a hub",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/hubcontext"
+        },
+        {
+          "label": "Microsoft Learn: Use hubs in SignalR",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/hubs"
+        }
+      ],
+      "brief": "### Why this matters\nEvents start in application code, not in the hub: a command saves a status change, or a job creates a reminder. `IHubContext` lets any service send to a group. Hiding it behind an interface in Application keeps SignalR out of your core, and publishing after the commit means you never announce a change that did not happen. Today's React part applies these events to the cache.\n\n### What you'll build\n- `INotificationPublisher` in Application: `ReminderCreatedAsync`, `ApplicationChangedAsync`, `RemindersReadAsync`, each taking a user id\n- `SignalRNotificationPublisher` in Api using `IHubContext<NotificationsHub, INotificationsClient>` and the `user:{userId}` group\n- `ApplicationChangedEvent(Id, Kind, Status, Version, OccurredAt)` with `Kind` in `Created`, `Updated`, `StatusChanged`, `Deleted`, `Restored`\n- Every application write publishing after `SaveChangesAsync`, next to the week 13 stats eviction\n- `FollowUpReminderJob` publishing only for reminders inserted in this run\n- Mark read (week 14) publishing `RemindersRead`\n- A no-op publisher in `Testing` and a recording fake for tests that need it\n\n### Step by step\n1. Write the interface; check it has no SignalR types.\n2. Implement and register it; `IHubContext` is a singleton.\n3. Publish after the commit in each command.\n4. Keep payloads small: ids, status and version. The client decides to patch or refetch.\n5. Log and swallow a failed push: the write already succeeded.\n6. Write the tests: job twice, then a status change.\n\n```csharp\npublic Task ApplicationChangedAsync(Guid userId, ApplicationChangedEvent e, CancellationToken ct) =>\n    hub.Clients.Group($\"user:{userId}\").ApplicationChanged(e);\n```\n\n### Acceptance criteria\n- [ ] No SignalR types in Application\n- [ ] Nothing is published when a save fails\n- [ ] A second job run publishes nothing\n- [ ] A failed push never fails a request\n\n### Hints\n- Hangfire runs in the API process, so the job can use `IHubContext`. Several instances need a backplane (week 20).\n- Pushes are notifications, not guaranteed delivery; clients refetch after reconnecting.\n\n### Common mistakes\n- Publishing before `SaveChangesAsync`.\n- Sending whole DTOs with data the client should refetch.\n\n### Check your understanding\n- Why publish after the commit?\n- Why put an interface in front of `IHubContext`?\n- What happens to an event if the user has no open tab?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Updating the TanStack Query cache from pushed events",
+      "title": "Board and list update live when another tab changes an application",
+      "doneWhen": "With the board open in two tabs, moving a card in tab A moves it in tab B within a second without a 409, a new reminder updates the badge in every tab, and Vitest tests cover the event-to-cache function",
+      "learnLinks": [
+        {
+          "label": "TanStack Query: Updates from mutation responses",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/updates-from-mutation-responses"
+        },
+        {
+          "label": "TanStack Query: Query invalidation",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation"
+        },
+        {
+          "label": "TanStack Query: QueryClient",
+          "url": "https://tanstack.com/query/latest/docs/reference/QueryClient"
+        }
+      ],
+      "brief": "### Why this matters\nA pushed event is only useful if the screen changes. TanStack Query is your single source of client data, so events update the cache, not component state. Patch what the event fully describes, invalidate the rest. Week 10's two-tab conflict becomes rare because tab B learns the new version before the user drags. This applies the events from today's .NET part.\n\n### What you'll build\n- `features/realtime/applyEvent.ts` with a pure `applyApplicationChanged(queryClient, event)`\n- `StatusChanged` and `Updated`: if the detail is cached with a different `version`, patch status and version with `setQueryData`; invalidate lists and the board\n- `Deleted`: remove the detail query, invalidate lists; `Created` and `Restored`: invalidate lists\n- Stats (week 12) invalidated on any application event\n- `ReminderCreated`: prepend to the reminders cache and raise `unreadCount`; `RemindersRead`: invalidate reminders\n- Handlers registered with `useRealtimeEvent` in one component under the provider\n\n### Step by step\n1. List your query keys and decide, per event kind, patch or invalidate.\n2. Write the pure function and its tests first with a real `QueryClient`.\n3. Skip events your tab caused: same version means nothing to do.\n4. If a move for that card is in flight, let its `onSettled` win; `queryClient.isMutating()` with a filter tells you.\n5. Register the handlers and repeat the week 10 two-tab test.\n6. Disable the handlers and repeat: the 409 safety net still works.\n\n```ts\nexport function applyApplicationChanged(qc: QueryClient, e: ApplicationChangedEvent) {\n  // TODO: patch the detail if cached and version differs, then invalidate\n}\n```\n\n### Acceptance criteria\n- [ ] The other tab updates without a reload\n- [ ] Events never overwrite an in-flight optimistic move\n- [ ] Event handling lives outside components\n- [ ] Tests cover patch and invalidate paths\n\n### Hints\n- `invalidateQueries` refetches only rendered queries; others refetch when next used.\n- Version strings cannot be ordered, but \"different from mine\" is enough.\n\n### Common mistakes\n- Copying events into `useState`, creating a second source of truth.\n- Patching lists by hand when an invalidation is simpler and safe.\n\n### Check your understanding\n- When do you patch and when do you invalidate?\n- How does tab B avoid a 409 now?\n- Why keep the 409 path anyway?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Reconnects and missed messages",
+      "title": "Events carry ids so clients can detect gaps",
+      "doneWhen": "Every pushed event is wrapped in an envelope with a unique `id`, a per-user `seq` that grows by one and a server `epoch`, and a test proves two events for one user arrive with consecutive numbers while another user's sequence is independent",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Send messages from outside a hub",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/hubcontext"
+        },
+        {
+          "label": "Microsoft Learn: ASP.NET Core SignalR configuration",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/configuration"
+        }
+      ],
+      "brief": "### Why this matters\nSignalR does not store messages: anything sent while a tab is disconnected is simply gone. The client cannot fix what it cannot detect. If every event carries an id and a sequence number, a client that sees 7 after 5 knows it missed one and can refetch. Ids also let it ignore a duplicate. This is the core idea behind every reliable feed. Today's React part acts on gaps and reconnects.\n\n### What you'll build\n- `EventEnvelope<T>(Guid Id, string Epoch, long Seq, DateTimeOffset OccurredAt, T Payload)`\n- A singleton `IEventSequencer` in Api: a `ConcurrentDictionary<Guid, long>` per user, incremented atomically, and an `Epoch` string generated at startup\n- `SignalRNotificationPublisher` wrapping every payload in the envelope\n- `INotificationsClient` methods taking the envelope type\n- A unit test for the sequencer (two users, many increments in parallel) and a hub test checking consecutive numbers\n\n### Step by step\n1. Write down what the client should do for: next number, a gap, a lower number, a new epoch.\n2. Write the sequencer with `AddOrUpdate` or `Interlocked` so parallel sends never share a number.\n3. Generate the epoch once when the app starts.\n4. Wrap every send in the publisher.\n5. Test the sequencer in parallel with `Parallel.ForEachAsync` and assert no duplicates.\n6. Write one sentence on the limit: after a restart or with two instances, sequences reset or split; the epoch tells clients to resync.\n\n```csharp\npublic long Next(Guid userId) =>\n    _seq.AddOrUpdate(userId, 1, (_, current) => current + 1);\n```\n\n### Acceptance criteria\n- [ ] Every event has an id, epoch and sequence\n- [ ] Sequences are per user and never repeat within an epoch\n- [ ] A restart changes the epoch\n- [ ] The limit is written down\n\n### Hints\n- The in-memory counter is a deliberate trade-off: cheap, and a reset only costs clients one refetch.\n- Week 17's outbox gives events durable ids in the database; this envelope is the first step.\n\n### Common mistakes\n- A global sequence shared by all users, so every client sees \"gaps\" from other users' events.\n- Incrementing with `++` on a shared field.\n\n### Check your understanding\n- How does a client detect a missed event?\n- What is the epoch for?\n- Why is an in-memory counter acceptable here?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Automatic reconnect and refetch after reconnect",
+      "title": "Invalidate queries after reconnect; remove the week 14 polling",
+      "doneWhen": "After a reconnect, a detected sequence gap or a new epoch, the client invalidates reminders, lists, the board and stats; `refetchInterval` is gone from `useReminders()`; and the Network tab shows no reminder polling",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: ASP.NET Core SignalR JavaScript client",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/signalr/javascript-client"
+        },
+        {
+          "label": "TanStack Query: Query invalidation",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation"
+        }
+      ],
+      "brief": "### Why this matters\nLaptops sleep, trains go through tunnels, servers restart. Automatic reconnect brings the connection back, but whatever happened in between is lost. The fix is simple: after any reconnect or detected gap, refetch what might have changed. With that safety net, push can replace week 14's polling for good. This uses the envelope from today's .NET part.\n\n### What you'll build\n- A small tracker holding the last `epoch` and `seq` seen\n- Every handler unwrapping the envelope first:\n  - same epoch and `seq` is last plus one: apply the payload\n  - a gap or a new epoch: invalidate everything live\n  - an id already seen: ignore it\n- `onreconnected` invalidating reminders, lists, the board and stats\n- A retry after automatic reconnect gives up: on the browser's `online` event or a Retry button next to \"Offline\"\n- The week 14 `refetchInterval` and its TODO removed\n\n### Step by step\n1. Write the unwrap function and test it: next, gap, duplicate, new epoch.\n2. Call it from `useRealtimeEvent` so handlers only see payloads.\n3. Write one `resyncAll()` that invalidates the live keys; call it on gaps and in `onreconnected`.\n4. In `onclose`, offer Retry and listen for `online`.\n5. Remove the polling and check the Network tab for a few minutes.\n6. Stop the API, create a reminder through the dashboard after restarting, and watch the badge catch up.\n\n```ts\nexport function track(env: EventEnvelope<unknown>): \"apply\" | \"resync\" | \"skip\" {\n  // TODO: compare with the last epoch and seq; remember recent ids\n}\n```\n\n### Acceptance criteria\n- [ ] Missed events heal with one round of refetches\n- [ ] Duplicates are ignored\n- [ ] No polling remains\n- [ ] The user can recover from Offline without a reload\n\n### Hints\n- The default reconnect delays are 0, 2, 10 and 30 seconds, then it stops; you can pass your own array.\n- Keep a small set of recent ids, not every id forever.\n\n### Common mistakes\n- Applying events from a new epoch as if nothing happened.\n- Forgetting to reset the tracker on logout.\n\n### Check your understanding\n- What is lost while a client is disconnected?\n- Why is refetching after reconnect enough?\n- What would make polling necessary again?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Per-user notification preferences",
+      "title": "UserPreferences with a quiet mode stored per user",
+      "doneWhen": "`GET` and `PUT /api/me/preferences` read and save `quietMode` for the current user in a `UserPreferences` table (defaulting to false when no row exists), with validation and an integration test, and the PR \"Real-time\" is open",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Basic SaveChanges",
+          "url": "https://learn.microsoft.com/en-us/ef/core/saving/basic"
+        },
+        {
+          "label": "Microsoft Learn: Create responses in Minimal API applications",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses"
+        }
+      ],
+      "brief": "### Why this matters\nReal-time can turn into noise. A quiet mode lets users keep live data but stop interruptions. Storing it on the server, not in `localStorage`, means it follows the user to every device and lets server code (week 17's digest) read it too. A table keyed by user id is a simple, common design. This closes the .NET side of the PR \"Real-time\"; today's React part respects the setting.\n\n### What you'll build\n- `UserPreferences` in Domain or Infrastructure: `UserId` (key), `QuietMode`, `UpdatedAt`, with a migration\n- `PreferencesDto(QuietMode)` and `UpdatePreferencesRequest(QuietMode)` with a validator\n- `GET /api/me/preferences`: the row, or defaults when none exists\n- `PUT /api/me/preferences`: insert or update the current user's row, 200 with the DTO\n- An integration test: defaults for a new user, saved value for an existing one, users isolated\n\n### Step by step\n1. Decide where the type lives and write one line why.\n2. Add the configuration with `UserId` as the primary key and a migration.\n3. GET: project the row or return defaults; never create a row on read.\n4. PUT: load by user id; add if missing, update if present; save once.\n5. Map both under a `/api/me` group with `RequireAuthorization()`.\n6. Push and open the PR \"Real-time\"; merge after today's React part.\n\n### Acceptance criteria\n- [ ] The user id comes from the token, never the body\n- [ ] GET never writes\n- [ ] PUT works for new and existing users\n- [ ] Two users' preferences never mix\n\n### Hints\n- Week 17 adds digest settings to the same table; name it for preferences in general, not quiet mode.\n- The hub does not need to know about quiet mode; the client decides whether to toast.\n\n### Common mistakes\n- A route like `/api/users/{id}/preferences` that tempts ownership bugs.\n- Creating rows on every GET.\n\n### Check your understanding\n- Why store preferences on the server?\n- Why is `/api/me` safer than a user id in the URL?\n- Who decides whether to show a toast, and why?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Toasts and attention",
+      "title": "Toast notifications for reminders that respect quiet mode",
+      "doneWhen": "A new reminder shows one polite toast with an Open action (bursts collapse into \"3 new reminders\"), quiet mode in the user menu stops toasts but keeps the badge counting, the setting survives a reload on another browser, and PR \"Real-time\" is merged",
+      "learnLinks": [
+        {
+          "label": "W3C WAI: Alert pattern",
+          "url": "https://www.w3.org/WAI/ARIA/apg/patterns/alert/"
+        },
+        {
+          "label": "MDN: ARIA live regions",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Guides/Live_regions"
+        },
+        {
+          "label": "MDN: Page Visibility API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API"
+        }
+      ],
+      "brief": "### Why this matters\nA toast is the most visible part of real-time and the easiest to get wrong: too many, too fast, stealing focus or invisible to screen readers. Good toasts are polite, few, pausable and never move focus. Respecting the user's quiet mode is the difference between helpful and annoying. It ends the week with the PR \"Real-time\", together with today's .NET part.\n\n### What you'll build\n- Week 6's toast grown into a queue: at most three visible, each with an optional action and a close button\n- Toasts inside one `role=\"status\"` live region, mounted before the first message\n- Auto dismiss after about 6 seconds, paused on hover and focus\n- Reminder toasts: \"Follow up with Acme? Applied 7 days ago\" with Open; several within a few seconds become one\n- No toast while the tab is hidden; the badge still updates\n- `preferencesQuery`, a quiet mode switch in the user menu with an optimistic mutation, and toasts skipped when it is on\n\n### Step by step\n1. Write which events toast: new reminders yes, changes from another tab no.\n2. Build the queue and the live region.\n3. Toasts never take focus; their buttons are reachable with Tab.\n4. Batch reminder events with a short timer.\n5. Check `document.visibilityState` before showing.\n6. Add the switch and read quiet mode before every toast.\n7. Run all builds and tests, push, review and merge PR \"Real-time\".\n\n### Acceptance criteria\n- [ ] Toasts are announced politely and never steal focus\n- [ ] Bursts collapse into one toast\n- [ ] Quiet mode silences toasts, not data\n- [ ] PR \"Real-time\" is merged\n\n### Hints\n- WCAG asks that timed content can be paused; hover and focus pausing covers it.\n- `role=\"alert\"` is for errors only.\n\n### Common mistakes\n- Mounting the live region together with its first message, so it is not announced.\n- Storing quiet mode in `localStorage`.\n\n### Check your understanding\n- Why `role=\"status\"` and not `alert` for reminders?\n- Why never move focus to a toast?\n- Why skip toasts in hidden tabs?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "lane": null,
+      "learn": null,
+      "title": "Draw how a server event reaches one user's open tabs, and explain what happens to messages while a client is disconnected",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nDraw how a server event reaches one user's open tabs, and explain what happens to messages while a client is disconnected, in 20 minutes.\n\n### Rules\n- Blank page or whiteboard, then explain it out loud as if to an interviewer. Optional: prove one part in a tiny hub in a new folder outside the JobHunt repo.\n- Docs allowed, but try without first and note every lookup. No AI assistants, no copying from JobHunt.\n\n### Must include\n- The path: a command saves, publishes through an interface, `IHubContext` sends to `user:{id}`, every tab's connection receives it, the handler updates the TanStack Query cache\n- How a connection joins the group, and why it must rejoin after reconnecting\n- How the browser authenticates: token in the query string for `/hubs` only, fresh through the shared refresh helper\n- What is lost while disconnected, and how the client recovers: reconnect, sequence gaps, refetch\n- Why events are published after the commit\n- What changes with two API instances (a backplane, week 20)\n\n### Self-check\n- [ ] Finished within 20 minutes\n- [ ] Every arrow on the drawing has a name\n- [ ] Explained why tab B avoids a 409 now\n- [ ] Explained why one refresh at a time still holds with a hub\n- [ ] Zero lookups, or a list of exactly what to review\n\n### If you got stuck\n- Hub and groups: Monday, .NET part. Hub auth: Tuesday, .NET part.\n- Publishing: Wednesday, .NET part. Event ids: Thursday, .NET part.\n- Connection lifetime: Monday, React part. Token factory: Tuesday, React part.\n- Cache updates: Wednesday, React part. Reconnect: Thursday, React part."
+    }
+  ]
+}

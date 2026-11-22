@@ -52,15 +52,15 @@ function plainMath(text) {
 const PERSONA = `You are "Mentor", a senior software engineer (10+ years, ex-FAANG interviewer and tech lead) who coaches one person.
 
 About them: 23-year-old software engineer in India, full-time at an MNC, switching from 7 LPA to a 20 LPA product/FAANG role.
-In a 22-week plan (Mon 5 Oct 2026 → Sun 7 Mar 2027): DSA in **Java** from zero (5 h/day, Phase 1 learn weeks 1–13, Phase 2 revision + mocks weeks 14–22),
-1 h/day from-scratch projects (Node.js weeks 1–6, ASP.NET Core/.NET 10 weeks 7–14, React + TypeScript weeks 15–21), and a home fat-loss plan (115 → 80 kg, 185 cm, non-veg).
+In a 22-week plan (Wed 18 Nov 2026 → Tue 20 Apr 2027): DSA in **Java** from zero (5 h/day, Phase 1 learn weeks 1–13, Phase 2 revision + mocks weeks 14–22),
+1 h/day full-stack course weeks 1–21 (one JobHunt app built feature by feature: a .NET 10 API endpoint and the React + TypeScript screen that uses it, every week), then Node.js weeks 23–28, and a home fat-loss plan (115 → 80 kg, 185 cm, non-veg).
 
 How you mentor:
 - Think like an interviewer and a tech lead: patterns, invariants, trade-offs, complexity, edge cases, clean code.
 - Socratic first: help them discover the idea; give the answer only when the mode asks for it.
 - Be concrete and concise. Markdown with short headings, bullet points, and fenced code blocks.
 - Never use LaTeX or $...$ math. Write complexity as plain text or inline code, e.g. \`O(n log n)\`.
-- Code language: Java for DSA, C# for .NET, TypeScript/JavaScript for React and Node.
+- Code language: Java for DSA, C# for the full-stack API, TypeScript for its React app, JavaScript for Node.
 - Tie advice to their plan and current progress (provided below). Point out the next concrete action.
 - Links: only cite URLs from the "Verified links" list in the context. Never invent or guess URLs.
 - Tone: warm, direct, never shaming, no fake urgency. Missed days are normal; use the plan's catch-up rules.
@@ -101,7 +101,7 @@ async function buildContext(date = localToday()) {
       WHERE d.plan_date < @today AND p.status = 'todo' AND p.is_stretch = 0;
     SELECT TOP 3 t.kind, t.learn, t.title, t.done, t.learn_done, CONVERT(char(10), t.plan_date, 23) AS plan_date, p.name AS project, p.area
       FROM dbo.project_tasks t JOIN dbo.projects p ON p.code = t.project_code
-      WHERE t.plan_date >= @d ORDER BY t.plan_date, CASE t.kind WHEN 'build' THEN 0 ELSE 1 END;
+      WHERE t.plan_date >= @d AND p.area <> 'archived' ORDER BY t.plan_date, CASE t.kind WHEN 'build' THEN 0 ELSE 1 END;
     SELECT COALESCE(SUM(calories), 0) AS kcal, COALESCE(SUM(protein_g), 0) AS protein FROM dbo.meals WHERE log_date = @today;
     SELECT water_ml, steps, weight_kg, sleep_h FROM dbo.body_log WHERE log_date = @today;`);
   const [day, tasks, probs, due, solved, weak, behindTasks, behindProbs, lessons, food, body] = r.recordsets;
@@ -186,14 +186,14 @@ async function getProblem(id) {
 async function getLessonTask(id) {
   const pool = await getPool();
   const r = await pool.request().input('id', sql.Int, id).query(`
-    SELECT CAST(t.id AS int) AS id, t.kind, t.learn, t.learn_links, t.title, t.week_title, p.name AS project, p.area
+    SELECT CAST(t.id AS int) AS id, t.kind, t.lane, t.learn, t.learn_links, t.title, t.week_title, p.name AS project, p.area
     FROM dbo.project_tasks t JOIN dbo.projects p ON p.code = t.project_code WHERE t.id = @id`);
   const t = r.recordset[0];
   if (t) t.learn_links = JSON.parse(t.learn_links || '[]');
   return t;
 }
 
-const LANG = { node: 'JavaScript (Node.js)', dotnet: 'C# (.NET 10)', react: 'TypeScript (React)', dsa: 'Java' };
+const LANG = { node: 'JavaScript (Node.js)', fullstack: 'C# (.NET 10) for the API and TypeScript (React) for the web app', dotnet: 'C# (.NET 10)', react: 'TypeScript (React)', dsa: 'Java' };
 
 /**
  * Builds the prompt for one mentor turn, calls Gemini with the thread history, stores both sides.
@@ -224,7 +224,8 @@ Earlier hints in this conversation may exist: build on them and don't repeat the
       const t = await getLessonTask(Number(body.taskId));
       if (!t) throw Object.assign(new Error('Lesson not found'), { status: 404 });
       topic = t.learn || t.title;
-      area = t.area;
+      // the full-stack course's .NET lessons get C# examples, its React lessons TypeScript
+      area = t.lane === 'api' ? 'dotnet' : t.lane === 'web' ? 'react' : t.area;
       links = t.learn_links;
       body.lessonNote = `This is from the ${t.project} roadmap, week "${t.week_title}". The build task that uses it: "${t.title}". Explain it for that lesson (it may be a future lesson; don't tie it to today's project).`;
     }

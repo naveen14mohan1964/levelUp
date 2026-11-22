@@ -1,0 +1,209 @@
+{
+  "week": 6,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "api",
+      "learn": "POST semantics; 201 Created with a Location header",
+      "title": "POST /api/applications",
+      "doneWhen": "`POST /api/applications` returns 201 with the created DTO and a `Location` header that resolves to the new item with a GET",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Create responses in Minimal API applications",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses"
+        },
+        {
+          "label": "MDN: HTTP request methods",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods"
+        }
+      ],
+      "brief": "### Why this matters\nWrites are where rules, transactions and HTTP semantics matter. `201 Created` with a `Location` header is how a REST API says \"here is your new resource\". Separating commands from the read queries you built in week 4 is the core idea behind CQRS, and \"is POST idempotent?\" is a common question.\n\n### What you'll build\nOn a branch `feature/create-edit`:\n- `CreateApplicationRequest` record in Application: `CompanyName`, `RoleTitle`, `AppliedOn`, `SourceUrl?`, `RecruiterEmail?`\n- `ICompanyRepository` (`FindByNameAsync`, `Add`) and `IUnitOfWork` (`SaveChangesAsync`), implemented in Infrastructure\n- An `ApplicationCommands` service with `CreateAsync`: find or create the company, build the `JobApplication` through its constructor, save once\n- `POST /api/applications` returning 201 with `Location` and the DTO\n\n### Step by step\n1. Write the request record. Never accept the entity as the body.\n2. Add the two interfaces; the DbContext can implement `IUnitOfWork` itself.\n3. Write `CreateAsync`. Convert strings to `WebUrl`/`EmailAddress` here, so the domain only sees valid values.\n4. Register the service as scoped.\n5. Map POST in the route group. Use `TypedResults.CreatedAtRoute` with the name you gave the GET by id endpoint in week 3, or `TypedResults.Created` with a path.\n6. Test in a `.http` file: create, follow the `Location`, and send the same POST twice.\n\n```csharp\ngroup.MapPost(\"/\", async (CreateApplicationRequest req, ApplicationCommands commands, CancellationToken ct) =>\n{\n    // TODO: create, then return 201 with Location\n});\n```\n\n### Acceptance criteria\n- [ ] 201, a `Location` header and the DTO in the body\n- [ ] One `SaveChangesAsync` per command\n- [ ] Writes use tracked entities; reads still use the no-tracking queries\n- [ ] `Id` and `Status` cannot be set by the client\n\n### Hints\n- POST creates a new resource each time, so two identical POSTs make two rows. That is expected.\n- `IUnitOfWork` keeps EF out of Application but still gives one transaction per command.\n\n### Common mistakes\n- Returning 200 for a create, or 201 without `Location`.\n- Saving inside repository methods, so one command commits twice.\n\n### Check your understanding\n- Which HTTP methods are idempotent?\n- Why should the body be a dedicated record and not the entity?\n- What is the difference between a command and a query in your code?"
+    },
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "web",
+      "learn": "React Hook Form basics: register, handleSubmit, errors",
+      "title": "Create application form with React Hook Form",
+      "doneWhen": "`/applications/new` renders a form whose empty submit shows \"required\" messages under company and role title, and a valid submit logs typed values to the console",
+      "learnLinks": [
+        {
+          "label": "React Hook Form: Get started",
+          "url": "https://react-hook-form.com/get-started"
+        },
+        {
+          "label": "React Hook Form: useForm",
+          "url": "https://react-hook-form.com/docs/useform"
+        }
+      ],
+      "brief": "### Why this matters\nForms are where users spend effort and where many front-end bugs live. React Hook Form keeps inputs uncontrolled, so typing does not re-render the whole form. Building a form from scratch is one of the most common take-home tasks. Wednesday connects this form to the POST endpoint built today.\n\n### What you'll build\n- `react-hook-form` installed\n- An `ApplicationForm` component with company, role title, applied date, source URL and recruiter email\n- `useForm<ApplicationFormValues>` with `defaultValues`, inputs registered with `register`\n- Basic rules through `register` options (`required`, `maxLength`) for today only; Tuesday replaces them with Zod\n- A route `applications/new` and a \"New application\" link on the list page\n\n### Step by step\n1. Define `ApplicationFormValues` by hand for today.\n2. Call `useForm` with `defaultValues` for every field (empty strings, today's date).\n3. Register each input with `{...register(\"roleTitle\", { required: \"Role title is required\" })}`.\n4. Give each field a `<label htmlFor>` and show `formState.errors.<field>?.message` under it.\n5. Add `aria-invalid` and `aria-describedby` pointing at the error element.\n6. Wrap with `<form onSubmit={handleSubmit(onSubmit)}>`; log the values in `onSubmit`.\n7. Add the route and the link.\n\n### Acceptance criteria\n- [ ] No `useState` per input\n- [ ] Every field has a label and default value\n- [ ] Errors are linked to their inputs for assistive tech\n- [ ] `onSubmit` runs only when the form is valid\n\n### Hints\n- `handleSubmit` calls your function with typed values only after validation passes.\n- `mode: \"onTouched\"` shows errors after a field loses focus instead of on every key.\n\n### Common mistakes\n- Missing `defaultValues`, which makes inputs flip from uncontrolled to controlled.\n- Using `placeholder` instead of a real label.\n\n### Stretch (optional)\n- Disable the submit button while `formState.isSubmitting` is true.\n\n### Check your understanding\n- Why does React Hook Form re-render less than a `useState` form?\n- What does `register` return, and why do you spread it?\n- When does `handleSubmit` call your `onSubmit`?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "api",
+      "learn": "FluentValidation and validation ProblemDetails",
+      "title": "Validator for create with field-level errors in the 400 response",
+      "doneWhen": "Posting an empty role title returns 400 `application/problem+json` with an `errors` object keyed by field name, and the command service is never called",
+      "learnLinks": [
+        {
+          "label": "FluentValidation: Creating your first validator",
+          "url": "https://docs.fluentvalidation.net/en/latest/start.html"
+        },
+        {
+          "label": "FluentValidation: ASP.NET Core",
+          "url": "https://docs.fluentvalidation.net/en/latest/aspnet.html"
+        },
+        {
+          "label": "Microsoft Learn: Filters in minimal API apps",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/min-api-filters"
+        }
+      ],
+      "brief": "### Why this matters\nA standard 400 with field-level errors lets the React form show \"Role title is required\" next to the right input. FluentValidation is common on .NET teams, and knowing where validation belongs (request shape vs business rule) is a frequent design question. The React part writes the same rules in Zod today.\n\n### What you'll build\n- `FluentValidation` and its DI extensions package in Application\n- `CreateApplicationRequestValidator`: company and role title required with max lengths matching EF; `AppliedOn` not in the future; `SourceUrl` an absolute http(s) URL and `RecruiterEmail` a valid email when present\n- `AddValidatorsFromAssemblyContaining<...>()` in an `AddApplication()` extension\n- A reusable `ValidationFilter<T>` endpoint filter returning `TypedResults.ValidationProblem(...)`\n\n### Step by step\n1. Read both FluentValidation pages. The automatic MVC integration is not recommended; you validate explicitly.\n2. Write the validator with `RuleFor(...)` chains and clear messages.\n3. Register validators by scanning the Application assembly.\n4. Write `ValidationFilter<T>`: find the `T` argument, validate, short-circuit when invalid.\n5. Apply it with `.AddEndpointFilter<ValidationFilter<CreateApplicationRequest>>()`.\n6. Send invalid requests and inspect `errors`. Keys should be camelCase.\n\n```csharp\npublic sealed class ValidationFilter<T>(IValidator<T> validator) : IEndpointFilter\n{\n    public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext ctx, EndpointFilterDelegate next)\n    {\n        // TODO: find T in ctx.Arguments, validate, return ValidationProblem or await next(ctx)\n    }\n}\n```\n\n### Acceptance criteria\n- [ ] 400 with `errors: { field: [messages] }`\n- [ ] Max lengths match the database configuration\n- [ ] The filter is generic and reusable\n- [ ] At least three validator unit tests\n\n### Hints\n- `ValidationResult.ToDictionary()` gives the shape `ValidationProblem` expects.\n- Domain guards (week 2) still protect invariants. Keep both layers.\n\n### Common mistakes\n- `if` checks in the handler that drift from the rules.\n- A custom error shape, so the client needs two parsers.\n\n### Check your understanding\n- What is the difference between request validation and a domain rule?\n- Why does an endpoint filter run after binding but before the handler?\n- How do the `errors` keys reach the right input in React?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Zod schemas and the resolver; sharing one schema",
+      "title": "Zod schema for the form, mirroring the API rules",
+      "doneWhen": "The form validates with a Zod schema through `zodResolver`, its values type comes from `z.infer`, and an empty or invalid submit shows the Zod messages with no network request",
+      "learnLinks": [
+        {
+          "label": "Zod: Defining schemas",
+          "url": "https://zod.dev/api"
+        },
+        {
+          "label": "React Hook Form: useForm",
+          "url": "https://react-hook-form.com/docs/useform"
+        }
+      ],
+      "brief": "### Why this matters\nZod gives you one schema that validates at run time and produces the TypeScript type, so the rules and the type cannot drift. Mirroring the server rules from today's .NET part means users get instant feedback, while the server stays the source of truth.\n\n### What you'll build\n- `zod` and `@hookform/resolvers` installed\n- `features/applications/applicationSchema.ts` with one object schema mirroring the FluentValidation rules\n- `type ApplicationFormValues = z.infer<typeof applicationSchema>` replacing the hand-written type\n- `useForm({ resolver: zodResolver(applicationSchema), defaultValues })`\n- The `register` rules from Monday removed\n\n### Step by step\n1. Write the schema: trimmed required strings with max lengths, a date string that is not in the future, an optional URL and an optional email.\n2. Treat empty optional inputs as \"not provided\": a union with an empty string literal, or a preprocess step; pick one and use it for both optional fields.\n3. Infer the type and delete Monday's interface.\n4. Pass the resolver to `useForm` and remove the inline rules.\n5. Check each message appears under the right field.\n6. Compare the schema with the C# validator line by line; note any rule that differs.\n\n```ts\nexport const applicationSchema = z.object({\n  companyName: z.string().trim().min(1, \"Company is required\").max(200),\n  // TODO: roleTitle, appliedOn, sourceUrl, recruiterEmail\n});\n```\n\n### Acceptance criteria\n- [ ] One schema, one inferred type\n- [ ] Max lengths match the server\n- [ ] Empty optional fields pass\n- [ ] No inline `register` rules left\n\n### Hints\n- If a schema transforms values, its input and output types differ; keep transforms small.\n- A `.refine` on the object can attach a cross-field error to one field with `path`.\n\n### Common mistakes\n- Two schemas for create and edit that slowly diverge.\n- Messages that differ from the server's, so users see two wordings for one rule.\n\n### Check your understanding\n- What does the resolver do?\n- Why keep client validation if the server is the source of truth?\n- What does `z.infer` give you?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "api",
+      "learn": "PUT vs PATCH; updating safely",
+      "title": "PUT /api/applications/{id} with its own validator",
+      "doneWhen": "`PUT /api/applications/{id}` returns 200 with the DTO for a known id, 404 for an unknown one, 400 with field errors from its own validator, and sending the same PUT twice leaves the same state",
+      "learnLinks": [
+        {
+          "label": "MDN: PATCH",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/PATCH"
+        },
+        {
+          "label": "Microsoft Learn: Web API design best practices",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design"
+        }
+      ],
+      "brief": "### Why this matters\nPUT replaces a resource's editable state and is idempotent; PATCH changes part of it. Choosing one, and refusing to let clients edit fields that only the domain may change, is what \"updating safely\" means. The React part today sends this PUT from the edit form.\n\n### What you'll build\n- `UpdateApplicationRequest` record with the same editable fields as create\n- `UpdateApplicationRequestValidator`, sharing rules with the create validator through a base class or `Include`\n- A domain method `JobApplication.UpdateDetails(...)` with guards\n- `ApplicationCommands.UpdateAsync`: load the tracked entity, call `UpdateDetails`, save once\n- `PUT /api/applications/{id:guid}` returning `Results<Ok<ApplicationDto>, NotFound, ValidationProblem>`\n\n### Step by step\n1. Move the shared rules into a base validator and make both validators use it.\n2. Add `UpdateDetails` on the entity: guards first, then assign.\n3. Write `UpdateAsync`: `GetByIdAsync` (tracked), 404 if missing, call the domain method, `SaveChangesAsync`.\n4. Map PUT with the validation filter.\n5. Add a domain test for the `UpdateDetails` guards.\n6. Test: update, update an unknown id, invalid body, the same PUT twice.\n\n### Acceptance criteria\n- [ ] Status cannot be changed through PUT\n- [ ] Create and update share rules without copy and paste\n- [ ] One `SaveChangesAsync` per command\n- [ ] PUT is idempotent\n\n### Hints\n- The change tracker notices property changes on a tracked entity; no `Update()` call is needed.\n- Status changes stay in the domain methods from week 2. A dedicated endpoint for them comes later.\n\n### Common mistakes\n- Attaching a new entity built from the request with `Update()`, which overwrites every column, including ones the client never sent.\n- Loading with the no-tracking query and wondering why nothing saves.\n\n### Check your understanding\n- When would you choose PATCH over PUT?\n- Why load and modify a tracked entity instead of attaching a new one?\n- What makes a PUT idempotent?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "web",
+      "learn": "useMutation and cache invalidation",
+      "title": "Create and edit mutations that invalidate the list and detail queries",
+      "doneWhen": "Creating an application lands on its detail page, editing one at `/applications/:id/edit` saves through PUT, and the list shows both changes without a page reload",
+      "learnLinks": [
+        {
+          "label": "TanStack Query: Mutations",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/mutations"
+        },
+        {
+          "label": "TanStack Query: Query invalidation",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation"
+        }
+      ],
+      "brief": "### Why this matters\nAfter a write, every cached list that might contain that row is stale. Invalidation by key prefix keeps the UI honest without manual state juggling. These mutations call the POST from Monday and the PUT from today's .NET part.\n\n### What you'll build\n- `createApplication` and `updateApplication` in `api.ts`, sending JSON\n- `useCreateApplication()` and `useUpdateApplication(id)` with `useMutation`\n- `onSuccess`: invalidate `applicationKeys.lists()` (and the detail key for updates), then navigate to the detail page\n- A route `applications/:id/edit` reusing `ApplicationForm` with `defaultValues` from the detail loader\n- A submit button that says \"Saving\" and is disabled while `isPending`\n\n### Step by step\n1. Write the two API functions on `request<T>` with `method` and a JSON body.\n2. Write the hooks. Get the client with `useQueryClient()` and invalidate by the list prefix.\n3. Give `ApplicationForm` props: `defaultValues`, `onSubmit`, `submitLabel`, `isSubmitting`.\n4. Use it on the new route with the create hook.\n5. Add the edit route; map the loaded DTO to form values (null to empty string).\n6. Add an Edit link on the detail page.\n7. Save, then check the Devtools: list queries are marked stale and refetch.\n\n```ts\nreturn useMutation({\n  mutationFn: (values: ApplicationFormValues) => createApplication(values),\n  onSuccess: async (created) => { /* TODO: invalidate, navigate */ },\n});\n```\n\n### Acceptance criteria\n- [ ] Invalidation uses a prefix, not one exact list key\n- [ ] One form component for create and edit\n- [ ] No double submit\n- [ ] The detail page shows fresh data after an edit\n\n### Hints\n- Returning the `invalidateQueries` promise keeps the mutation pending until the refetch finishes.\n- Navigating to the detail route re-runs its loader.\n\n### Common mistakes\n- Updating every cached list by hand with `setQueryData`.\n- Catching errors inside `mutationFn`, which hides them from `onError`.\n\n### Check your understanding\n- What is the difference between invalidating and refetching?\n- Why invalidate by prefix?\n- What happens to invalidated queries that are not on screen?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Mapping domain rules to responses",
+      "title": "Domain rule violations returned as 422 with a clear message",
+      "doneWhen": "Editing a Rejected application returns 422 ProblemDetails with a clear `title` and `detail`, while bad input still returns 400",
+      "learnLinks": [
+        {
+          "label": "MDN: 422 Unprocessable Content",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/422"
+        },
+        {
+          "label": "Microsoft Learn: Handle errors in ASP.NET Core APIs",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling-api"
+        }
+      ],
+      "brief": "### Why this matters\n\"Your input is malformed\" (400) and \"your input is fine but the business says no\" (422) are different messages, and clients handle them differently. Mapping domain exceptions to the right status in one place keeps endpoints thin. The React part today shows this message on the form.\n\n### What you'll build\n- A new rule: details of an application in a final status (`Offer` or `Rejected`) cannot be edited, enforced in `UpdateDetails`\n- `GlobalExceptionHandler` mapping `DomainException` to 422 instead of week 3's temporary 400\n- A stable `type` URI or `title` per domain error so clients can tell them apart\n- Tests for the new rule\n\n### Step by step\n1. Add the guard to `UpdateDetails` and a specific exception (for example `ApplicationClosedException`).\n2. In the exception handler, map every `DomainException` to 422 with the exception message as `detail`.\n3. Give each domain exception a short, stable title (\"Application is closed\", \"Invalid status transition\").\n4. Add a domain test for the new guard.\n5. Seed or create a Rejected application and PUT to it. Check status, title and detail.\n6. Confirm a blank role title still returns 400 from the validator, before the domain is touched.\n\n### Acceptance criteria\n- [ ] Domain rule violations return 422, not 400 or 500\n- [ ] Validation errors still return 400\n- [ ] The mapping lives in one place\n- [ ] Messages are safe to show to users\n\n### Hints\n- A small dictionary or `switch` from exception type to title keeps the handler readable.\n- Domain messages are written by you and safe to show; unexpected exception messages are not.\n\n### Common mistakes\n- try/catch in each endpoint to turn exceptions into responses.\n- Using 409 for every rule. 409 is for conflicts with current state, such as a duplicate or a concurrency clash; pick deliberately.\n\n### Check your understanding\n- When is 422 better than 400?\n- When would 409 be the better choice?\n- Why can domain messages be shown while 500 details cannot?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Showing server field errors on inputs",
+      "title": "API field errors mapped onto the matching form inputs",
+      "doneWhen": "A server 400 shows each message under the matching input, and a 422 shows its title in one form-level message above the submit button",
+      "learnLinks": [
+        {
+          "label": "React Hook Form: setError",
+          "url": "https://react-hook-form.com/docs/useform/seterror"
+        },
+        {
+          "label": "TanStack Query: Mutations",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/mutations"
+        }
+      ],
+      "brief": "### Why this matters\nClient validation never catches everything: the server knows rules the browser does not. Mapping server errors back onto the right input is what makes a form feel professional. Today the form handles the 400 and the new 422 from the .NET part.\n\n### What you'll build\n- `ProblemDetails` extended with an optional `errors: Record<string, string[]>` (if not done in week 5)\n- `applyServerErrors(error, setError)` that maps `errors` keys onto form fields\n- A root error (`setError(\"root.server\", ...)`) for 422s and unknown keys\n- The root message rendered above the submit button with `role=\"alert\"`\n\n### Step by step\n1. Write `applyServerErrors`: if the error is an `ApiError` with status 400 and `errors`, call `setError` for each known field.\n2. Send keys that do not match a field to the root error.\n3. For status 422, set the root error from the ProblemDetails title and detail.\n4. Call it from the mutation's `onError` (or from a try/catch around `mutateAsync` in the submit handler).\n5. Temporarily loosen a Zod rule, submit a too-long value, and watch the server message appear under the field. Restore the rule.\n6. Edit a Rejected application to see the 422 message.\n\n### Acceptance criteria\n- [ ] Server field errors appear under the matching inputs\n- [ ] 422 and unknown errors appear in one form-level message\n- [ ] Field names match without manual renaming for each field\n- [ ] The root message is announced with `role=\"alert\"`\n\n### Hints\n- Keep the known field names in one array typed as `Path<ApplicationFormValues>[]` so a typo is a compile error.\n- Root errors are cleared on the next submit; field errors clear when the user edits the field.\n\n### Common mistakes\n- Field name casing mismatch (`RoleTitle` vs `roleTitle`), so errors silently go nowhere.\n- Showing a generic \"Failed\" toast and dropping the useful server message.\n\n### Stretch (optional)\n- Focus the first field with a server error using `setFocus`.\n\n### Check your understanding\n- Why might the server reject input the client accepted?\n- What is a root error in React Hook Form?\n- How should the form treat 400, 422 and 500 differently?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "api",
+      "learn": "DELETE and soft delete with a global query filter",
+      "title": "Soft delete endpoint hidden from every query",
+      "doneWhen": "`DELETE /api/applications/{id}` returns 204, the item disappears from list and detail through a global query filter, and `POST /api/applications/{id}/restore` brings it back",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Global query filters",
+          "url": "https://learn.microsoft.com/en-us/ef/core/querying/filters"
+        },
+        {
+          "label": "MDN: DELETE",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/DELETE"
+        }
+      ],
+      "brief": "### Why this matters\nHard deletes are permanent; real products usually soft delete so users can undo and data can be audited. A global query filter hides deleted rows everywhere without remembering a `Where` in every query. The React part today calls both endpoints for delete and undo. This closes the .NET side of the PR \"Create + edit\".\n\n### What you'll build\n- `IsDeleted` and `DeletedAt` on `JobApplication`, set by `Delete(DateTimeOffset now)` and cleared by `Restore()`\n- A migration for the new columns and `HasQueryFilter(a => !a.IsDeleted)` in the configuration\n- `DELETE /api/applications/{id:guid}` returning 204, or 404 when missing\n- `POST /api/applications/{id:guid}/restore` using `IgnoreQueryFilters()` and returning 200 with the DTO\n\n### Step by step\n1. Add the domain methods with guards. Decide what deleting twice does and test it.\n2. Configure the filter and add the migration.\n3. Write `DeleteAsync` and `RestoreAsync` commands, each saving once.\n4. Map both endpoints in the route group.\n5. Check that the list, detail and PUT all treat a deleted item as missing.\n6. Add domain tests for `Delete` and `Restore`.\n\n```csharp\nbuilder.HasQueryFilter(a => !a.IsDeleted);\n```\n\n### Acceptance criteria\n- [ ] Deleted items vanish from every normal query\n- [ ] DELETE returns 204; unknown id returns 404\n- [ ] `IgnoreQueryFilters()` appears only in restore\n- [ ] Domain tests cover delete and restore\n\n### Hints\n- Use a clock abstraction (`TimeProvider` is built in) so `DeletedAt` is testable.\n- DELETE is idempotent in intent. Decide whether a second DELETE returns 204 or 404 and be consistent.\n\n### Common mistakes\n- Forgetting that `IgnoreQueryFilters()` removes every filter, including the per-user filter coming in week 7.\n- A unique index that now blocks re-creating something soft deleted.\n\n### Check your understanding\n- What are the trade-offs of soft delete versus hard delete?\n- Why a global filter instead of `Where` in each query?\n- How would you purge old deleted rows later?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Confirm dialogs and undo",
+      "title": "Delete with a confirm dialog and an undo toast",
+      "doneWhen": "Delete asks for confirmation in a native `<dialog>`, the item disappears from the list, a toast offers Undo for about 5 seconds and Undo restores it; PR \"Create + edit\" is merged",
+      "learnLinks": [
+        {
+          "label": "MDN: The dialog element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog"
+        },
+        {
+          "label": "react.dev: Passing data deeply with context",
+          "url": "https://react.dev/learn/passing-data-deeply-with-context"
+        }
+      ],
+      "brief": "### Why this matters\nA destructive action deserves both a confirmation and a way back. Confirm dialogs and undo toasts are standard product UX, and building them accessibly is a common front-end interview topic. Today also ends the week with the PR \"Create + edit\".\n\n### What you'll build\n- `ConfirmDialog` built on `<dialog>` opened with `showModal()`, focus on Cancel by default\n- A minimal toast system: a context provider in the layout and a `useToast()` hook\n- `useDeleteApplication` and `useRestoreApplication` mutations that invalidate the list keys\n- A Delete button on the detail page: confirm, delete, go to the list, show \"Application deleted\" with Undo\n\n### Step by step\n1. Build `ConfirmDialog` with props `open`, `title`, `onConfirm`, `onCancel`. Call `showModal()` and `close()` from an effect on a ref.\n2. Handle Escape through the dialog's `cancel` event.\n3. Create a toast context with `show(message, action?)`; render the toast in the layout with `role=\"status\"`.\n4. Clear the timer in a cleanup so it never fires after unmount.\n5. Write the two mutations; both invalidate `applicationKeys.lists()`.\n6. Wire the Delete button, then Undo calling restore.\n7. Run all checks, push, open the PR \"Create + edit\", review the diff and merge.\n\n### Acceptance criteria\n- [ ] Escape and Cancel close the dialog without deleting\n- [ ] Focus returns to the Delete button after closing\n- [ ] Undo restores the item and the list updates\n- [ ] PR \"Create + edit\" is merged\n\n### Hints\n- `showModal()` gives a backdrop, focus trapping and Escape handling for free.\n- Context is right for app-wide UI like toasts; avoid it for server data, which lives in TanStack Query.\n\n### Common mistakes\n- Using `window.confirm`, which cannot be styled or tested well.\n- Starting the toast timer in render instead of an effect.\n\n### Check your understanding\n- Why both a confirmation and an undo?\n- What does `showModal()` give you over a styled `div`?\n- Why put the toast provider in the layout?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "lane": null,
+      "learn": null,
+      "title": "Write a useMutation + useQuery pair with invalidation from memory, and a FluentValidation rule with its 400 response shape",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nFrom memory, write a `useQuery` and `useMutation` pair with invalidation, and a FluentValidation rule with the 400 response it produces, in 20 minutes.\n\n### Rules\n- New empty folder outside the repo. A Vite React app and a small API without a database are enough.\n- The outline says from memory: keep docs closed for the first attempt and note anything you had to look up.\n- No AI assistants, no copying from JobHunt. Stop when the 20 minute timer rings.\n\n### Must include\n- A query key factory and a `useQuery` hook for a list (for example `todos`)\n- A `useMutation` that POSTs a new item and invalidates the list by prefix in `onSuccess`\n- A pending state on the submit button\n- A request record and a FluentValidation validator with at least two rules\n- An endpoint filter or explicit check returning `ValidationProblem` with field errors\n- Written next to the code: the exact JSON shape of the 400 (`type`, `title`, `status`, `errors`), and one sentence on when you would return 422 instead\n\n### Self-check\n- [ ] Finished within 20 minutes\n- [ ] The query key includes everything the query depends on\n- [ ] Invalidation uses a prefix, not an exact key\n- [ ] The 400 body you wrote matches what the API really returns\n- [ ] You can explain why POST is not idempotent and PUT is\n- [ ] Zero lookups, or you know exactly which ones to review\n\n### If you got stuck\n- POST, 201 and `Location`: Monday, .NET part.\n- FluentValidation and the 400 shape: Tuesday, .NET part.\n- Zod and the resolver: Tuesday, React part.\n- PUT and shared rules: Wednesday, .NET part.\n- `useMutation` and invalidation: Wednesday, React part.\n- 400 vs 422: Thursday, both parts."
+    }
+  ]
+}

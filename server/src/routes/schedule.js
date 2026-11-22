@@ -19,9 +19,9 @@ router.get('/schedule/:date', wrap(async (req, res) => {
       FROM dbo.tasks t JOIN dbo.days d ON d.id = t.day_id WHERE d.plan_date = @date ORDER BY t.sort_order;
     SELECT p.is_selftest, p.is_stretch, p.status
       FROM dbo.problems p JOIN dbo.days d ON d.id = p.day_id WHERE d.plan_date = @date;
-    SELECT CAST(t.id AS int) AS id, t.kind, t.learn, t.learn_done, t.title, t.done, p.area, p.name AS project
-      FROM dbo.project_tasks t JOIN dbo.projects p ON p.code = t.project_code WHERE t.plan_date = @date
-      ORDER BY CASE t.kind WHEN 'build' THEN 0 ELSE 1 END, t.id;`);
+    SELECT CAST(t.id AS int) AS id, t.kind, t.lane, t.learn, t.learn_done, t.title, t.done, p.area, p.name AS project
+      FROM dbo.project_tasks t JOIN dbo.projects p ON p.code = t.project_code WHERE t.plan_date = @date AND p.area <> 'archived'
+      ORDER BY CASE t.kind WHEN 'build' THEN 0 ELSE 1 END, t.lane, t.id;`);
   const [days, settings, rawTasks, problems, projectTasks] = r.recordsets;
   const tasks = markLinked(rawTasks, problems);
   const day = days[0] || null;
@@ -58,11 +58,12 @@ router.get('/schedule/:date', wrap(async (req, res) => {
       block.title = projectTasks[0] ? `${projectTasks[0].project} (1h at the office)` : tpl.title;
       // Each roadmap day = 📖 learn → 🛠 build (→ ✅ checkpoint on Fridays), each its own tick.
       block.items = projectTasks.flatMap((t) => {
-        const base = { kind: 'project', id: t.id, area: t.area, project: t.project };
+        const base = { kind: 'project', id: t.id, area: t.area, project: t.project, lane: t.lane || null };
+        const tag = t.lane === 'api' ? '.NET: ' : t.lane === 'web' ? 'React: ' : '';
         if (t.kind === 'checkpoint') return [{ ...base, step: 'checkpoint', title: `✅ Checkpoint: ${t.title}`, done: t.done }];
         return [
-          ...(t.learn ? [{ ...base, step: 'learn', title: `📖 ${t.learn}`, done: t.learn_done }] : []),
-          { ...base, step: 'build', title: `🛠 ${t.title}`, done: t.done },
+          ...(t.learn ? [{ ...base, step: 'learn', title: `📖 ${tag}${t.learn}`, done: t.learn_done }] : []),
+          { ...base, step: 'build', title: `🛠 ${tag}${t.title}`, done: t.done },
         ];
       });
       if (!block.items.length) block.detail = 'No project task today: use it for reading docs, or rest';

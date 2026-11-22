@@ -382,6 +382,17 @@ const plan = {
   workout,
 };
 
+// The separate .NET and React courses are replaced by one full-stack course (scripts/fullstack-course.js);
+// the portfolio week now belongs to it too. Node.js (SnippetVault) stays as it is.
+const FULLSTACK = require('./fullstack-course');
+const fullstack = FULLSTACK.loadCourse(START_DATE, addDays);
+plan.projects = [
+  fullstack.project,
+  ...plan.projects.filter((p) => !FULLSTACK.REPLACES.includes(p.code)).map((p) => (p.code === 'portfolio' ? { ...p, area: fullstack.project.area } : p)),
+];
+fs.writeFileSync(path.join(__dirname, '..', 'server', 'data', 'briefs', `${FULLSTACK.CODE}.json`), JSON.stringify(fullstack.briefs, null, 1));
+console.log(`full-stack course: ${fullstack.project.tasks.length} lessons, written weeks ${fullstack.written.join(', ') || 'none yet'}, ${Object.keys(fullstack.briefs).length} briefs`);
+
 // Attach the verified documentation links (scripts/doc-links.js, checked by `npm run check:links`).
 const LINKS = require('./doc-links');
 const dedupe = (list) => list.filter((x, i, a) => a.findIndex((y) => y.url === x.url) === i);
@@ -392,7 +403,7 @@ for (const d of plan.days) {
 }
 for (const p of plan.projects) {
   for (const t of p.tasks) {
-    if (t.kind !== 'build') continue;
+    if (t.kind !== 'build' || p.code === FULLSTACK.CODE) continue; // the full-stack course carries its own links
     t.learnLinks = p.code === 'portfolio' ? LINKS.PORTFOLIO_LINKS[t.dow] || [] : LINKS.PROJECT_LEARN_LINKS[p.code]?.[t.week]?.[t.dow] || [];
   }
 }

@@ -50,6 +50,21 @@ export const api = {
   settings: () => request('GET', '/settings'),
   saveSettings: (changes) => request('PUT', '/settings', changes),
 
+  // daily check-in + journal (one optional entry per day)
+  journal: (date) => request('GET', `/journal/${date}`),
+  saveJournal: (date, changes) => request('PUT', `/journal/${date}`, changes),
+  journalList: (days = 30) => request('GET', `/journal?days=${days}`),
+
+  // growth layer: tiny habits, the weekly challenge, your goals (stats and milestones arrive with game())
+  setHabit: (date, key, done) => request('POST', `/habits/${date}/${key}`, { done }),
+  chooseChallenge: (key) => request('POST', '/challenge', { key }),
+  lifeGoals: () => request('GET', '/journey/goals'),
+  addGoal: (body) => request('POST', '/journey/goals', body),
+  setGoalStatus: (id, status) => request('PATCH', `/journey/goals/${id}`, { status }),
+  deleteGoal: (id) => request('DELETE', `/journey/goals/${id}`),
+  addGoalStep: (id, title) => request('POST', `/journey/goals/${id}/steps`, { title }),
+  setGoalStep: (id, done) => request('PATCH', `/journey/steps/${id}`, { done }),
+
   // DSA problems + spaced repetition + LeetCode
   problems: () => request('GET', '/problems'),
   problemHistory: (id) => request('GET', `/problems/${id}/history`),
@@ -156,7 +171,6 @@ export const api = {
   cardDelete: (id) => request('DELETE', `/cards/${id}`),
   learn: (track) => request('GET', `/learn/${track}`),
   learnLesson: (track, id, body) => request('POST', `/learn/${track}/lessons/${id}`, body),
-  neurosprint: (body) => request('POST', '/neurosprint', body),
   aiNews: (params = {}) => request('GET', `/ai/news?${new URLSearchParams(Object.entries(params).filter(([, v]) => v))}`),
   aiNewsStatus: (id, status) => request('PATCH', `/ai/news/${id}`, { status }),
   aiNewsRead: (id, read) => request('PATCH', `/ai/news/${id}`, { read }),

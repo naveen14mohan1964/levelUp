@@ -11,10 +11,18 @@ const EDITABLE = {
   leetcode_username: (v) => String(v).trim().slice(0, 50),
   height_cm: Number, start_weight_kg: Number, goal_weight_kg: Number,
   calorie_target: Number, protein_target_g: Number, water_target_ml: Number, sleep_target_h: Number,
+  display_name: (v) => String(v ?? '').trim().slice(0, 40), // for the greeting on Today (empty = no name)
+  // The simplification rule: only a few learning tracks are active at once; the rest are parked (hidden, progress kept)
+  active_tracks: (v) => {
+    const list = [...new Set((Array.isArray(v) ? v : String(v ?? '').split(',')).map((x) => String(x).trim()).filter(Boolean))];
+    if (!list.length || list.length > MAX_ACTIVE_TRACKS || list.some((x) => !TRACK_KEYS.includes(x))) throw bad(`active_tracks: choose 1 to ${MAX_ACTIVE_TRACKS} of ${TRACK_KEYS.join(', ')}`);
+    return list.join(',');
+  },
   progress_ai: (v) => (v === true || v === 1 || v === '1' ? '1' : '0'), // on/off switch, stored as text
   // The Mentor (stored as text; a bad value is rejected with 400)
   mentor_enabled: onOff,
   mentor_morning: onOff,
+  mentor_escalation: onOff,
   mentor_telegram: onOff,
   mentor_strictness: (v) => oneOf(v, ['gentle', 'standard', 'drill'], 'mentor_strictness'),
   mentor_eval_time: (v) => time(v, 'mentor_eval_time'),
@@ -32,6 +40,9 @@ const EDITABLE = {
   },
 };
 
+const TRACK_KEYS = ['dsa', 'ai', 'lld', 'hld', 'judge', 'fullstack', 'node'];
+const MAX_ACTIVE_TRACKS = 3;
+
 function bad(message) { const e = new Error(message); e.status = 400; return e; }
 function onOff(v) { return v === true || v === 1 || v === '1' ? '1' : '0'; }
 function oneOf(v, options, k) { if (!options.includes(v)) throw bad(`${k} must be one of: ${options.join(', ')}`); return v; }
@@ -43,7 +54,7 @@ async function readSettings() {
   const { recordset } = await pool.request().query('SELECT k, v FROM dbo.settings');
   const out = {};
   // numbers come back as numbers, except free-text keys and HH:MM / date settings that only look numeric
-  for (const { k, v } of recordset) out[k] = v !== null && v !== '' && !Number.isNaN(Number(v)) && k !== 'leetcode_username' && !k.startsWith('mentor_') ? Number(v) : v;
+  for (const { k, v } of recordset) out[k] = v !== null && v !== '' && !Number.isNaN(Number(v)) && k !== 'leetcode_username' && k !== 'display_name' && !k.startsWith('mentor_') ? Number(v) : v;
   return out;
 }
 

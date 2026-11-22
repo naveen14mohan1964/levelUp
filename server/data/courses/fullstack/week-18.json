@@ -1,0 +1,217 @@
+{
+  "week": 18,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "api",
+      "learn": "OWASP API Security Top 10",
+      "title": "Audit every endpoint against the OWASP API Top 10 and fix findings",
+      "doneWhen": "`SECURITY.md` has a row for each of the ten OWASP API risks saying where JobHunt guards against it, at least three findings are fixed with tests, and a Theory test proves user B gets 404 on every endpoint that takes one of user A's ids",
+      "learnLinks": [
+        {
+          "label": "OWASP: API Security Top 10 2023",
+          "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+        },
+        {
+          "label": "OWASP: API Security Project",
+          "url": "https://owasp.org/API-Security/"
+        }
+      ],
+      "brief": "### Why this matters\nYou have built 17 weeks of endpoints; some will have gaps. The OWASP API Security Top 10 is the checklist attackers and reviewers use, and broken object level authorization (reading someone else's data by changing an id) tops it. Walking your own API against it, with evidence, is senior work and a strong interview story. Today's React part does the same review on the client: where can user text become code?\n\n### What you'll build\nOn a new branch `feature/security`:\n- `SECURITY.md` with a table: risk, where JobHunt guards it, evidence (test or file), open gaps\n- An endpoint inventory from the OpenAPI document or the endpoint data source, each route with its auth requirement\n- A data-driven BOLA Theory over every route with an id (applications, interviews, notes, attachments, reminders, company info): user B gets 404\n- Fixes for findings. Likely candidates:\n  - page size and `limit` caps everywhere\n  - request DTOs that cannot bind `UserId` or other server-owned fields\n  - OpenAPI UI and dev-only endpoints mapped only in Development\n  - the week 16 stub URL built from configuration plus an escaped name only (SSRF)\n\n### Step by step\n1. Read the ten risks; summarise each in a sentence.\n2. Generate the inventory. Justify every anonymous route (health, login, register, refresh, client errors).\n3. Write the BOLA Theory with week 11's helpers, seeding one application per user with child data.\n4. Go risk by risk. Point to code, not to \"we use JWT\".\n5. Fix findings, each with a test.\n6. Record the gaps you accept, and why.\n\n```csharp\n[Theory]\n[MemberData(nameof(OwnedRoutes))]\npublic async Task Other_users_ids_return_404(HttpMethod method, string route)\n{\n    // TODO: seed A's data, call as B with A's ids, assert 404\n}\n```\n\n### Acceptance criteria\n- [ ] Ten rows, each with evidence\n- [ ] Every id route is in the BOLA test\n- [ ] Every anonymous route is justified\n- [ ] Accepted gaps are written down\n\n### Hints\n- Function level authorization: a normal user gets 403 on every admin endpoint (week 8).\n- Check the hub (week 15): no client-callable method takes a user or group id.\n\n### Common mistakes\n- Testing BOLA on GET only.\n- \"N/A\" for a risk with no reason.\n\n### Check your understanding\n- What is BOLA, and how does JobHunt stop it?\n- What is mass assignment, and where could it happen here?\n- Why is an endpoint inventory itself a security control?"
+    },
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "web",
+      "learn": "XSS in React: what JSX escapes and what it does not",
+      "title": "Review every place user text is rendered; remove unsafe HTML",
+      "doneWhen": "A written list in the PR covers every place user text is rendered (notes, company, role, URLs, reminders, activity, toasts) with its data source and how it is escaped, `dangerouslySetInnerHTML` appears nowhere, and an ESLint rule fails the build if it is added",
+      "learnLinks": [
+        {
+          "label": "OWASP: Cross site scripting prevention cheat sheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+        },
+        {
+          "label": "react.dev: Dangerously setting the inner HTML",
+          "url": "https://react.dev/reference/react-dom/components/common#dangerously-setting-the-inner-html"
+        }
+      ],
+      "brief": "### Why this matters\nReact escapes text in JSX, so `{note.body}` cannot run a script. That safety ends at a few doors: `dangerouslySetInnerHTML`, URLs in `href` and `src` (a `javascript:` link runs code when clicked), and anything written to the DOM outside React. Knowing exactly where JSX protects you and where it does not is a common front-end security question. Today's .NET part audits the API the same way.\n\n### What you'll build\n- A search of the web app for `dangerouslySetInnerHTML`, `href={`, `src={`, `innerHTML` and `window.open`\n- A table in the PR: location, data source (user, server, constant), and why it is safe or what you changed\n- Any unsafe HTML removed or replaced with plain text rendering\n- A `safeUrl(value)` helper allowing only `http:` and `https:` for user-provided URLs (the job posting link)\n- An ESLint rule (`react/no-danger` or `no-restricted-syntax`) so new uses fail the build; tomorrow's Markdown component will be the single allowed exception\n\n### Step by step\n1. Read the React page section on `dangerouslySetInnerHTML` and the OWASP rules for URL contexts.\n2. Run the search and fill the table.\n3. Create a note containing `<img src=x onerror=alert(1)>` and check it renders as text.\n4. Save a job URL of `javascript:alert(1)` through the API directly and check what the link does.\n5. Write `safeUrl` with the `URL` constructor and use it for every user-provided `href`.\n6. Add the lint rule and prove it fails on a test line.\n\n```ts\nexport function safeUrl(value: string): string | undefined {\n  // TODO: parse with new URL(), allow only http: and https:\n}\n```\n\n### Acceptance criteria\n- [ ] Every user-text render location is listed\n- [ ] No user value reaches `href` without a scheme check\n- [ ] Unsafe HTML is gone\n- [ ] The lint rule blocks new cases\n\n### Hints\n- React warns about `javascript:` URLs in development, but do not rely on a warning.\n- The API should also reject non-http URLs (week 6 `WebUrl` value object); check that it does.\n\n### Common mistakes\n- Believing React makes every XSS impossible.\n- Checking URLs with `startsWith(\"http\")`, which `httpx:` or odd casing can fool.\n\n### Check your understanding\n- What does JSX escape, and what does it not?\n- Why is a `javascript:` URL dangerous?\n- Why check the scheme on both client and server?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Secrets: user-secrets, environment variables, Key Vault",
+      "title": "No secrets in the repo; Key Vault provider ready for production",
+      "doneWhen": "`git grep` finds no signing key, password or credentialed connection string in the repo, a fresh clone stops at start-up with a clear options error until user-secrets are set, and `Program.cs` adds the Key Vault provider only when a vault URI is configured",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Safe storage of app secrets in development",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets"
+        },
+        {
+          "label": "Microsoft Learn: Azure Key Vault configuration provider",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/key-vault-configuration"
+        },
+        {
+          "label": "OWASP: Secrets management cheat sheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html"
+        }
+      ],
+      "brief": "### Why this matters\nA signing key in Git is a key every past and future clone has, forever. Secrets belong outside the repo: user-secrets on your machine, a vault in production, with configuration layering hiding the difference from your code. Failing fast when a secret is missing beats a null reference an hour later. Today's React part keeps the client from exposing anything either.\n\n### What you'll build\n- A secrets inventory in `SECURITY.md`: name, used by, development source, production source\n- `dotnet user-secrets init` on the Api project and every secret moved there (JWT key, SQL, Redis, RabbitMQ, SMTP, admin seed password)\n- `appsettings.json` holding only non-secret settings, with week 3's `ValidateOnStart` failing clearly\n- `.env.example` (committed) and `.env` (ignored) for week 20, using `Section__Key` names\n- The Key Vault provider with `DefaultAzureCredential`, added only when `KeyVault:Uri` is set\n- A history check, and rotation of anything ever committed\n\n### Step by step\n1. List every value that would hurt if leaked.\n2. Move each with `dotnet user-secrets set`, then delete it from `appsettings*.json`.\n3. Clone into a temp folder and run: it should stop with a clear options error.\n4. Add the Key Vault provider behind the configuration check. Note the naming rule: `Jwt--SigningKey` becomes `Jwt:SigningKey`.\n5. Search history with `git log -p`. If a real secret was committed, generate a new one; rewriting history is not enough.\n6. Add `.env.example` and the ignore rule.\n\n```csharp\nif (builder.Configuration[\"KeyVault:Uri\"] is { Length: > 0 } vaultUri)\n{\n    // TODO: AddAzureKeyVault with DefaultAzureCredential\n}\n```\n\n### Acceptance criteria\n- [ ] No secrets in the repo or its tracked config\n- [ ] Missing secrets fail at start-up, clearly\n- [ ] Production reads secrets from the vault\n- [ ] Leaked values were rotated\n\n### Hints\n- User-secrets are plain JSON in your profile, outside the repo: a convenience, not encryption.\n- `DefaultAzureCredential` uses your login locally and a managed identity in Azure (week 20), so no vault password exists.\n\n### Common mistakes\n- \"Removing\" a secret in a new commit and leaving it in history.\n- Putting secrets in a `VITE_` variable.\n\n### Check your understanding\n- Why is deleting a committed secret not enough?\n- How does configuration layering keep code unchanged?\n- What does a managed identity remove?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Sanitising Markdown safely",
+      "title": "Notes rendered as sanitised Markdown",
+      "doneWhen": "Notes render as Markdown through one `SafeMarkdown` component, and a Vitest test proves `<img src=x onerror=alert(1)>`, a `<script>` tag and a `[link](javascript:alert(1))` render harmlessly while bold, lists and an `https` link still work",
+      "learnLinks": [
+        {
+          "label": "OWASP: Cross site scripting prevention cheat sheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+        },
+        {
+          "label": "react.dev: Dangerously setting the inner HTML",
+          "url": "https://react.dev/reference/react-dom/components/common#dangerously-setting-the-inner-html"
+        }
+      ],
+      "brief": "### Why this matters\nUsers want formatting in notes: bold, lists, links. Markdown gives that, but most Markdown renderers also pass raw HTML through, which reopens the XSS door you checked yesterday. Rendering safely means either never producing raw HTML, or sanitising it with a proven library. One component owning this decision keeps it reviewable. Today's .NET part keeps secrets safe; this keeps users safe from each other's content.\n\n### What you'll build\n- `SafeMarkdown` as the only place notes are rendered as Markdown. Two acceptable options:\n  - a Markdown library that outputs React elements and ignores raw HTML by default, or\n  - a Markdown-to-HTML library plus a well-known HTML sanitiser, with `dangerouslySetInnerHTML` used only inside `SafeMarkdown`\n- Links limited to `http`, `https` and `mailto` with yesterday's helper, opened with `rel=\"noopener noreferrer\"`\n- Images in notes either disabled or limited to `https`\n- The ESLint rule from yesterday allowing the single exception, if you chose option two\n- Tests for the attacks and for normal formatting\n\n### Step by step\n1. Pick an option and write one sentence on why. Check the library's docs for its raw HTML default.\n2. Build `SafeMarkdown` with a link renderer that runs `safeUrl` and drops unsafe links to plain text.\n3. Write the attack tests first: script tag, event handler attribute, `javascript:` link, `data:` URL.\n4. Write the formatting tests: bold, a list, an `https` link.\n5. Use it in the Notes tab and the note preview in the activity feed.\n6. Paste the attack strings into a real note through the UI.\n\n```tsx\nexport function SafeMarkdown({ source }: { source: string }) {\n  // TODO: render without raw HTML; filter link schemes\n}\n```\n\n### Acceptance criteria\n- [ ] All attack strings render harmlessly\n- [ ] Normal formatting survives\n- [ ] Markdown rendering lives in one component\n- [ ] Unsafe link schemes never become links\n\n### Hints\n- Storing the raw Markdown and rendering on the client keeps the database free of HTML.\n- Sanitising on output (not input) means a future renderer bug can be fixed without migrating data.\n\n### Common mistakes\n- Turning on a renderer's \"allow HTML\" option for convenience.\n- Writing your own regex sanitiser.\n\n### Check your understanding\n- Why is Markdown an XSS risk?\n- Why sanitise on output rather than input?\n- Why one component for all Markdown?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Security headers, HTTPS, HSTS, strict CORS",
+      "title": "Security headers middleware and production CORS for the real origin",
+      "doneWhen": "API responses carry `nosniff`, `Referrer-Policy: no-referrer`, frame blocking and a JSON-only CSP (plus HSTS and HTTPS redirection outside Development), auth responses are `no-store`, and a request from an unlisted origin gets no CORS headers",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Enforce HTTPS in ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl"
+        },
+        {
+          "label": "OWASP: HTTP headers cheat sheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html"
+        },
+        {
+          "label": "Microsoft Learn: Enable CORS in ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/cors"
+        }
+      ],
+      "brief": "### Why this matters\nSecurity headers are cheap instructions to the browser: do not guess content types, do not leak URLs in the referrer, do not let other sites frame you, always use HTTPS. CORS decides which other origins may read your API from a browser. Week 1 allowed only the Vite origin; production needs the real one, from configuration. Today's React part writes the browser-side policy for the web app.\n\n### What you'll build\n- `SecurityHeadersMiddleware`: `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY` and `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'`\n- An exception for `/hangfire`, which serves HTML and scripts\n- `Cache-Control: no-store` on auth responses\n- `UseHsts()` and `UseHttpsRedirection()` outside Development\n- CORS rewritten: a policy from `Cors:AllowedOrigins`, specific methods and headers; when the web app is served same-origin (week 20) the list can be empty\n\n### Step by step\n1. Look at today's response headers and list what is missing.\n2. Write the middleware early in the pipeline; skip the CSP for `/hangfire`.\n3. Add `no-store` to login, refresh and `me`.\n4. Add HSTS and HTTPS redirection outside Development. Note why HSTS is risky to try on localhost.\n5. Rewrite CORS from configuration. Never any-origin together with credentials.\n6. Check the headers against the OWASP cheat sheet and with a request from a test origin.\n\n```csharp\napp.Use(async (ctx, next) =>\n{\n    ctx.Response.Headers[\"X-Content-Type-Options\"] = \"nosniff\";\n    // TODO: referrer policy, framing, CSP except for /hangfire\n    await next();\n});\n```\n\n### Acceptance criteria\n- [ ] Every API response carries the headers\n- [ ] The dashboard still works\n- [ ] HSTS only outside Development\n- [ ] Allowed origins come from configuration\n\n### Hints\n- CORS is enforced by browsers only; `curl` ignores it. It is not authorization.\n- A JSON API needs almost no CSP; the strict policy costs nothing.\n\n### Common mistakes\n- `AllowAnyOrigin` with `AllowCredentials`.\n- Testing HSTS on localhost and breaking other local sites.\n\n### Check your understanding\n- What does each header stop?\n- Why is CORS not a security boundary for your API?\n- Why is HSTS dangerous to misconfigure?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Content Security Policy",
+      "title": "CSP for the web app, tested with vite preview",
+      "doneWhen": "The production build served by `vite preview` sends an enforced Content Security Policy header, and using the list, board, files, notes and live updates shows zero CSP violations in the console",
+      "learnLinks": [
+        {
+          "label": "MDN: Content Security Policy",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP"
+        },
+        {
+          "label": "OWASP: Content security policy cheat sheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html"
+        },
+        {
+          "label": "Vite: Preview options",
+          "url": "https://vite.dev/config/preview-options"
+        }
+      ],
+      "brief": "### Why this matters\nIf an XSS bug ever slips through, a Content Security Policy is the second wall: the browser refuses to run scripts from anywhere you did not allow. A strict policy (no inline scripts, only your own origin) blocks most real attacks. Writing one and fixing what it breaks is a skill many front-end developers never practise. Today's .NET part secures the API's headers; this secures the page's.\n\n### What you'll build\n- A policy in one file (for example `web/csp.ts` or a text file): `default-src 'self'`, `script-src 'self'`, `connect-src 'self'` (covers `/api` and the `/hubs` WebSocket in modern browsers), `img-src 'self' data:`, `object-src 'none'`, `base-uri 'self'`, `frame-ancestors 'none'`\n- `preview.headers` in `vite.config.ts` serving it, first as `Content-Security-Policy-Report-Only`, then enforced\n- `/api` and `/hubs` proxied in preview too, so the app works there\n- Every violation fixed in code, never with `'unsafe-inline'`\n\n### Step by step\n1. Read the MDN guide; note which directives cover scripts, styles, fetch and WebSockets.\n2. Add the report-only header to `preview` and run `vite build` then `vite preview`.\n3. Use every page and read the console.\n4. Fix violations: inline `style` attributes from libraries may need `style-src` care; inline scripts must go.\n5. Switch to the enforced header and repeat.\n6. Keep the policy text in one place; week 20's nginx serves the same text.\n\n```ts\npreview: {\n  headers: { \"Content-Security-Policy-Report-Only\": csp },\n  // TODO: proxy /api and /hubs\n},\n```\n\n### Acceptance criteria\n- [ ] The CSP is enforced, not report-only\n- [ ] No `'unsafe-inline'` or `'unsafe-eval'` in `script-src`\n- [ ] Zero violations across the main flows\n- [ ] One source of truth for the policy\n\n### Hints\n- The dev server injects inline scripts for hot reload, which is why you test on the production build.\n- `frame-ancestors` does not work in a `<meta>` tag; serve the policy as a header.\n\n### Common mistakes\n- Testing the CSP on the dev server and giving up.\n- Adding `'unsafe-inline'` to make warnings go away.\n\n### Check your understanding\n- What does a CSP do if an XSS bug exists?\n- Why test with `vite preview`?\n- Why start with report-only?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Forwarded headers behind a proxy",
+      "title": "Forwarded headers so rate limiting sees real client IPs",
+      "doneWhen": "With loopback configured as a trusted proxy, a `.http` request with `X-Forwarded-For: 203.0.113.7` is rate limited under that IP (seen in the log), the same header is ignored once loopback is removed from the list, and the week 13 TODO is deleted",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Configure ASP.NET Core to work with proxy servers and load balancers",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer"
+        },
+        {
+          "label": "Microsoft Learn: Rate limiting middleware",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/performance/rate-limit"
+        }
+      ],
+      "brief": "### Why this matters\nIn production the API sits behind a proxy (week 20's nginx, a load balancer). Every request then comes from the proxy's IP, so week 13's per-IP rate limit puts all users in one bucket, and HTTPS looks like HTTP. Forwarded headers fix that, but trusting them from anyone lets an attacker pick their own IP and dodge every limit. Trusting only known proxies is the whole trick. Today's React part keeps tokens out of URLs.\n\n### What you'll build\n- `ForwardedHeadersOptions` with `XForwardedFor` and `XForwardedProto`\n- Trusted proxies or networks read from configuration (`ForwardedHeaders:KnownProxies`), empty by default\n- `UseForwardedHeaders()` first in the pipeline, before HTTPS redirection, authentication and rate limiting\n- The rate limiter partition logging the client IP it used, at `Debug`\n- The week 13 TODO comment removed, and a line in `SECURITY.md` about trusted proxies\n\n### Step by step\n1. Read the proxy page's section on forwarded headers and the default trust rules.\n2. Configure the options; bind the known proxy list from configuration.\n3. Move `UseForwardedHeaders()` to the top of the pipeline.\n4. Log the partition key in the rate limiter.\n5. With loopback trusted, send requests with a forwarded IP and watch the key change.\n6. Remove loopback from the list and repeat: the header is ignored.\n\n```csharp\nbuilder.Services.Configure<ForwardedHeadersOptions>(o =>\n{\n    o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;\n    // TODO: known proxies or networks from configuration\n});\n```\n\n### Acceptance criteria\n- [ ] Forwarded headers are honoured only from trusted proxies\n- [ ] The middleware runs first\n- [ ] Rate limiting sees the real client IP behind a proxy\n- [ ] The week 13 TODO is closed\n\n### Hints\n- Week 20 sets the trusted network to the Docker network nginx uses.\n- `X-Forwarded-Proto` matters for HTTPS redirection and for `Secure` cookies behind a proxy.\n\n### Common mistakes\n- Clearing the known proxy lists so every sender is trusted.\n- Placing the middleware after authentication or rate limiting.\n\n### Check your understanding\n- What breaks behind a proxy without forwarded headers?\n- Why must the proxy list be restricted?\n- Why does the middleware's position matter?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Secure handling of tokens and links",
+      "title": "Safe external links and no tokens in URLs or logs",
+      "doneWhen": "Every external link in the app has `target=\"_blank\"` with `rel=\"noopener noreferrer\"` and passes `safeUrl`, a search of the code and the browser history shows no token in any URL, and error reports and logs from the client never include the access token or a full URL query string",
+      "learnLinks": [
+        {
+          "label": "MDN: rel=noopener",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/noopener"
+        },
+        {
+          "label": "MDN: Referrer-Policy",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Referrer-Policy"
+        }
+      ],
+      "brief": "### Why this matters\nURLs leak: into browser history, server logs, proxy logs and the `Referer` header sent to the next site. A token in a URL is a token in all of those places. External links opened in a new tab without `noopener` give the other page a handle on yours. These are small rules with real consequences. Today's .NET part makes the server see the real client; this makes sure the client gives nothing away.\n\n### What you'll build\n- An `ExternalLink` component: `safeUrl` check (Monday), `target=\"_blank\"`, `rel=\"noopener noreferrer\"`, and visible text saying it opens a new tab\n- Every job posting and company link switched to it\n- A review of token handling: the access token only in `api.ts` memory, the refresh token only in its httpOnly cookie, the hub token only in the `/hubs` query string that week 15 keeps out of logs\n- `reportClientError` (week 16) and web vitals checked: URLs sent without query strings, no headers, no token\n- A `<meta name=\"referrer\" content=\"no-referrer\">` or equivalent so outgoing navigations send no referrer\n\n### Step by step\n1. Search for `<a ` with external `href`s and replace them with `ExternalLink`.\n2. Search for `access_token`, `token=` and `Authorization` in the web code; each hit must be `api.ts` or the hub client.\n3. Use the app, then read the browser history: no tokens.\n4. Check the reports you send: strip query strings and hash.\n5. Add the referrer policy and confirm it in the Network tab.\n6. Write a short \"where tokens live\" section in `SECURITY.md`.\n\n```tsx\nexport function ExternalLink({ href, children }: ExternalLinkProps) {\n  const safe = safeUrl(href);\n  // TODO: plain text if unsafe, else a new-tab link with rel and a hint\n}\n```\n\n### Acceptance criteria\n- [ ] Every external link uses the component\n- [ ] No token appears in any URL or report\n- [ ] Outgoing navigations send no referrer\n- [ ] \"Where tokens live\" is documented\n\n### Hints\n- Modern browsers imply `noopener` for `target=\"_blank\"`, but being explicit costs nothing and covers older ones.\n- Week 14 downloads use blobs, so no token in URLs there.\n\n### Common mistakes\n- Logging whole request configs, headers included.\n- Passing a token in a query string \"just for downloads\".\n\n### Check your understanding\n- Where can a URL end up after you navigate?\n- What does `noopener` prevent?\n- Why is the hub the one exception for a token in a URL?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Vulnerable packages in .NET",
+      "title": "dotnet list package --vulnerable clean, Dependabot for NuGet",
+      "doneWhen": "`dotnet list package --vulnerable --include-transitive` in `/api` shows no high or critical finding left unexplained, NuGet audit warnings appear during restore, `.github/dependabot.yml` has a weekly grouped `nuget` entry for `/api`, and the PR \"Security\" is open",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Auditing package dependencies for security vulnerabilities",
+          "url": "https://learn.microsoft.com/en-us/nuget/concepts/auditing-packages"
+        },
+        {
+          "label": "GitHub Docs: Dependabot options reference",
+          "url": "https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference"
+        }
+      ],
+      "brief": "### Why this matters\nMost of the code you run is not yours: EF Core, Hangfire, RabbitMQ, Serilog and their dependencies. Known vulnerabilities in them are published, and attackers read the same lists. Checking regularly, and letting a bot open upgrade pull requests, is basic hygiene that interviewers increasingly ask about. This closes the .NET side of the PR \"Security\"; today's React part does the same for npm.\n\n### What you'll build\n- A scan with `dotnet list package --vulnerable --include-transitive` (the noun-first `dotnet package list` form also works on recent SDKs)\n- NuGet audit confirmed on during restore, with its warnings visible in the build\n- A triage section in `SECURITY.md`: fix, upgrade, accept with a reason and review date, or replace\n- `.github/dependabot.yml` with a `nuget` entry for `/api`, weekly, minor and patch updates grouped\n- A root `audit:api` script\n\n### Step by step\n1. Run the scan and paste the summary into the PR.\n2. For each finding: is it reachable in JobHunt? Is there a fixed version?\n3. A transitive finding is often fixed by upgrading the direct package that pulls it in.\n4. Upgrade one package at a time and run all tests after each.\n5. Record any accepted risk with a reason and a date.\n6. Write the `nuget` entry with a group for minor and patch updates.\n7. Push and open the PR \"Security\"; merge after today's React part.\n\n```yaml\nversion: 2\nupdates:\n  - package-ecosystem: \"nuget\"\n    directory: \"/api\"\n    schedule: { interval: \"weekly\" }\n    # TODO: group minor and patch updates\n```\n\n### Acceptance criteria\n- [ ] No unexplained high or critical findings\n- [ ] Audit warnings show during restore\n- [ ] Dependabot covers NuGet\n- [ ] Accepted risks have a review date\n\n### Hints\n- Prerelease packages from week 16 (instrumentation) deserve a note: when will you move to stable?\n- Week 20 adds `docker` and `github-actions` ecosystems.\n\n### Common mistakes\n- Upgrading everything at once, so a failure has no obvious cause.\n- Treating \"no warnings today\" as \"secure forever\".\n\n### Check your understanding\n- What is a transitive vulnerability?\n- Why group Dependabot updates?\n- When is accepting a known vulnerability reasonable?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "web",
+      "learn": "npm audit and dependency hygiene",
+      "title": "npm audit clean, Dependabot for npm",
+      "doneWhen": "`npm audit` and `npm audit --omit=dev` in `/web` show no high or critical finding left unexplained, `dependabot.yml` also has weekly grouped `npm` and `github-actions` entries, a root `audit` script runs both apps' checks, and PR \"Security\" is merged",
+      "learnLinks": [
+        {
+          "label": "OWASP: Vulnerable dependency management cheat sheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Vulnerable_Dependency_Management_Cheat_Sheet.html"
+        },
+        {
+          "label": "GitHub Docs: Dependabot options reference",
+          "url": "https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference"
+        }
+      ],
+      "brief": "### Why this matters\nA Vite + React app pulls in hundreds of packages. Most are build tools that never reach the browser, so a finding there matters less than one in a library you ship. Telling the two apart, and keeping dependencies few and current, is dependency hygiene. It ends the week with the PR \"Security\", together with today's .NET part.\n\n### What you'll build\n- `npm audit` and `npm audit --omit=dev`, compared: what ships versus what only builds\n- Each high or critical finding triaged with the same policy as the API\n- Unused dependencies removed (check `package.json` against imports)\n- `npm` (for `/web`) and `github-actions` (for `/`) entries in `dependabot.yml`, weekly, grouped\n- A root `audit` script running `audit:api` and the npm audit\n- PR \"Security\" merged\n\n### Step by step\n1. Run both audits and paste the summaries into the PR.\n2. For each finding: shipped or dev-only? Reachable? Fixed version available?\n3. Upgrade one package at a time; run lint, type check, tests and build after each.\n4. Remove packages nothing imports.\n5. Add the Dependabot entries and the root script.\n6. Re-run the week 18 checks: CSP, Markdown tests, BOLA tests, headers.\n7. Run all builds and tests, push, review and merge PR \"Security\".\n\n### Acceptance criteria\n- [ ] No unexplained high or critical findings\n- [ ] Shipped and dev-only findings are told apart\n- [ ] Dependabot covers npm and Actions\n- [ ] PR \"Security\" is merged\n\n### Hints\n- `npm audit fix --force` can install breaking major versions; read before running.\n- Lock files matter: commit `package-lock.json` so audits match what you install.\n\n### Common mistakes\n- Ignoring a finding because \"it is only a dev dependency\" without checking.\n- Running `npm audit fix --force` and committing without testing.\n\n### Check your understanding\n- Why does `--omit=dev` change the picture?\n- Why remove unused dependencies?\n- What does a lock file give you?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "lane": null,
+      "learn": null,
+      "title": "Name five OWASP API risks and where JobHunt guards against each",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nName five OWASP API risks and where JobHunt guards against each, in 15 minutes.\n\n### Rules\n- Blank page, no `SECURITY.md` open. Write the table, then explain it out loud as if to an interviewer.\n- For each risk, point to a concrete place in JobHunt: a file, a test, a setting.\n- Docs allowed only after you finish; note what you had to check. No AI assistants.\n\n### Must include\n- Broken object level authorization: the user filter in queries, the ownership check before writes, 404 for not yours, the BOLA Theory test\n- Broken authentication: short access tokens, rotated and hashed refresh tokens in an httpOnly cookie, reuse detection, login rate limits\n- Broken object property level authorization: request DTOs that cannot set `UserId` or other server-owned fields\n- Unrestricted resource consumption: page size caps, rate limits, upload size limits\n- Broken function level authorization: the admin policy and the 403 test\n- One sentence each on a client-side guard: escaping, sanitised Markdown, CSP, no tokens in URLs\n\n### Self-check\n- [ ] Finished within 15 minutes\n- [ ] Every risk points to code or a test, not a slogan\n- [ ] Explained 404 vs 403 for JobHunt\n- [ ] Named one gap you accepted and why\n- [ ] Explained why forwarded headers need a trusted proxy list\n- [ ] Zero lookups, or a list of exactly what to review\n\n### If you got stuck\n- OWASP review: Monday, .NET part. Secrets: Tuesday, .NET part.\n- Headers and CORS: Wednesday, .NET part. Forwarded headers: Thursday, .NET part.\n- XSS in React: Monday, React part. Markdown: Tuesday, React part.\n- CSP: Wednesday, React part. Tokens and links: Thursday, React part."
+    }
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "week": 8,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Resource-based authorization; 401 vs 403 vs 404",
+      "title": "Ownership checks so a user can never read another user's application",
+      "doneWhen": "Logged in as user B, GET, PUT, DELETE and restore on user A's application id all return 404 through one ownership handler, and the same calls without a token return 401",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Resource-based authorization",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/resourcebased"
+        },
+        {
+          "label": "OWASP: API Security Top 10 2023",
+          "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+        },
+        {
+          "label": "MDN: 403 Forbidden",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/403"
+        }
+      ],
+      "brief": "### Why this matters\nWeek 7 filtered every query by `UserId`, so other users' rows already look missing. One path that forgets the filter (week 6's restore with `IgnoreQueryFilters()`) breaks that. Resource-based authorization turns \"does this caller own this thing?\" into one explicit, testable check. Today's React part shows the 404 this check returns.\n\n### What you'll build\nOn a new branch `feature/authz-refresh`:\n- `IOwnedByUser` in Domain (`Guid UserId { get; }`), implemented by `JobApplication`\n- `OwnerRequirement` and `OwnerHandler : AuthorizationHandler<OwnerRequirement, IOwnedByUser>` in Api, plus a policy `\"OwnsResource\"`\n- `IResourceAuthorizer` in Application, implemented with `IAuthorizationService`\n- Update, delete and restore load the entity, ask the authorizer, return not found on failure\n\n### Step by step\n1. Write an access matrix (endpoint × anonymous, owner, other user) and test it in a `.http` file with two users. Check restore.\n2. Add `IOwnedByUser`, the requirement and the handler; register the handler and the policy with `AddAuthorizationBuilder()`.\n3. Implement the authorizer with `AuthorizeAsync(user, resource, \"OwnsResource\")`.\n4. Call it in each command after loading. Keep the read filter too.\n5. Re-run the matrix; fix what disagrees.\n\n```csharp\nprotected override Task HandleRequirementAsync(\n    AuthorizationHandlerContext ctx, OwnerRequirement req, IOwnedByUser resource)\n{\n    // TODO: compare the caller's id claim with resource.UserId, then ctx.Succeed(req)\n    return Task.CompletedTask;\n}\n```\n\n### Acceptance criteria\n- [ ] Another user's id returns 404 everywhere, including restore\n- [ ] No token returns 401 on every applications endpoint\n- [ ] The ownership rule lives in one handler\n- [ ] The matrix is saved for the PR\n\n### Hints\n- 401: we do not know you. 403: we know you, and you may not. 404: for you, it does not exist. Use 404 when admitting existence would leak information.\n- Resource checks need the loaded entity, so they cannot be an endpoint policy.\n\n### Common mistakes\n- Returning 403 for another user's application, which confirms the id exists.\n- Reading the id with a different claim type than `CurrentUser` (the week 7 mapping decision).\n\n### Check your understanding\n- Policy-based vs resource-based: what differs?\n- When is 403 right, and when is 404 better?\n- Why keep both the query filter and the explicit check?"
+    },
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Handling 403 and 404 from the API in the UI",
+      "title": "Friendly 'not found' for applications that are missing or not yours",
+      "doneWhen": "Opening another user's application id, a random Guid or its edit URL shows the same friendly \"Application not found\" screen, a 403 shows a separate \"no access\" screen, and neither status is retried by TanStack Query",
+      "learnLinks": [
+        {
+          "label": "React Router: Error boundaries",
+          "url": "https://reactrouter.com/how-to/error-boundary"
+        },
+        {
+          "label": "TanStack Query: Query retries",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-retries"
+        },
+        {
+          "label": "MDN: HTTP response status codes",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"
+        }
+      ],
+      "brief": "### Why this matters\nThe API now answers 404 for anything that is missing or not yours. The UI must turn that into a calm screen, not a crash or a spinner that never ends, and must never hint that the record exists. A 403 means something different (you are signed in but not allowed), so it deserves its own message. Tomorrow's admin page reuses it.\n\n### What you'll build\n- A small `errorKind(error)` helper in `lib/` that maps `ApiError` status to `\"not-found\" | \"forbidden\" | \"unauthorized\" | \"other\"`\n- The detail and edit route error elements using it: one shared `NotFound` screen and a `Forbidden` screen\n- Loaders that throw on 404 so the route error element renders\n- The `QueryClient` default `retry` returning `false` for 403 and 404, next to week 7's 401 rule\n- Mutations (edit, delete) that get a 404 showing \"This application no longer exists\" and navigating to the list\n\n### Step by step\n1. List every place an application id comes from the URL: detail, edit, and any action.\n2. Write `errorKind`; use the `status` on `ApiError`, never the message text.\n3. In each route `errorElement`, read `useRouteError()`, call `errorKind`, render the right screen.\n4. Make sure \"not yours\" and \"does not exist\" render exactly the same text.\n5. Update the retry rule, then test with a throttled network: one request per 404, not four.\n6. Log in as user B and paste user A's detail and edit URLs.\n\n```ts\nexport function errorKind(e: unknown): ErrorKind {\n  // TODO: narrow to ApiError, then switch on status\n}\n```\n\n### Acceptance criteria\n- [ ] Missing and not-yours ids look identical\n- [ ] 403 has its own screen with a link home\n- [ ] 401, 403 and 404 are never retried\n- [ ] A 404 during a mutation lands the user on the list with a message\n\n### Hints\n- The week 4 not-found screen is your starting point; extend it, do not duplicate it.\n- A Guid is not a permission; the UI should not treat it as one either.\n\n### Common mistakes\n- Showing \"you do not have access to this application\" for a 404, which leaks existence.\n- Matching on `error.message` strings that change when the API wording changes.\n\n### Check your understanding\n- Why must the two 404 cases look the same?\n- Why is retrying a 404 wasteful?\n- Where does a loader error end up, and where does a query error end up?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Roles and policy-based authorization",
+      "title": "Admin role and a policy-protected GET /api/admin/stats",
+      "doneWhen": "`GET /api/admin/stats` returns 401 without a token, 403 for a normal user and 200 with cross-user totals for a user in the `Admin` role",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Policy-based authorization",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies"
+        },
+        {
+          "label": "Microsoft Learn: Role-based authorization",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/roles"
+        }
+      ],
+      "brief": "### Why this matters\nRoles are the simple model, policies the flexible one, and naming the policy (`\"AdminOnly\"`) lets you change the rule in one place. This is also a real 403: the endpoint is no secret, the caller just is not allowed. Today's React part shows the admin link only when this role is present.\n\n### What you'll build\n- Roles enabled: `AddRoles<IdentityRole<Guid>>()` on your `AddIdentityCore` call\n- A Development-only seeder creating `Admin` and adding one configured user (`RoleManager`, `UserManager`)\n- One role claim per role in the JWT, and `RoleClaimType` set in the bearer options\n- Policy `AdminOnly` registered with `AddAuthorizationBuilder()`\n- An `/api/admin` group with `RequireAuthorization(Policies.AdminOnly)` and `GET /stats` (total users, total applications, created in the last 7 days) through an `IAdminQueries` read service\n- `roles: string[]` added to the `/api/auth/me` response\n\n### Step by step\n1. Enable roles, add the seeder, check `AspNetRoles` and `AspNetUserRoles`.\n2. In the token service, read `GetRolesAsync` and add the claims. Keep the claim type consistent with the bearer options.\n3. Log in as the admin and decode the token: the role claim is there.\n4. Register the policy and map the admin group.\n5. Write `IAdminQueries`: deliberately cross-user, so skip the user filter but still hide soft-deleted rows.\n6. Call `/stats` as anonymous, normal user and admin.\n\n```csharp\nbuilder.Services.AddAuthorizationBuilder()\n    .AddPolicy(Policies.AdminOnly, p => p.RequireRole(Roles.Admin));\n```\n\n### Acceptance criteria\n- [ ] 401 anonymous, 403 normal user, 200 admin\n- [ ] The role name lives in one constant\n- [ ] Admin queries use `AsNoTracking()` and skip deleted rows\n- [ ] The admin user comes from configuration\n\n### Hints\n- Roles in a token are a snapshot until it expires: one more reason for short lifetimes and tomorrow's refresh tokens.\n- EF Core 10 supports named query filters, so a query can ignore only the user filter.\n\n### Common mistakes\n- Role claims of a type the bearer handler does not treat as roles, so every admin gets 403.\n- `user.IsInRole(\"Admin\")` inside handlers instead of a policy on the group.\n\n### Check your understanding\n- What is the difference between a role and a claim?\n- Why is a named policy better than `RequireRole` everywhere?\n- What happens if you remove a role while the user's token is still valid?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Role-aware UI",
+      "title": "Admin-only nav item and admin page",
+      "doneWhen": "Only an admin sees the Admin nav item and can open `/admin` with live stats, while a normal user typing `/admin` is redirected to `/applications`",
+      "learnLinks": [
+        {
+          "label": "React Router: Routing (data mode)",
+          "url": "https://reactrouter.com/start/data/routing"
+        },
+        {
+          "label": "TanStack Query: useQuery",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/reference/useQuery"
+        }
+      ],
+      "brief": "### Why this matters\nThe UI should match what the user can do: hiding admin links avoids dead ends and confusing 403s. But it is only UX; the policy from today's .NET part is the real guard. \"Is hiding a button authorization?\" is a quick way interviewers test that you know the difference.\n\n### What you'll build\n- `roles: string[]` on the TypeScript `User`, filled from `/api/auth/me`\n- A `hasRole(role)` helper on the auth context\n- An Admin `NavLink` rendered only for admins\n- A `RequireRole` layout route inside the protected branch, redirecting non-admins\n- `AdminPage` at `/admin` showing the stats with `useQuery` and key `[\"admin\", \"stats\"]`\n- The `Forbidden` screen from Monday shown if the API still answers 403\n\n### Step by step\n1. Extend the `me` response type and the context value. Keep roles out of storage.\n2. Add `hasRole` and use it in the header for the Admin link.\n3. Write `RequireRole`, reusing the loading and redirect pattern from week 7's `ProtectedRoute`.\n4. Nest `/admin` under it.\n5. Build `AdminPage` with loading, error and data states.\n6. Test as admin, as a normal user, and by calling the API directly as a normal user (still 403).\n\n```tsx\nexport function RequireRole({ role }: { role: string }) {\n  const { user } = useAuth();\n  // TODO: <Navigate to=\"/applications\" replace /> unless user has the role\n}\n```\n\n### Acceptance criteria\n- [ ] Normal users never see the Admin link\n- [ ] Normal users are redirected from `/admin` without a flash of the page\n- [ ] The API still returns 403 for a direct call\n- [ ] Role names come from one constants file\n\n### Hints\n- Roles change only when the user logs in again or the token refreshes; that is fine for nav items.\n- Put the role constant next to the `User` type so both sides read the same word.\n\n### Common mistakes\n- Checking roles in many components instead of one helper.\n- Rendering the admin page first and redirecting in an effect, which flashes data.\n\n### Check your understanding\n- Why is hiding a nav item not authorization?\n- Why put `RequireRole` in the route tree instead of inside `AdminPage`?\n- What does the user see if their role is removed while signed in?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Refresh tokens: rotation, hashing, reuse detection",
+      "title": "POST /api/auth/refresh with rotating refresh tokens in an httpOnly cookie",
+      "doneWhen": "Login sets an httpOnly refresh cookie, `POST /api/auth/refresh` returns a new access token and rotates the cookie, and replaying an old refresh token returns 401 and revokes its whole family",
+      "learnLinks": [
+        {
+          "label": "OWASP: Session management cheat sheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+        },
+        {
+          "label": "MDN: Set-Cookie",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie"
+        }
+      ],
+      "brief": "### Why this matters\nWeek 7 kept the access token in `sessionStorage`, readable by any injected script. Now it gets short (15 minutes or less) and a long-lived refresh token lives in an httpOnly cookie JavaScript cannot read. Rotation plus reuse detection means a stolen refresh token works once at most. Today's React part calls this endpoint to restore the session.\n\n### What you'll build\n- `RefreshToken` entity in Infrastructure: `Id`, `UserId`, `TokenHash`, `FamilyId`, `CreatedAt`, `ExpiresAt`, `RevokedAt?`, `ReplacedById?`, a unique index on `TokenHash`, and a migration\n- Raw tokens: 32 random bytes from `RandomNumberGenerator`, base64url; only the SHA-256 hash is stored\n- Login also issues a refresh token in a new family and writes the cookie\n- `POST /api/auth/refresh` (anonymous): read the cookie, find the hash, rotate or reject\n- Cookie: `HttpOnly`, `Secure`, `SameSite=Strict`, `Path=/api/auth`, explicit expiry\n\n### Step by step\n1. Draw one token's states (active, replaced, revoked, expired) and what refresh does in each.\n2. Add the entity, configuration and migration.\n3. Write `IRefreshTokenService` with `IssueAsync(userId)` and `RotateAsync(raw)` returning success or failure.\n4. Rotation: mark the current token replaced, add a new one in the same family, save once.\n5. Reuse: a replaced token presented again revokes the whole family and returns 401.\n6. Write the cookie with `Response.Cookies.Append`; test login, refresh twice, replay the first.\n\n```csharp\nvar raw = WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32));\n// TODO: store only the SHA-256 hash of raw\n```\n\n### Acceptance criteria\n- [ ] Raw refresh tokens never touch the database\n- [ ] Each refresh returns a new access token and a new cookie\n- [ ] Replaying a rotated token revokes the family\n- [ ] Unknown or expired tokens return 401 ProblemDetails\n\n### Hints\n- Fast SHA-256 is fine: these are long random values, not passwords.\n- The Vite proxy keeps the API same-origin in development, so the cookie is sent with no CORS work.\n\n### Common mistakes\n- Returning the refresh token in JSON, which brings the XSS risk straight back.\n- Requiring an access token on refresh.\n\n### Check your understanding\n- Why rotate refresh tokens at all?\n- What does reuse detection assume when an old token comes back?\n- What does an httpOnly cookie protect against, and what new risk does it bring?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Keeping the access token in memory only",
+      "title": "Access token moved to memory; session restored on page load through refresh",
+      "doneWhen": "No token is in `sessionStorage` or `localStorage`, reloading any page restores the session through one `POST /api/auth/refresh` followed by `/api/auth/me`, and a user with no cookie lands on `/login` without a flash",
+      "learnLinks": [
+        {
+          "label": "MDN: Using HTTP cookies",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies"
+        },
+        {
+          "label": "React: Synchronizing with Effects",
+          "url": "https://react.dev/learn/synchronizing-with-effects"
+        }
+      ],
+      "brief": "### Why this matters\nAn access token in memory disappears on reload, so the app needs another way to remember the user: the httpOnly cookie from today's .NET part. On start the app asks the server for a fresh access token. If you can explain this restore flow, you can explain how most modern SPAs keep sessions.\n\n### What you'll build\n- The week 7 `sessionStorage` code deleted; the token lives only in a variable in `api.ts`\n- `refreshAccessToken()` in `api.ts` calling `POST /api/auth/refresh` and storing the returned token\n- `AuthProvider` start-up: `status` is `loading`, then refresh, then `me()`, then `authenticated` or `anonymous`\n- A guard so start-up runs one refresh, even in Strict Mode\n\n### Step by step\n1. Remove every `sessionStorage` call and the stored-token check.\n2. Add `refreshAccessToken()`. It sends no body; the browser adds the cookie because the call is same-origin.\n3. Start `status` as `loading` always: you cannot know if a cookie exists, JavaScript cannot see it.\n4. On mount: refresh, then `me()`. Any failure means `anonymous`, quietly.\n5. Strict Mode runs effects twice. Two refreshes with the same cookie look like reuse and revoke the family. Keep the start-up promise in a module variable so the second run reuses it.\n6. Reload on a detail page and watch the Network tab: one refresh, one `me`, then the data.\n\n### Acceptance criteria\n- [ ] Reload restores the session with exactly one refresh call\n- [ ] No token in any browser storage\n- [ ] Anonymous users see the login page with no flash\n- [ ] Login still works and sets the cookie\n\n### Hints\n- Until Thursday's React part, an expired access token still hits the week 7 401 handler and logs you out after 15 minutes. That is expected; Thursday adds refresh and retry.\n- `credentials: \"same-origin\"` is the fetch default, which is what you want behind the Vite proxy.\n\n### Common mistakes\n- Starting as `anonymous`, so protected routes redirect before the restore finishes.\n- Two start-up refreshes racing, which kills the session on every reload in development.\n\n### Check your understanding\n- Why can JavaScript not check whether the refresh cookie exists?\n- What does XSS still let an attacker do with the token in memory?\n- Why does Strict Mode expose the double refresh bug?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Revocation and logout everywhere",
+      "title": "Logout revokes the refresh token; logout everywhere revokes all of them",
+      "doneWhen": "`POST /api/auth/logout` revokes the current refresh token family and deletes the cookie, and `POST /api/auth/logout-all` revokes every refresh token of the user so another browser fails its next refresh with 401",
+      "learnLinks": [
+        {
+          "label": "OWASP: Session management cheat sheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+        },
+        {
+          "label": "MDN: Set-Cookie",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie"
+        }
+      ],
+      "brief": "### Why this matters\nA JWT cannot be un-issued, so logout with JWTs is subtle. What you can kill is the refresh token, which stops new access tokens. \"How do you log out a JWT user everywhere?\" is a frequent interview question, and the honest answer includes the access token lifetime. Friday's React part calls these endpoints from the logout buttons.\n\n### What you'll build\n- `POST /api/auth/logout` (anonymous): read the cookie, revoke that token's family, delete the cookie\n- `POST /api/auth/logout-all` (requires a valid access token): revoke every active refresh token for the current user\n- `RevokeFamilyAsync(familyId)` and `RevokeAllForUserAsync(userId)` on the refresh token service\n- A `.http` scenario with two \"browsers\" (two cookie jars or two logins)\n\n### Step by step\n1. Write down what each endpoint guarantees and what it does not (access tokens stay valid until expiry).\n2. Implement both revoke methods with one `SaveChanges` each; set `RevokedAt`, never delete rows (you want the audit trail).\n3. Map logout as anonymous: it must work even when the access token has expired.\n4. Delete the cookie with `Response.Cookies.Delete` using the same `Path` you set it with.\n5. Map logout-all on the auth group with `RequireAuthorization()`.\n6. Log in twice, call logout-all with one login, then refresh with the other: 401.\n\n### Acceptance criteria\n- [ ] Logout works with an expired access token\n- [ ] Logout deletes the cookie (check the `Set-Cookie` header)\n- [ ] Logout-all revokes every family of the user and nobody else's\n- [ ] Both return 204, even if the token was already revoked\n\n### Hints\n- Logout should be idempotent: calling it twice is not an error.\n- Revoked rows are evidence. Clean up expired ones later with a job (week 14).\n\n### Common mistakes\n- Deleting the cookie with a different path, so it survives.\n- Making logout require a valid access token, so users with an expired one cannot log out.\n\n### Stretch (optional)\n- Add a `security stamp` style check: logout-all also stores a timestamp and rejects access tokens issued before it.\n\n### Check your understanding\n- What does \"log out everywhere\" really guarantee with JWTs?\n- Why mark tokens revoked instead of deleting them?\n- Why is logout safe to call anonymously?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Refresh-and-retry: one shared refresh for concurrent requests",
+      "title": "API client that refreshes once on 401 and retries the original request",
+      "doneWhen": "With a 1 minute access token, the app keeps working after expiry: three parallel requests that get 401 trigger exactly one refresh and are each retried once, and a failed refresh logs the user out once",
+      "learnLinks": [
+        {
+          "label": "MDN: Using the Fetch API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch"
+        },
+        {
+          "label": "MDN: 401 Unauthorized",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/401"
+        }
+      ],
+      "brief": "### Why this matters\nShort access tokens only work if expiry is invisible. The client must notice a 401, refresh once, and replay the request. The hard part is concurrency: a page firing five queries must not fire five refreshes, because with rotation the second looks like reuse and kills the session. Writing this wrapper from memory is this week's checkpoint. It uses Wednesday's refresh endpoint.\n\n### What you'll build\n- A module-level `refreshPromise: Promise<string> | null` in `api.ts`\n- `refreshAccessToken()` reusing the running promise, or starting one and clearing it in `finally` (Wednesday's start-up guard becomes this)\n- `request<T>`: on 401, except for auth endpoints, await the shared refresh, then retry once with the new token\n- A failed refresh calls the week 7 unauthorized handler once and rethrows the original `ApiError`\n\n### Step by step\n1. Refactor Wednesday's start-up guard into `refreshAccessToken()`.\n2. In `request<T>`, mark the retry with a flag in the call, not a global, so a second 401 does not loop.\n3. Skip refresh for `/api/auth/login`, `/register`, `/refresh` and `/logout`.\n4. Keep the original method, body and signal so the retry is identical apart from the header.\n5. Set the API's access token lifetime to 1 minute, open the list, wait, change a filter. Watch for one refresh.\n6. Delete the cookie in DevTools and wait again: one logout, then the login page.\n\n```ts\nlet refreshPromise: Promise<string> | null = null;\nexport function refreshAccessToken() {\n  // TODO: reuse the running promise, or start one and clear it in finally\n}\n```\n\n### Acceptance criteria\n- [ ] Concurrent 401s share one refresh request\n- [ ] Each request is retried at most once\n- [ ] A failed refresh logs out exactly once\n- [ ] Loaders and queries both benefit, because the logic lives in `api.ts`\n\n### Hints\n- A stream body cannot be replayed; your JSON string bodies can.\n- The week 7 rule that TanStack Query never retries 401 still matters: `api.ts` owns this retry.\n\n### Common mistakes\n- Each failing request calling refresh, so reuse detection revokes the session.\n- Retrying forever when the new token is also rejected.\n\n### Check your understanding\n- Why must concurrent requests share one refresh?\n- What breaks if the retry is not limited to once?\n- Why does refresh live in `api.ts` and not in a component?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Security review of the auth flow",
+      "title": "Auth integration checklist: expiry, clock skew, cookie flags",
+      "doneWhen": "Every item of the auth checklist (token lifetimes, explicit clock skew, signing key length, cookie flags, refresh expiry, no tokens in logs) is verified by a request or a config value and recorded in the PR \"Authorization + refresh\" description",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Configure JWT bearer authentication",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/configure-jwt-bearer-authentication"
+        },
+        {
+          "label": "OWASP: Session management cheat sheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+        }
+      ],
+      "brief": "### Why this matters\nAuth code fails quietly: a default you never looked at can let an expired token live five extra minutes. A short, repeatable checklist is how teams review auth before it ships, and walking an interviewer through one shows judgement, not just syntax. This closes the .NET side of the PR \"Authorization + refresh\"; today's React part closes the client side.\n\n### What you'll build\nA checklist in the PR description, each line with how you verified it:\n- Access token lifetime 15 minutes or less; refresh lifetime in days from options\n- `ClockSkew` set explicitly (the default is 5 minutes) to something small, such as 30 seconds\n- Issuer, audience, lifetime and signature validation all on\n- Signing key from user-secrets, at least 32 bytes\n- Refresh cookie: `HttpOnly`, `Secure`, `SameSite=Strict`, `Path=/api/auth`, expiry equal to the token's\n- Rotation, reuse detection and logout tested\n- No token or cookie value in logs\n- The access matrix from Monday\n\n### Step by step\n1. Set the access lifetime to 1 minute and the skew to 30 seconds. Time how long an expired token still works.\n2. Set the skew back to the default once, repeat, and note the difference.\n3. Inspect the login `Set-Cookie` header and tick each flag.\n4. Search your logs for `Bearer` and for the cookie name.\n5. Write the checklist, restore real lifetimes, run all tests.\n6. Push and open the PR \"Authorization + refresh\"; merge after today's React part.\n\n### Acceptance criteria\n- [ ] `ClockSkew` is explicit in code\n- [ ] Every checklist line has evidence\n- [ ] No secret or token appears in logs or committed files\n- [ ] The PR description holds the checklist and matrix\n\n### Hints\n- Clock skew exists because servers' clocks drift; keep it small, not zero.\n- Two tabs refreshing at the same moment can look like reuse. Note your decision: accept the rare logout, or allow a short grace window.\n\n### Common mistakes\n- Trusting defaults without reading them.\n- Testing only the happy path and never an expired or replayed token.\n\n### Check your understanding\n- What does clock skew do, and why not set it to zero?\n- Which cookie flag stops JavaScript from reading the token, and which limits CSRF?\n- Why is a refresh token's expiry server side as well as on the cookie?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Syncing logout across tabs",
+      "title": "Logout in one tab logs out the others (BroadcastChannel)",
+      "doneWhen": "Logging out in one tab logs out every other open tab within a second, Logout and Log out everywhere call the API and always clear the token and query cache, and PR \"Authorization + refresh\" is merged",
+      "learnLinks": [
+        {
+          "label": "MDN: Broadcast Channel API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API"
+        },
+        {
+          "label": "TanStack Query: QueryClient",
+          "url": "https://tanstack.com/query/latest/docs/reference/QueryClient"
+        }
+      ],
+      "brief": "### Why this matters\nEach tab now keeps its own access token in memory, so logging out in one tab leaves the others signed in until their token expires. That looks broken to users and is a real risk on shared computers. `BroadcastChannel` lets tabs of the same origin talk with a few lines. It also ends the week with the PR \"Authorization + refresh\".\n\n### What you'll build\n- `logout()` in `AuthProvider`: call `POST /api/auth/logout`, then always clear the token, `queryClient.clear()` and the user, even if the call fails\n- `logoutEverywhere()` calling `POST /api/auth/logout-all` first, then the same local cleanup\n- A `BroadcastChannel(\"auth\")` that posts `\"logout\"`; other tabs listen and run only the local cleanup\n- Logout and Log out everywhere buttons in a small user menu\n\n### Step by step\n1. Split cleanup into `clearLocalSession()` so both buttons and the listener share it.\n2. Write `logout()` with `try/finally` so local cleanup always runs.\n3. Create the channel in an effect, add the listener, close the channel in the cleanup.\n4. After a local logout, post the message. The sending tab does not receive its own message.\n5. Open three tabs, log out in one, watch the others land on `/login`.\n6. Log out everywhere in one browser; in a second browser, wait for its access token to expire.\n7. Run all builds and tests, push, review and merge PR \"Authorization + refresh\".\n\n### Acceptance criteria\n- [ ] Other tabs log out within a second\n- [ ] Local state is cleared even when the API call fails\n- [ ] The channel is closed on unmount\n- [ ] PR \"Authorization + refresh\" is merged\n\n### Hints\n- The listener must not call the API again: one tab already revoked the token.\n- Login in one tab could also broadcast, so other tabs restore through refresh.\n\n### Common mistakes\n- Not clearing the query cache, so the next user sees the previous user's data.\n- Creating a channel on every render.\n\n### Stretch (optional)\n- Look up the Web Locks API and use it so only one tab refreshes at a time.\n\n### Check your understanding\n- Why does each tab need to be told about a logout?\n- What does \"log out everywhere\" guarantee for a second device, and when?\n- Why must local cleanup run even if the logout request fails?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "lane": null,
+      "learn": null,
+      "title": "Explain 401 vs 403 vs 404 for a resource you do not own, and write the refresh-and-retry wrapper from memory",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nExplain 401 vs 403 vs 404 for a resource you do not own, then write the refresh-and-retry wrapper from memory, in 25 minutes.\n\n### Rules\n- Part 1 (about 7 minutes): blank page, explain out loud as if to an interviewer.\n- Part 2 (about 18 minutes): a new empty folder outside the JobHunt repo. One TypeScript file and a fake server function are enough.\n- The outline says from memory: docs closed for the first attempt; note every lookup if you make one.\n- No AI assistants and no copying from JobHunt.\n\n### Must include\n- Part 1: when each status is correct, why another user's application returns 404, why the admin endpoint returns 403, and where each is decided in the ASP.NET Core pipeline (authentication, policy, resource check)\n- How the refresh cookie is protected (flags, path, rotation, reuse detection)\n- Part 2: a `request<T>` that attaches a bearer token held in memory\n- One shared `refreshPromise`, so concurrent 401s cause one refresh\n- The original request retried once, never twice\n- No refresh for the login and refresh calls themselves\n- A failed refresh calls a logout handler once\n- A tiny test: three parallel requests against a fake server that rejects the old token, counting refresh calls\n\n### Self-check\n- [ ] Finished within 25 minutes\n- [ ] The 404 argument mentioned not leaking existence\n- [ ] Three parallel 401s produced exactly one refresh\n- [ ] A second 401 after the retry did not loop\n- [ ] Explained why the refresh token lives in an httpOnly cookie\n- [ ] Zero lookups, or a list of exactly what to review\n\n### If you got stuck\n- Resource checks and 404: Monday, .NET part. Showing 404 and 403: Monday, React part.\n- Roles, policies and 403: Tuesday, .NET part.\n- Rotation and reuse detection: Wednesday, .NET part. Session restore: Wednesday, React part.\n- The shared refresh promise: Thursday, React part. Revocation: Thursday, .NET part.\n- Cookie flags and clock skew: Friday, .NET part."
+    }
+  ]
+}

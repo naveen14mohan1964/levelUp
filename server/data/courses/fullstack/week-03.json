@@ -1,0 +1,205 @@
+{
+  "week": 3,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Dependency injection and lifetimes: singleton, scoped, transient",
+      "title": "IApplicationRepository with an in-memory implementation registered in DI",
+      "doneWhen": "`IApplicationRepository` lives in Application, `InMemoryApplicationRepository` in Infrastructure, and a temporary endpoint resolves it through `AddInfrastructure()` and returns the item count",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Dependency injection in ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection"
+        },
+        {
+          "label": "Microsoft Learn: .NET dependency injection",
+          "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection"
+        }
+      ],
+      "brief": "### Why this matters\nDI wires every ASP.NET Core service, and lifetimes are a top .NET interview topic. Putting the interface in Application and the implementation in Infrastructure makes the week 1 layers mean something: next week you swap the in-memory store for EF Core without touching the endpoints.\n\n### What you'll build\nOn a branch `feature/applications-list`:\n- `IApplicationRepository` in `JobHunt.Application/Abstractions` with `ListAsync(CancellationToken ct)` and `GetByIdAsync(Guid id, CancellationToken ct)`\n- `InMemoryApplicationRepository` in `JobHunt.Infrastructure` with seed data built through the domain constructors and methods\n- `AddInfrastructure(this IServiceCollection services)` in an Infrastructure `DependencyInjection` class\n- The repository registered as a singleton, with a comment saying why\n\n### Step by step\n1. Write the interface first. Every async method takes a `CancellationToken`.\n2. Implement it with a private list built in the constructor. Return `Task.FromResult(...)`.\n3. Add the DI abstractions package to Infrastructure (`Microsoft.Extensions.DependencyInjection.Abstractions`).\n4. Write `AddInfrastructure()` and call it from `Program.cs`.\n5. Add a temporary `GET /debug/count` that injects the interface and returns the count.\n6. Experiment: register it as transient, add an item and count again. Explain what you see, then switch back.\n\n```csharp\npublic static IServiceCollection AddInfrastructure(this IServiceCollection services)\n{\n    // TODO: register IApplicationRepository\n    return services;\n}\n```\n\n### Acceptance criteria\n- [ ] Application has no reference to Infrastructure\n- [ ] `Program.cs` never names the concrete class\n- [ ] All async methods accept a `CancellationToken`\n- [ ] You can explain why this store is a singleton\n\n### Hints\n- Singleton: one for the app's life. Scoped: one per request. Transient: new every time it is resolved.\n- A singleton that depends on a scoped service captures one request's instance forever: a captive dependency. Scope validation in Development catches it.\n\n### Common mistakes\n- Putting the interface in Infrastructure, so Application must reference Infrastructure to use it.\n- Returning `IQueryable` from the interface.\n\n### Check your understanding\n- Give a JobHunt example for each lifetime.\n- What is a captive dependency?\n- What exactly changes next week when the repository moves to EF Core?"
+    },
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "web",
+      "learn": "A typed API client module; handling HTTP errors in one place",
+      "title": "web/src/lib/api.ts with getApplications and an ApiError type",
+      "doneWhen": "`web/src/lib/api.ts` exports `request<T>`, `getApplications` and `ApiError`, the health badge uses `request<T>`, and a non-2xx response throws `ApiError` with its status",
+      "learnLinks": [
+        {
+          "label": "MDN: Using the Fetch API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch"
+        },
+        {
+          "label": "TypeScript: Generics",
+          "url": "https://www.typescriptlang.org/docs/handbook/2/generics.html"
+        }
+      ],
+      "brief": "### Why this matters\nIf every component calls `fetch` its own way, you get five slightly different error checks and nowhere to add an auth header later. One typed client module gives you one place for the base URL, errors and (in week 7) the token. Tomorrow's page calls the endpoint today's .NET part prepares.\n\n### What you'll build\n`web/src/lib/api.ts` with:\n- `ApiError extends Error` with a `status` number\n- A generic `request<T>(path, init?)` that calls `fetch`, throws `ApiError` on non-2xx and returns typed JSON\n- `getApplications(signal?)` and `getHealth(signal?)` built on it\n- An `ApplicationSummary` type in `types/` for the list item the API will return (id, roleTitle, companyName, appliedOn, status)\n\n### Step by step\n1. Write `ApiError` with a constructor taking `status` and a message.\n2. Write `request<T>`: build the URL from `API_BASE_URL + path`, call `fetch`, throw when `!res.ok`, return `res.json() as Promise<T>`.\n3. Return `undefined` for `204 No Content` instead of calling `res.json()`.\n4. Move `getHealth` here and rewrite it as a one-liner on `request<HealthStatus>`.\n5. Add `getApplications` returning `ApplicationSummary[]`.\n6. Check the badge still works, then call a path that does not exist from the console and confirm you get an `ApiError` with 404.\n\n```ts\nexport class ApiError extends Error {\n  constructor(public readonly status: number, message: string) { super(message); }\n}\n```\n\n### Acceptance criteria\n- [ ] No `fetch` outside `api.ts`\n- [ ] Non-2xx responses throw `ApiError` with the status\n- [ ] `request<T>` passes an optional `AbortSignal` through\n- [ ] No `any`\n\n### Hints\n- A generic type parameter lets callers say what they expect back: `request<HealthStatus>(\"/health\")`.\n- `instanceof ApiError` works for narrowing in a `catch` block.\n\n### Common mistakes\n- Forgetting that `fetch` resolves on 404 and 500.\n- Swallowing errors inside `request<T>` and returning `null`, which hides failures from the UI.\n\n### Check your understanding\n- What problem does a single API client module solve?\n- Why is `res.json() as Promise<T>` a promise you make, not a check?\n- Where would you add an `Authorization` header later?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "api",
+      "learn": "DTOs, mapping and HTTP status codes",
+      "title": "GET /api/applications and GET /api/applications/{id} returning DTOs (404 when missing)",
+      "doneWhen": "`GET /api/applications` returns a JSON array of DTOs with string statuses, and `GET /api/applications/{id}` returns 200 for a known id and 404 for an unknown one",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Create responses in Minimal API applications",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses"
+        },
+        {
+          "label": "MDN: HTTP response status codes",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"
+        },
+        {
+          "label": "Microsoft Learn: Choose between controller-based APIs and minimal APIs",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/apis"
+        }
+      ],
+      "brief": "### Why this matters\nReturning entities straight from an API leaks your internal model and ties clients to your database shape. DTOs give you a contract you control, and correct status codes make an API predictable. The React part today calls the list endpoint.\n\n### What you'll build\n- `ApplicationDto` record in `JobHunt.Application/Applications`: `Id`, `RoleTitle`, `CompanyName`, `AppliedOn`, `Status`\n- A hand-written `ToDto()` extension on `JobApplication`\n- `GET /api/applications` (200 with a list) and `GET /api/applications/{id:guid}` (200 or 404), mapped in `Program.cs` for now (Friday moves them to a route group)\n- Enums serialised as strings\n\n### Step by step\n1. Create the DTO and `ToDto()`. No mapping library needed for five fields.\n2. Map both routes. Inject `IApplicationRepository` and a `CancellationToken`.\n3. Give the detail handler the return type `Results<Ok<ApplicationDto>, NotFound>` and use `TypedResults`.\n4. Call `ConfigureHttpJsonOptions` and add `JsonStringEnumConverter`.\n5. Delete yesterday's debug endpoint. Test a known id, an unknown Guid and `abc` in a `.http` file.\n6. Add two sentences to the README: why minimal APIs here, and when you would pick controllers.\n\n```csharp\nstatic async Task<Results<Ok<ApplicationDto>, NotFound>> GetById(Guid id, IApplicationRepository repo, CancellationToken ct)\n{\n    // TODO\n}\n```\n\n### Acceptance criteria\n- [ ] Endpoints return DTOs, never entities\n- [ ] Unknown Guid returns 404\n- [ ] `abc` never reaches the handler\n- [ ] `status` is a string in JSON\n\n### Hints\n- `{id:guid}` is a route constraint: non-matching requests get 404 from routing.\n- Put the DTO in Application so other use cases can reuse it.\n\n### Common mistakes\n- Returning 200 with `null` for a missing item.\n- Mapping inside the handler so it cannot be reused or tested.\n\n### Check your understanding\n- Why is returning entities from an API risky?\n- What does `Results<Ok<T>, NotFound>` give you over returning `IResult`?\n- 400, 404 or 500: give a JobHunt example of each."
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Loading, error and empty states as a pattern",
+      "title": "ApplicationsPage that loads from the API with loading, empty and error states",
+      "doneWhen": "`ApplicationsPage` shows a loading state, the list from the API, an empty message when the API returns `[]`, and an error message when the API is stopped",
+      "learnLinks": [
+        {
+          "label": "react.dev: Conditional rendering",
+          "url": "https://react.dev/learn/conditional-rendering"
+        },
+        {
+          "label": "React: Synchronizing with Effects",
+          "url": "https://react.dev/learn/synchronizing-with-effects"
+        }
+      ],
+      "brief": "### Why this matters\nReal screens spend a lot of time loading, empty or broken. Handling all four states is what makes an app feel solid, and it is a common take-home requirement. This page calls the list endpoint built in today's .NET part.\n\n### What you'll build\n- `features/applications/ApplicationsPage.tsx` that loads `getApplications()` on mount\n- Request state as a discriminated union: `loading`, `error`, `success`\n- An empty message when the list is `[]`\n- Week 2's list, filter and summary reused, fed by API data instead of `sampleData`\n\n### Step by step\n1. Define `type State = { status: \"loading\" } | { status: \"error\"; error: Error } | { status: \"success\"; data: ApplicationSummary[] }`.\n2. Hold it in one `useState<State>`.\n3. In `useEffect`, create an `AbortController`, call `getApplications(controller.signal)`, set the state, and abort in the cleanup.\n4. Ignore the `AbortError` that an aborted request throws.\n5. Render each state; inside `success`, render the empty message or the list.\n6. Adjust the card props to `ApplicationSummary` if needed.\n7. Test: throttle the network in DevTools, stop the API, empty the in-memory list.\n\n### Acceptance criteria\n- [ ] One state value, not three booleans\n- [ ] Distinct loading, error, empty and data UI\n- [ ] Aborted requests do not show an error\n- [ ] `sampleData.ts` is no longer imported by the page\n\n### Hints\n- Narrow with `switch (state.status)`; TypeScript then knows `data` exists only in `success`.\n- `error.name === \"AbortError\"` identifies an aborted fetch.\n\n### Common mistakes\n- `isLoading`, `isError` and `data` that can contradict each other.\n- Showing the raw error object to the user.\n\n### Stretch (optional)\n- Add a \"Try again\" button that refetches.\n\n### Check your understanding\n- Why is a discriminated union better than several booleans?\n- What happens without the abort in StrictMode?\n- What would you need to add caching here? (Week 5 answers it.)"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "api",
+      "learn": "ProblemDetails and global exception handling",
+      "title": "Exception handler returning ProblemDetails for unexpected errors and not-found",
+      "doneWhen": "An unhandled exception returns a 500 `application/problem+json` body with a `traceId` and no stack trace, and an unknown id returns a 404 ProblemDetails body",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Handle errors in ASP.NET Core APIs",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling-api"
+        },
+        {
+          "label": "Microsoft Learn: Handle errors in ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling"
+        }
+      ],
+      "brief": "### Why this matters\nWithout a global handler, a crash returns an HTML page or an empty 500, and the React app has nothing useful to show. ProblemDetails (RFC 9457) is the standard JSON error shape; the web app relies on it from today. The React part parses exactly this body.\n\n### What you'll build\n- `AddProblemDetails()`, `UseExceptionHandler()` and `UseStatusCodePages()` in `Program.cs`\n- `GlobalExceptionHandler : IExceptionHandler` that logs once and writes a 500 ProblemDetails with a `traceId`\n- `DomainException` mapped to 400 with its message as `detail` (week 6 refines this)\n- 404s with a ProblemDetails body instead of an empty response\n\n### Step by step\n1. Add a temporary endpoint that throws. Call it and save the response.\n2. Add `AddProblemDetails()` and `UseExceptionHandler()` early in the pipeline. Call again and compare.\n3. Implement `IExceptionHandler.TryHandleAsync`: branch on the exception type, set the status, write the body through `IProblemDetailsService` and return `true`.\n4. Register it with `AddExceptionHandler<GlobalExceptionHandler>()`.\n5. Add `UseStatusCodePages()` and call an unknown id: the empty 404 now has a ProblemDetails body.\n6. Remove the throwing endpoint.\n\n### Acceptance criteria\n- [ ] Errors use `application/problem+json` with `status`, `title` and `traceId`\n- [ ] No stack trace or exception message in a 500 body\n- [ ] A `DomainException` returns 400 with its message\n- [ ] The exception is logged once, with structured placeholders\n\n### Hints\n- `Activity.Current?.Id ?? httpContext.TraceIdentifier` is a common `traceId` value.\n- `AddProblemDetails` lets you customise every ProblemDetails in one place, for example adding `traceId` to all of them.\n- The exception handler must sit before the middleware whose exceptions it should catch.\n\n### Common mistakes\n- try/catch in every endpoint instead of one handler in the pipeline.\n- Returning `exception.Message` for 500s, which can leak internals.\n- Logging the same exception in the handler and again in middleware.\n\n### Check your understanding\n- Where in the pipeline must the exception handler sit, and why?\n- What fields does a ProblemDetails body have?\n- Why is a 400 for a domain exception only a temporary choice?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Parsing ProblemDetails into a friendly error message",
+      "title": "ApiError carries the parsed ProblemDetails and the page shows its title",
+      "doneWhen": "Stopping the API or requesting an unknown id shows the ProblemDetails `title` (or a friendly fallback) on the page instead of a generic message",
+      "learnLinks": [
+        {
+          "label": "MDN: HTTP response status codes",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"
+        },
+        {
+          "label": "TypeScript: Narrowing",
+          "url": "https://www.typescriptlang.org/docs/handbook/2/narrowing.html"
+        }
+      ],
+      "brief": "### Why this matters\n\"Something went wrong\" helps nobody. When the API already sends a clear title and detail, the UI should show it. Parsing the error body safely, without trusting it blindly, is the other half of today's .NET part.\n\n### What you'll build\n- A `ProblemDetails` type in `types/`: `type?`, `title?`, `status?`, `detail?`, `traceId?`\n- `ApiError` extended with an optional `problem: ProblemDetails`\n- `request<T>` that tries to parse an error body as ProblemDetails when the content type says so\n- A `getErrorMessage(error: unknown): string` helper used by the page\n\n### Step by step\n1. Write the `ProblemDetails` type.\n2. In `request<T>`, on `!res.ok`, check whether `content-type` includes `problem+json`; if so parse it, otherwise leave `problem` undefined.\n3. Wrap the parse in try/catch: a broken body must still produce an `ApiError`.\n4. Set the `ApiError` message to `problem.title`, falling back to `HTTP <status>`.\n5. Write `getErrorMessage`: `ApiError` with a problem gives the title (and `detail` if present), a network `TypeError` gives \"Cannot reach the server\", anything else a fallback.\n6. Use it in `ApplicationsPage` and show `traceId` in small text when present.\n\n### Acceptance criteria\n- [ ] The page shows the API's `title` for a 404 or 500\n- [ ] A network failure shows a friendly \"cannot reach\" message\n- [ ] A non-JSON error body does not crash the client\n- [ ] `getErrorMessage` accepts `unknown`, not `any`\n\n### Hints\n- In a `catch`, the error is `unknown`. Narrow with `instanceof ApiError` before reading fields.\n- Showing the `traceId` lets a user report an error you can find in the logs.\n\n### Common mistakes\n- Calling `res.json()` on an HTML error page and getting a confusing parse error instead of the real status.\n- Rendering `detail` from a 500, which the server should not fill with internals anyway.\n\n### Check your understanding\n- Why type the caught error as `unknown`?\n- How does `instanceof` narrow a type?\n- Which errors should a user see in full, and which only as a generic message?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "api",
+      "learn": "The Options pattern with validation on start-up",
+      "title": "Validated JobHuntOptions bound from configuration",
+      "doneWhen": "CORS and the health display name read from a validated `JobHuntOptions`, and the API refuses to start with a clear message when `JobHunt:AllowedOrigins` is empty",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Options pattern in ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options"
+        },
+        {
+          "label": "Microsoft Learn: Configuration in ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/"
+        }
+      ],
+      "brief": "### Why this matters\nReading `config[\"Some:Key\"]` strings in five places means typos fail silently at run time. The Options pattern gives you one typed, validated class, so a missing setting stops the app at startup instead of breaking the first request in production.\n\n### What you'll build\n- A `JobHunt` section in appsettings with `DisplayName` and `AllowedOrigins` (moving week 1's `App` and `Cors` values into it)\n- `JobHuntOptions` class with data annotations: `DisplayName` required, `AllowedOrigins` required with at least one item\n- Registration with `AddOptions<JobHuntOptions>()`, `BindConfiguration(\"JobHunt\")`, `ValidateDataAnnotations()` and `ValidateOnStart()`\n- CORS and `/health` reading from the options class\n\n### Step by step\n1. Write the class with a `const string Section = \"JobHunt\"` and the two properties.\n2. Register it with the four chained calls.\n3. In `/health`, inject `IOptions<JobHuntOptions>` instead of `IConfiguration`.\n4. For CORS, which is set up before the app is built, read the section once with `GetSection(...).Get<JobHuntOptions>()` or configure the policy through options; pick one and note why.\n5. Empty the origins array and run: read the startup error. Restore it.\n\n```csharp\npublic sealed class JobHuntOptions\n{\n    public const string Section = \"JobHunt\";\n    // TODO: [Required] DisplayName, [Required, MinLength(1)] AllowedOrigins\n}\n```\n\n### Acceptance criteria\n- [ ] No `config[\"...\"]` string lookups left in endpoint code\n- [ ] Startup fails fast with a readable message on bad config\n- [ ] The class lives in a place both Api and Infrastructure can use\n- [ ] `/health` and CORS still work\n\n### Hints\n- `IOptions<T>` is read once; `IOptionsSnapshot<T>` per request; `IOptionsMonitor<T>` notifies on change. `IOptions<T>` fits here.\n- For rules annotations cannot express, `.Validate(o => ..., \"message\")` adds a custom check.\n\n### Common mistakes\n- Forgetting `ValidateOnStart()`, so validation only runs on first use.\n- Making options classes immutable records without settable properties, so binding fills nothing.\n\n### Check your understanding\n- What is the difference between `IOptions`, `IOptionsSnapshot` and `IOptionsMonitor`?\n- Why fail at startup rather than on first use?\n- What does binding do with a JSON array?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Environment variables in Vite",
+      "title": "API base URL from a Vite env variable with a typed config module",
+      "doneWhen": "`api.ts` reads its base URL from `config.ts`, which reads a typed `VITE_API_BASE_URL`, and no API URL is hard-coded anywhere under `web/src`",
+      "learnLinks": [
+        {
+          "label": "Vite: Env variables and modes",
+          "url": "https://vite.dev/guide/env-and-mode"
+        }
+      ],
+      "brief": "### Why this matters\nHard-coded `http://localhost:5123` breaks the moment someone else runs the app or you deploy. Knowing what Vite bakes in at build time, and why a `VITE_` variable is never a secret, prevents a classic deployment bug.\n\n### What you'll build\n- `web/.env.development` with `VITE_API_BASE_URL` set to your API URL\n- A typed `ImportMetaEnv` declaration in `vite-env.d.ts`\n- `web/src/lib/config.ts` exporting a frozen `config` object with `apiBaseUrl`\n- `api.ts` using `config.apiBaseUrl` instead of the `API_BASE_URL` constant\n\n### Step by step\n1. Read the env and modes guide: which files load in which mode, and which variables reach browser code.\n2. Create `.env.development`. Check `.gitignore` covers `.env*.local`.\n3. Declare `interface ImportMetaEnv { readonly VITE_API_BASE_URL?: string }` in `vite-env.d.ts`.\n4. Write `config.ts` reading `import.meta.env.VITE_API_BASE_URL`, defaulting to `\"\"` (relative URLs), and validating it is not just whitespace.\n5. Use `config` in `api.ts` and delete the old constant.\n6. Restart Vite and check the badge and list still load.\n7. Run `npm run build`, search the `dist` folder for your URL and see that it was inlined.\n\n### Acceptance criteria\n- [ ] Only `config.ts` touches `import.meta.env`\n- [ ] The variable is typed, so a typo is a compile error\n- [ ] No API URL under `web/src`\n- [ ] README lists the variable\n\n### Hints\n- Vite replaces `import.meta.env.VITE_*` at build time. Changing the env file needs a restart in dev and a rebuild for production.\n- An empty base URL means \"same origin\", which tomorrow's proxy relies on.\n\n### Common mistakes\n- Putting an API key in a `VITE_` variable. Anything in the bundle is public.\n- Reading `import.meta.env` all over the codebase.\n\n### Stretch (optional)\n- Add `VITE_APP_NAME` and show it in the header.\n\n### Check your understanding\n- Why are only `VITE_` variables exposed to client code?\n- What is the difference between build time and run time config?\n- How would you give one build different URLs per environment?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Route groups and endpoint organisation in minimal APIs",
+      "title": "Applications endpoints moved into a route group in their own file",
+      "doneWhen": "`Program.cs` calls one `MapApplicationsEndpoints()` line, both routes live in `ApplicationsEndpoints.cs` under one `MapGroup(\"/api/applications\")`, and the `.http` tests still pass",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Route handlers in Minimal API apps",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/route-handlers"
+        },
+        {
+          "label": "Microsoft Learn: Minimal APIs overview",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis"
+        }
+      ],
+      "brief": "### Why this matters\nMinimal APIs get a bad name when everything lives in a 400-line `Program.cs`. Route groups let you share a prefix, tags and later auth rules (week 7) across endpoints, and one file per feature keeps the code findable. This finishes the .NET side of the PR \"Applications list\".\n\n### What you'll build\n- `JobHunt.Api/Endpoints/ApplicationsEndpoints.cs` with `MapApplicationsEndpoints(this IEndpointRouteBuilder app)`\n- A route group from `MapGroup(\"/api/applications\")` with `WithTags(\"Applications\")`\n- Named static handler methods (`GetAll`, `GetById`) instead of inline lambdas\n- `Program.cs` reduced to registrations, middleware and one `Map...` call per feature\n\n### Step by step\n1. Create the `Endpoints` folder and the static class.\n2. Create the group and map `/` and `/{id:guid}` on it with the handler methods.\n3. Give each endpoint a name with `WithName(...)` so you can build links to it later (week 6 needs this for `201 Created`).\n4. Move the health endpoint into the same folder if it is not already there.\n5. Delete the old mappings from `Program.cs` and run your `.http` file again.\n\n### Acceptance criteria\n- [ ] One group, one file, one call in `Program.cs`\n- [ ] Handlers are named methods with explicit `TypedResults` return types\n- [ ] Endpoints have names and a tag\n- [ ] All earlier requests behave exactly as before\n\n### Hints\n- A group returns a `RouteGroupBuilder`; anything you call on it (tags, filters, `RequireAuthorization`) applies to every endpoint inside.\n- Named methods show up clearly in stack traces and can be unit tested.\n\n### Common mistakes\n- Repeating `\"/api/applications\"` in each `MapGet` instead of using the group.\n- A leading slash mismatch that produces `/api/applications//{id}`. Check the routes in the log or OpenAPI.\n\n### Stretch (optional)\n- Add `Microsoft.AspNetCore.OpenApi` and map the OpenAPI document in Development to see your contract.\n\n### Check your understanding\n- What can you attach to a route group besides a prefix?\n- Why prefer named handler methods over lambdas as a feature grows?\n- How would you organise ten features with this pattern?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "web",
+      "learn": "The Vite dev proxy",
+      "title": "Vite proxy so the web app calls /api without CORS in development",
+      "doneWhen": "The web app calls relative `/api` and `/health` URLs through the Vite proxy with no CORS preflight in the Network tab, and PR \"Applications list\" is merged",
+      "learnLinks": [
+        {
+          "label": "Vite: Server options",
+          "url": "https://vite.dev/config/server-options"
+        },
+        {
+          "label": "Vite: Env variables and modes",
+          "url": "https://vite.dev/guide/env-and-mode"
+        }
+      ],
+      "brief": "### Why this matters\nA dev proxy makes the browser talk to one origin, which removes CORS from development and matches production, where web and API usually sit behind the same domain. Today you also finish the week: the PR \"Applications list\".\n\n### What you'll build\n- `server.proxy` in `vite.config.ts` forwarding `/api` and `/health` to the API\n- The proxy target from a non-`VITE_` variable such as `API_PROXY_TARGET`, loaded with `loadEnv`\n- `VITE_API_BASE_URL` left empty in development so `api.ts` uses relative URLs\n- README updated and the PR merged\n\n### Step by step\n1. Switch `vite.config.ts` to the function form of `defineConfig` to get `mode`, and call `loadEnv(mode, process.cwd(), \"\")`.\n2. Add `server.proxy` entries for `/api` and `/health` with `changeOrigin: true`.\n3. Put `API_PROXY_TARGET` in `.env.development` and clear `VITE_API_BASE_URL`.\n4. Restart Vite. In DevTools, requests now go to the Vite origin and no `OPTIONS` preflight appears.\n5. Keep the API's CORS policy (production may need it) and note in the README that dev uses the proxy.\n6. Run lint, build and `dotnet test`, push, open the PR \"Applications list\", review the diff and merge.\n\n```ts\nserver: {\n  proxy: {\n    \"/api\": { target: env.API_PROXY_TARGET, changeOrigin: true },\n    // TODO: /health\n  },\n},\n```\n\n### Acceptance criteria\n- [ ] No API port anywhere under `web/src`\n- [ ] The proxy target is configurable without editing `vite.config.ts`\n- [ ] README lists every env variable\n- [ ] PR \"Applications list\" is merged\n\n### Hints\n- Variables used only in `vite.config.ts` do not need the `VITE_` prefix and never reach the browser.\n- Set `secure: false` only if the API uses a self-signed HTTPS dev certificate.\n\n### Common mistakes\n- Expecting the proxy in a production build. It exists only in the dev server.\n- Forgetting to restart Vite after changing the config or `.env` files.\n\n### Check your understanding\n- Why does the proxy remove the need for CORS in development?\n- Which variables reach the browser bundle, and which do not?\n- How will the deployed app find the API later?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "lane": null,
+      "learn": null,
+      "title": "Draw the request from the browser to the controller and back, naming every layer, the DI lifetime of each service and the status codes",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nOn paper or a whiteboard file, draw one request from the browser to `GET /api/applications/{id}` and back, naming every layer, the DI lifetime of each service and every status code, in 20 minutes. Then explain it out loud as if to an interviewer.\n\n### Rules\n- Blank page outside the repo, JobHunt closed.\n- Docs are allowed, but try without them first and mark every item you looked up.\n- No AI assistants. Set a 20 minute timer.\n\n### Must include\n- Browser: the page component, its loading and error states, `api.ts` with `ApiError`, the Vite proxy in dev\n- Server: Kestrel, the middleware in order (exception handler, status code pages, CORS, routing), the route group and handler\n- `IApplicationRepository`, its implementation and the project each lives in\n- The lifetime of the repository, the options class and the exception handler, with one sentence each on why\n- The way back: DTO mapping, JSON with string enums, status code, ProblemDetails for errors\n- Status codes 200, 404 (unknown Guid), 404 (non-Guid id), 400 (domain exception), 500, and what the page shows for each\n\n### Self-check\n- [ ] Finished within 20 minutes\n- [ ] The drawing shows the inbound and outbound path\n- [ ] Every box is labelled with its project (Api, Application, Domain, Infrastructure, web)\n- [ ] You explained singleton, scoped and transient with JobHunt examples\n- [ ] You described a captive dependency without looking it up\n- [ ] You explained why the proxy removes CORS in dev\n\n### If you got stuck\n- Interfaces, layers and lifetimes: Monday, .NET part.\n- `api.ts` and `ApiError`: Monday, React part.\n- DTOs and status codes: Tuesday, .NET part.\n- Page states: Tuesday, React part.\n- ProblemDetails and handler position: Wednesday, .NET part.\n- Options: Thursday, .NET part. Proxy: Friday, React part."
+    }
+  ]
+}

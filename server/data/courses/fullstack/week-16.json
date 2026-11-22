@@ -1,0 +1,213 @@
+{
+  "week": 16,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Typed HttpClient and IHttpClientFactory",
+      "title": "Company info enrichment through a typed client (public API or a stub)",
+      "doneWhen": "`GET /api/companies/{id}/info` returns domain, industry and size fetched through a typed `ICompanyInfoClient` from a local stub, returns 404 for an unknown company, and 503 ProblemDetails when the stub is stopped",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: IHttpClientFactory with .NET",
+          "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/httpclient-factory"
+        },
+        {
+          "label": "Microsoft Learn: Make HTTP requests using IHttpClientFactory in ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests"
+        }
+      ],
+      "brief": "### Why this matters\nReal apps call other services, and those services are slow or down at the worst moments. `new HttpClient()` per call exhausts sockets; one static client ignores DNS changes. `IHttpClientFactory` with a typed client solves both and gives you one place to add resilience tomorrow. \"How do you call an external API from .NET?\" is a standard question. Today's React part makes sure a failure stays contained.\n\n### What you'll build\nOn a new branch `feature/resilience-observability`:\n- `tools/CompanyInfoStub`: a tiny separate minimal API with `GET /companies/{name}`, and configurable `DelayMs` and `FailRate` so you can make it slow or flaky\n- `ICompanyInfoClient` in Application (`GetAsync(name, ct)` returning a DTO or null) and `CompanyInfoClient` in Infrastructure\n- `CompanyInfo:BaseUrl` added to the validated settings\n- `AddHttpClient<ICompanyInfoClient, CompanyInfoClient>(...)` setting `BaseAddress`\n- `GET /api/companies/{id}/info` with an ownership check, cached for a day with the week 13 Redis helper\n\n### Step by step\n1. Build the stub: an in-memory dictionary and the two failure knobs.\n2. Write the typed client. An upstream 404 means null, not an exception.\n3. Register it and run both apps.\n4. Add the endpoint. Map `HttpRequestException` and timeouts to 503 at the edge.\n5. Pass the endpoint's `CancellationToken` all the way into the HTTP call.\n6. Stop the stub and call the endpoint.\n\n```csharp\npublic async Task<CompanyInfoDto?> GetAsync(string name, CancellationToken ct)\n{\n    using var response = await http.GetAsync($\"companies/{Uri.EscapeDataString(name)}\", ct);\n    // TODO: 404 means null, other failures throw, success deserialises\n}\n```\n\n### Acceptance criteria\n- [ ] No `new HttpClient()` anywhere\n- [ ] The base URL comes from validated settings\n- [ ] Upstream failure gives 503, never a 500 stack trace\n- [ ] Cancellation flows into the outbound call\n\n### Hints\n- The factory pools and rotates handlers, which fixes socket exhaustion and stale DNS.\n- Typed clients are transient; never capture one in a singleton.\n\n### Common mistakes\n- Treating an upstream 404 as an error.\n- Building URLs without escaping the company name.\n\n### Check your understanding\n- What two problems does `IHttpClientFactory` solve?\n- Why is the client behind an interface in Application?\n- Why 503 and not 500 for an upstream failure?"
+    },
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Error boundaries",
+      "title": "Error boundary per route with a retry button",
+      "doneWhen": "Throwing on purpose inside the board route shows that route's error screen with a Try again button while the header and nav still work, and Try again re-renders the route successfully once the throw is removed",
+      "learnLinks": [
+        {
+          "label": "React Router: Error boundaries",
+          "url": "https://reactrouter.com/how-to/error-boundary"
+        },
+        {
+          "label": "react.dev: Catching rendering errors with an error boundary",
+          "url": "https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary"
+        }
+      ],
+      "brief": "### Why this matters\nWithout boundaries, one render error anywhere blanks the whole app. React Router's route `errorElement` catches errors from a route's loader, action and render, and keeps the layout around it alive. Placing boundaries per route means a broken dashboard never takes down the board. This is the safety net that today's .NET part's 503 needs on the client.\n\n### What you'll build\n- `RouteErrorScreen` used as `errorElement` on the root route and on applications, detail, board and dashboard\n- `useRouteError()` with `isRouteErrorResponse` and your week 8 `errorKind` to show not-found, forbidden and crash screens differently\n- A Try again button that re-runs the route with `useRevalidator()` or navigates to the same URL\n- A small class `WidgetBoundary` (`getDerivedStateFromError`, `componentDidCatch`) for widgets inside a page\n\n### Step by step\n1. Add `errorElement` to the root route first, then to each main route.\n2. Throw from a component inside the board and check the header stays.\n3. Throw from a loader and compare what `useRouteError()` returns.\n4. Build the three screens: not-found and forbidden reuse week 8; crash shows a calm message.\n5. Add Try again. Make sure it focuses the main heading after recovery.\n6. Write `WidgetBoundary`; class components are still the built-in way to catch render errors outside the router.\n\n```tsx\nexport function RouteErrorScreen() {\n  const error = useRouteError();\n  // TODO: route error response vs ApiError vs crash; Try again\n}\n```\n\n### Acceptance criteria\n- [ ] One route's crash never blanks the app\n- [ ] Not found, forbidden and crash look different\n- [ ] Try again works without a full reload\n- [ ] `WidgetBoundary` exists for tomorrow's card\n\n### Hints\n- Boundaries do not catch errors in event handlers or async code; those need `try/catch`.\n- In development, React logs caught errors loudly; check a production build too.\n\n### Common mistakes\n- Only one boundary at the root, so every error replaces the whole layout.\n- Showing raw stack traces to users.\n\n### Check your understanding\n- What does a route `errorElement` catch?\n- What can an error boundary never catch?\n- Why boundaries per route instead of one?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Resilience: retry, timeout, circuit breaker",
+      "title": "Standard resilience handler with timeouts and a circuit breaker",
+      "doneWhen": "With the stub failing half its requests most info calls still succeed and retries show in the log, with the stub down calls fail in under 50 ms once the circuit opens and return 503 with `Retry-After`, and a 5 second stub delay is cut by the attempt timeout",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Build resilient HTTP apps",
+          "url": "https://learn.microsoft.com/en-us/dotnet/core/resilience/http-resilience"
+        },
+        {
+          "label": "Microsoft Learn: Introduction to resilient app development",
+          "url": "https://learn.microsoft.com/en-us/dotnet/core/resilience/"
+        }
+      ],
+      "brief": "### Why this matters\nRetries hide brief blips; timeouts stop one slow service from tying up your threads; a circuit breaker stops hammering a service that is down and fails fast instead. Each solves a different problem, and combined wrongly they make things worse. \"Retry vs circuit breaker\" is a classic interview question. Today's React part shows the user something useful while this fails.\n\n### What you'll build\n- `Microsoft.Extensions.Http.Resilience` in Infrastructure\n- `.AddStandardResilienceHandler(...)` on the company info client\n- Options tuned and written down: attempt timeout about 2 s, total timeout about 6 s, 3 retries with exponential backoff and jitter, circuit breaker sampling and break duration\n- The endpoint mapping \"circuit open\" and \"timeout\" exceptions to 503 with `Retry-After`\n\n### Step by step\n1. Read the standard pipeline's order: rate limiter, total timeout, retry, circuit breaker, attempt timeout. Draw it as nested boxes.\n2. Add the handler with defaults and set the stub's fail rate to 0.5. Count attempts in the log.\n3. Tune the options. The breaker's sampling duration must be at least twice the attempt timeout, or start-up validation fails.\n4. Stop the stub, call until the circuit opens, then time a call.\n5. Start the stub, wait the break duration, and watch the half-open probe close the circuit.\n6. Set a 5 second delay and confirm the attempt timeout cuts it.\n\n```csharp\n.AddStandardResilienceHandler(o =>\n{\n    o.AttemptTimeout.Timeout = TimeSpan.FromSeconds(2);\n    // TODO: total timeout, retries, circuit breaker\n});\n```\n\n### Acceptance criteria\n- [ ] Brief failures are retried, with jitter\n- [ ] An open circuit fails fast\n- [ ] No call waits longer than the total timeout\n- [ ] Every option value has a written reason\n\n### Hints\n- Retrying a POST can run it twice on the server; retries need idempotent operations.\n- Breaker state lives in memory, per client and per instance.\n\n### Common mistakes\n- Retrying on the client too, so retries multiply.\n- An attempt timeout longer than the total timeout.\n\n### Check your understanding\n- Retry vs circuit breaker, with JobHunt examples?\n- Why does jitter matter?\n- What does half-open mean?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Graceful degradation in the UI",
+      "title": "Company info shown as optional; the page works when enrichment fails",
+      "doneWhen": "The Overview tab shows a `CompanyInfoCard` with its own loading and error states; with the stub stopped the card says \"Company info is temporarily unavailable\" while the rest of the page works, and the client does not retry a 503",
+      "learnLinks": [
+        {
+          "label": "TanStack Query: Query retries",
+          "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-retries"
+        },
+        {
+          "label": "MDN: 503 Service Unavailable",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/503"
+        }
+      ],
+      "brief": "### Why this matters\nCompany info is nice to have; the application itself is what the user came for. Graceful degradation means optional parts fail quietly and locally while the core keeps working. It also means not stacking retries: the server already retried three times, so a client retry just adds load to a struggling service. This shows the data and the failures from today's and Monday's .NET parts.\n\n### What you'll build\n- `getCompanyInfo(companyId)` in `api.ts` and `useCompanyInfo(companyId)` with a long `staleTime` (company facts rarely change)\n- `retry` off for 503 in that query (or in the `QueryClient` default, next to the 401, 403, 404 and 429 rules)\n- `CompanyInfoCard` on the Overview tab:\n  - loading: a small skeleton the size of the card\n  - not found: \"No extra info for this company\"\n  - 503 or network error: a calm unavailable message, with the `Retry-After` hint if present\n- The card wrapped in yesterday's `WidgetBoundary`, so even a render bug stays inside it\n\n### Step by step\n1. Add the API function and the hook.\n2. Build the card's four states with sample data first.\n3. Decide the retry rule and write it next to the others.\n4. Wrap the card in `WidgetBoundary`.\n5. Stop the stub: the card degrades, the rest of the page loads normally.\n6. Make the stub flaky and reload a few times: the server's retries hide most failures.\n\n```ts\nretry: (count, error) =>\n  !(error instanceof ApiError && error.status === 503) && count < 1,\n```\n\n### Acceptance criteria\n- [ ] The page never waits for or breaks on company info\n- [ ] 503 is not retried by the client\n- [ ] Every state has calm, specific text\n- [ ] A render error in the card stays in the card\n\n### Hints\n- Put optional data in its own query so its failure cannot block the main query.\n- A skeleton the same size as the card avoids layout shift (Friday measures it).\n\n### Common mistakes\n- Loading company info in the route loader, so a failure blocks the page.\n- Red error styling for something the user cannot fix.\n\n### Check your understanding\n- What makes a feature optional, and how does the UI show it?\n- Why not retry a 503 on the client here?\n- Why a separate query for optional data?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Structured logging with Serilog",
+      "title": "Serilog with request logging and enrichers",
+      "doneWhen": "Every request writes one structured Serilog line with method, path, status, elapsed time and user id, start-up failures are logged by a bootstrap logger, and no token, password or `/hubs` query string appears in any log",
+      "learnLinks": [
+        {
+          "label": "Serilog: Home",
+          "url": "https://serilog.net/"
+        },
+        {
+          "label": "Microsoft Learn: Logging in .NET and ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging/"
+        }
+      ],
+      "brief": "### Why this matters\nPlain text logs are hard to search: \"find every 500 for user X in the last hour\" needs structure. Serilog writes logs as events with named properties, and request logging replaces many noisy framework lines with one useful line per request. Structured logging is the base of observability and a common interview topic. Today's React part creates the correlation id that tomorrow joins to these logs.\n\n### What you'll build\n- `Serilog.AspNetCore` with `AddSerilog(...)` reading levels from configuration, `Enrich.FromLogContext()`, and a console sink (readable in Development, compact JSON elsewhere)\n- A bootstrap logger so start-up failures are logged\n- `UseSerilogRequestLogging()` with the user id added to the diagnostic context\n- Noisy framework categories lowered in configuration\n- A Hangfire job pushing its job name into the log context\n\n### Step by step\n1. Replace the default logging with Serilog, keeping `ILogger<T>` in your code.\n2. Add the bootstrap logger around start-up with `try/catch/finally`.\n3. Add request logging and enrich it with the user id from the claims.\n4. Lower `Microsoft.AspNetCore` and EF categories to `Warning` in configuration.\n5. Check the `/hubs` rule from week 15 still holds: request paths without query strings.\n6. Search the output for `Bearer`, `password` and `access_token`.\n\n```csharp\napp.UseSerilogRequestLogging(o =>\n{\n    o.EnrichDiagnosticContext = (diag, http) =>\n    {\n        // TODO: add the user id when authenticated\n    };\n});\n```\n\n### Acceptance criteria\n- [ ] One line per request with the named fields\n- [ ] Levels come from configuration\n- [ ] Start-up crashes are logged\n- [ ] No secrets in any log\n\n### Hints\n- Use message templates: `\"Moved {ApplicationId} to {Status}\"`, never interpolated strings.\n- The week 13 `[LoggerMessage]` methods keep working; Serilog receives them like any log.\n\n### Common mistakes\n- Logging the full URL, including query strings with tokens.\n- Leaving EF at `Information` in production.\n\n### Check your understanding\n- What makes a log structured?\n- Why one line per request?\n- How do you keep secrets out of logs?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Sending a correlation id from the client",
+      "title": "api.ts sends X-Correlation-Id and keeps it on ApiError",
+      "doneWhen": "Every request from `api.ts` sends an `X-Correlation-Id` from `crypto.randomUUID()`, `ApiError` keeps the id (from the response header when present, else the one sent), and error states show \"Reference: \" with that id",
+      "learnLinks": [
+        {
+          "label": "MDN: Crypto.randomUUID()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID"
+        },
+        {
+          "label": "MDN: HTTP headers",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers"
+        }
+      ],
+      "brief": "### Why this matters\n\"It broke\" is not a bug report. A reference id on the error screen lets a user (or you, testing) give support the one value that finds the exact server log line. Generating it on the client means even a request that never reached the server has an id. Tomorrow's .NET part reads this header and returns it; until then the server ignores it, so `ApiError` falls back to the id it sent.\n\n### What you'll build\n- `request<T>` in `api.ts` adding `X-Correlation-Id: crypto.randomUUID()` to every request, including the refresh and upload paths\n- `correlationId` on `ApiError`: the response's `X-Correlation-Id` header if present, otherwise the id sent\n- A module-level `lastCorrelationId` for Thursday's error reports\n- The week 3 error states and `RouteErrorScreen` showing \"Reference: 3f2a…\" in a selectable, copyable form\n- A test with MSW asserting the header is sent and kept on the error\n\n### Step by step\n1. Add the header in the one place `api.ts` builds headers.\n2. Do the same for the XHR upload (week 14) and the blob download.\n3. Read the response header and store it on `ApiError`.\n4. Show the reference in error states; a short prefix is fine for display, but copy the full id.\n5. Write the MSW test: a 500 response, assert `error.correlationId`.\n6. Check the Network tab: every request carries the header.\n\n### Acceptance criteria\n- [ ] Every request has its own id\n- [ ] Errors keep the id\n- [ ] Users can copy the full reference\n- [ ] The retry after refresh gets a new id or keeps the old one, as you decided and wrote down\n\n### Hints\n- If the API were cross-origin, CORS would need to expose the response header; the Vite proxy makes it same-origin.\n- Do not reuse one id for the whole session: one id per request is what finds one log line.\n\n### Common mistakes\n- Adding the header in some fetch paths but not others.\n- Showing the id in a tooltip nobody can copy.\n\n### Check your understanding\n- Why generate the id on the client?\n- Why one id per request, not per session?\n- What will the server do with it tomorrow?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Correlation ids end to end",
+      "title": "Correlation id in logs, ProblemDetails and response headers",
+      "doneWhen": "A valid incoming `X-Correlation-Id` is reused (otherwise the trace id), it appears on every log line of the request, in ProblemDetails as `correlationId` and in the response header even on a 500, and `POST /api/client-errors` logs a validated report with it",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Handle errors in ASP.NET Core APIs",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling-api"
+        },
+        {
+          "label": "Serilog: Home",
+          "url": "https://serilog.net/"
+        }
+      ],
+      "brief": "### Why this matters\nOne id that travels from the browser through every log line and back to the error screen turns \"it broke at about 3pm\" into a single search. Validating the incoming id matters too: a client can send anything, including a megabyte of text or log-injection characters. Today's React part sends render errors to the endpoint you add here, with the same id.\n\n### What you'll build\n- `CorrelationIdMiddleware` early in the pipeline: accept the incoming header only if short and made of safe characters, else use `Activity.Current?.TraceId`\n- The id pushed into Serilog's `LogContext` for the whole request\n- The response header added in `Response.OnStarting`, so error responses keep it\n- ProblemDetails customised in `AddProblemDetails` to include `correlationId`\n- `POST /api/client-errors` (anonymous): message, stack, URL and correlation id, FluentValidation length limits, the week 13 per-IP rate limiter, a `Warning` log, 204\n\n### Step by step\n1. Header rule: up to 64 letters, digits and dashes.\n2. Write the middleware and register it before request logging and the exception handler.\n3. Add the header with `OnStarting`; the exception handler clears headers set earlier.\n4. Customise ProblemDetails.\n5. Build the client-errors endpoint. Treat the payload as untrusted text: never render it as HTML.\n6. Force a 500 and find its log lines by the id in the response.\n\n```csharp\napp.Use(async (ctx, next) =>\n{\n    var id = /* TODO: valid header, or Activity.Current?.TraceId.ToString() */;\n    ctx.Response.OnStarting(() => { ctx.Response.Headers[\"X-Correlation-Id\"] = id; return Task.CompletedTask; });\n    using (LogContext.PushProperty(\"CorrelationId\", id)) await next();\n});\n```\n\n### Acceptance criteria\n- [ ] Bad incoming ids are replaced, not trusted\n- [ ] 500 responses carry the header and `correlationId`\n- [ ] Every log line of a request has the id\n- [ ] Client reports are size-limited and rate-limited\n\n### Hints\n- Using the trace id as the default lines logs up with tomorrow's traces.\n\n### Common mistakes\n- Setting the header before `next()`, so the exception handler wipes it.\n- Logging the client's stack at `Error`, so one buggy browser pages someone.\n\n### Check your understanding\n- Why validate an id that is \"just for logs\"?\n- Why `OnStarting`?\n- Why is the client-errors endpoint anonymous but rate-limited?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Reporting client errors",
+      "title": "POST /api/client-errors from the error boundary with the correlation id",
+      "doneWhen": "A render error in a route shows the error screen and sends one `POST /api/client-errors` with message, trimmed stack, URL and the last correlation id, uncaught errors and unhandled rejections are reported too, and a render loop cannot send more than five reports per session",
+      "learnLinks": [
+        {
+          "label": "react.dev: createRoot",
+          "url": "https://react.dev/reference/react-dom/client/createRoot"
+        },
+        {
+          "label": "MDN: Navigator.sendBeacon()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Navigator/sendBeacon"
+        }
+      ],
+      "brief": "### Why this matters\nErrors in users' browsers are invisible unless the app reports them. Sending them to your API, with the correlation id of the last request, connects a front-end crash to the server logs around it. A report path that floods the server during a render loop is its own outage, so caps and de-duplication are part of the job. This posts to the endpoint from today's .NET part.\n\n### What you'll build\n- `lib/reportClientError.ts`: `reportClientError(error, extra)` sending message, stack (first few kB), component stack, URL, user agent and `lastCorrelationId`\n- `fetch` with `keepalive: true` (or `navigator.sendBeacon`) so reports survive a page unload\n- De-duplication by message and a cap of five reports per session\n- Calls from `RouteErrorScreen` (once per error) and `WidgetBoundary.componentDidCatch`\n- React 19 root options on `createRoot` (`onUncaughtError`, `onCaughtError`) and a `window` `unhandledrejection` listener using the same function\n\n### Step by step\n1. Write the function; never let it throw, and never report its own failures.\n2. Add de-duplication and the cap with a module-level `Set` and counter.\n3. Call it from the route error screen in an effect keyed on the error.\n4. Call it from `WidgetBoundary`.\n5. Add the root options and the rejection listener.\n6. Throw on purpose, find the report in the API log, and follow the correlation id to the request before it.\n\n### Acceptance criteria\n- [ ] Each distinct error is reported once\n- [ ] Reports include the last correlation id\n- [ ] A render loop sends at most five reports\n- [ ] Reporting never breaks the error screen\n\n### Hints\n- In development, React reports some errors twice; test the cap in a production build.\n- Strip query strings from the URL you send; they can hold personal data.\n\n### Common mistakes\n- Reporting from the render body, which runs on every render.\n- Sending full objects that include user data.\n\n### Check your understanding\n- What do error boundaries miss that the root callbacks catch?\n- Why cap reports?\n- How does the correlation id help you debug a front-end crash?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "api",
+      "learn": "OpenTelemetry traces and spans",
+      "title": "Traces for HTTP, EF Core and the external call, viewed locally",
+      "doneWhen": "One call to `GET /api/companies/{id}/info` appears in a local trace viewer as a single trace with the ASP.NET Core span, the SQL span and one outbound HTTP span per attempt, the reminder job has its own trace with a custom span, and the PR \"Resilience + observability\" is open",
+      "learnLinks": [
+        {
+          "label": "OpenTelemetry: .NET",
+          "url": "https://opentelemetry.io/docs/languages/dotnet/"
+        },
+        {
+          "label": "Microsoft Learn: .NET observability with OpenTelemetry",
+          "url": "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/observability-with-otel"
+        },
+        {
+          "label": "OpenTelemetry: Traces",
+          "url": "https://opentelemetry.io/docs/concepts/signals/traces/"
+        }
+      ],
+      "brief": "### Why this matters\nLogs say what happened; a trace shows where the time went, as nested spans across your code, the database and other services. With retries, one slow request can hide three upstream calls; a trace shows them side by side. OpenTelemetry is the vendor-neutral standard, so what you learn works with any backend. This closes the .NET side of the PR \"Resilience + observability\".\n\n### What you'll build\n- `OpenTelemetry.Extensions.Hosting` with a resource named `JobHunt.Api`, tracing for ASP.NET Core and `HttpClient`\n- Database instrumentation (EF Core or SqlClient; some packages are prerelease, so note the version)\n- An OTLP exporter to a local viewer in Docker (Jaeger, or the standalone .NET Aspire dashboard), endpoint from configuration\n- An `ActivitySource` named `JobHunt` with a span around `FollowUpReminderJob.RunAsync`, tagged with the count of reminders\n- The week 13 `JobHunt.Cache` meter exported too, if time allows\n\n### Step by step\n1. Run the viewer and note its OTLP and UI ports.\n2. Add tracing and the exporter.\n3. Call the info endpoint and expand every span; write down the slowest.\n4. Make the stub flaky: each retry is its own HTTP span.\n5. Add the source with `AddSource(\"JobHunt\")` and wrap the job.\n6. Search a trace by the correlation id from yesterday (it is the trace id by default).\n7. Push and open the PR \"Resilience + observability\"; merge after today's React part.\n\n```csharp\nbuilder.Services.AddOpenTelemetry()\n    .ConfigureResource(r => r.AddService(\"JobHunt.Api\"))\n    .WithTracing(t => t\n        .AddAspNetCoreInstrumentation()\n        .AddHttpClientInstrumentation()); // TODO: database, source, exporter\n```\n\n### Acceptance criteria\n- [ ] One request is one trace with nested spans\n- [ ] Retries are visible as separate spans\n- [ ] The job has its own trace\n- [ ] Exporter settings come from configuration\n\n### Hints\n- A span is a `System.Diagnostics.Activity` in .NET; no extra API needed.\n- `traceparent` is the W3C header carrying trace context; `HttpClient` adds it for you.\n\n### Common mistakes\n- Sampling everything in production.\n- Forgetting `AddSource`, so custom spans never appear.\n\n### Check your understanding\n- What is a span, and what makes spans one trace?\n- Where did the time go in your slowest trace?\n- Why use a vendor-neutral standard?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Web Vitals and performance marks",
+      "title": "Report Core Web Vitals for the main pages to the API",
+      "doneWhen": "The `web-vitals` library reports LCP, INP and CLS for the list, board and dashboard to a small `POST /api/web-vitals` endpoint, values show in the API log with the route name, one custom `performance.mark` measures board render time, and PR \"Resilience + observability\" is merged",
+      "learnLinks": [
+        {
+          "label": "web.dev: Web Vitals",
+          "url": "https://web.dev/articles/vitals"
+        },
+        {
+          "label": "web.dev: Interaction to Next Paint",
+          "url": "https://web.dev/articles/inp"
+        },
+        {
+          "label": "MDN: Performance.mark()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Performance/mark"
+        }
+      ],
+      "brief": "### Why this matters\nLab tools measure your laptop; Core Web Vitals measure what real users feel: how fast the main content appears (LCP), how quickly the page responds to input (INP), and how much it jumps around (CLS). Reporting them from the browser gives you numbers per route. It ends the week with the PR \"Resilience + observability\", together with today's .NET part.\n\n### What you'll build\n- The `web-vitals` package with `onLCP`, `onINP` and `onCLS` reporting name, value, rating and the current route pattern\n- A `POST /api/web-vitals` endpoint copied from Thursday's client-errors pattern: validated, rate-limited, one structured log line, 204\n- Reports sent with `sendBeacon` or `fetch` with `keepalive`, batched so one page view sends one request\n- A `performance.mark` and `performance.measure` around the board's first render with data\n- Your numbers per route in the PR\n\n### Step by step\n1. Read the vitals article and write each metric's \"good\" threshold.\n2. Register the three callbacks once at start-up.\n3. Use the route pattern (`/applications/:id`), not the URL, so ids do not split the data.\n4. Add the endpoint (five minutes, reusing Thursday's code).\n5. Add the marks on the board and log the measure.\n6. Browse each page, then switch tabs to flush the reports. Read the log.\n7. Run all builds and tests, push, review and merge PR \"Resilience + observability\".\n\n### Acceptance criteria\n- [ ] LCP, INP and CLS are reported per route\n- [ ] One request per page view\n- [ ] The custom measure appears in the log\n- [ ] PR \"Resilience + observability\" is merged\n\n### Hints\n- Some metrics only finalise when the page is hidden; that is why reports flush on visibility change.\n- Tuesday's card skeleton is a CLS fix; compare CLS on the detail page with and without it.\n\n### Common mistakes\n- Reporting full URLs with ids and query strings.\n- Sending a request per metric.\n\n### Check your understanding\n- What does each of LCP, INP and CLS measure?\n- Why group by route pattern?\n- Why do real-user numbers differ from your laptop's?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "lane": null,
+      "learn": null,
+      "title": "From one trace, explain where the time went; explain retry vs circuit breaker with JobHunt examples",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nFrom one trace, explain where the time went; then explain retry vs circuit breaker with JobHunt examples, in 20 minutes.\n\n### Rules\n- Part 1 (about 10 minutes): open your trace viewer, pick one slow `GET /api/companies/{id}/info` trace with retries, and explain it out loud span by span.\n- Part 2 (about 10 minutes): blank page, no code needed; draw the resilience pipeline and talk through it.\n- Docs allowed, but try without first and note every lookup. No AI assistants.\n\n### Must include\n- Part 1: the request span, the SQL span, each outbound attempt, the gaps between them (backoff), and the total\n- Which span you would optimise first and why\n- How the correlation id on the error screen leads to this trace and its log lines\n- Part 2: what a retry fixes (a blip) and what it makes worse (a service already down)\n- What a circuit breaker does: closed, open, half-open, and why failing fast protects both sides\n- Where timeouts sit, and why an attempt timeout must be shorter than the total\n- Why the client does not retry a 503 on top of the server's retries\n\n### Self-check\n- [ ] Finished within 20 minutes\n- [ ] Named the slowest span with its duration\n- [ ] Gave one JobHunt example for retry and one for the breaker\n- [ ] Explained jitter in one sentence\n- [ ] Zero lookups, or a list of exactly what to review\n\n### If you got stuck\n- Typed client: Monday, .NET part. Resilience: Tuesday, .NET part.\n- Serilog: Wednesday, .NET part. Correlation ids: Thursday, .NET part. Traces: Friday, .NET part.\n- Error boundaries: Monday, React part. Degradation: Tuesday, React part.\n- Correlation id in the client: Wednesday, React part."
+    }
+  ]
+}

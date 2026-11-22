@@ -1,0 +1,213 @@
+{
+  "week": 7,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Authentication vs authorization; ASP.NET Core Identity",
+      "title": "Identity with an AppUser and POST /api/auth/register",
+      "doneWhen": "`POST /api/auth/register` creates a user with a hashed password in the Identity tables, and a duplicate email or weak password returns 400 ProblemDetails with field errors",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Introduction to Identity on ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity"
+        },
+        {
+          "label": "Microsoft Learn: Overview of ASP.NET Core authentication",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/"
+        },
+        {
+          "label": "Microsoft Learn: Introduction to authorization in ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/introduction"
+        }
+      ],
+      "brief": "### Why this matters\nAuthentication answers \"who are you?\", authorization answers \"what may you do?\", and mixing them up is a classic interview slip. ASP.NET Core Identity gives you tested password hashing and user storage, so you never write crypto yourself.\n\n### What you'll build\nOn a branch `feature/auth`:\n- `Microsoft.AspNetCore.Identity.EntityFrameworkCore` in Infrastructure\n- `AppUser : IdentityUser<Guid>` in `Infrastructure/Identity` (Domain stays free of Identity)\n- `JobHuntDbContext` deriving from `IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>`\n- `AddIdentityCore<AppUser>(...)` with password rules and unique emails, plus `AddEntityFrameworkStores<JobHuntDbContext>()`\n- A migration `AddIdentity`\n- `IIdentityService.RegisterAsync` in Application, implemented with `UserManager<AppUser>`\n- `POST /api/auth/register` in a `/api/auth` group with a validator (week 6 pattern)\n\n### Step by step\n1. Read the Identity introduction: what `UserManager` does and what the hasher stores.\n2. Change the context's base class and call `base.OnModelCreating` before your configurations.\n3. Register with `AddIdentityCore` (no cookies, no UI). Set a minimum length and `RequireUniqueEmail`.\n4. Add and read the migration (users, roles, claims, tokens), then apply it.\n5. Implement `RegisterAsync`; map `IdentityResult.Errors` to a field-to-messages dictionary.\n6. Map `register`, returning 201 or a validation problem.\n7. Register a user and find the `PasswordHash` column in `AspNetUsers`.\n\n### Acceptance criteria\n- [ ] Passwords are stored only as hashes\n- [ ] Duplicate email returns 400 with an `email` error, not 500\n- [ ] Domain has no reference to Identity\n- [ ] Migration applied and committed\n\n### Hints\n- `AddIdentityCore` skips the cookie sign-in that `AddIdentity` adds; you will issue JWTs instead.\n- `MapIdentityApi` exists and adds ready-made endpoints; building your own teaches what it hides.\n\n### Common mistakes\n- Forgetting `base.OnModelCreating`, so Identity tables have no keys.\n- Putting `AppUser` in Domain and dragging ASP.NET Core into it.\n\n### Check your understanding\n- What is the difference between authentication and authorization?\n- Why hash with a slow, salted algorithm instead of SHA-256?\n- Why does Domain not know about `AppUser`?"
+    },
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "web",
+      "learn": "React Context for app-wide state",
+      "title": "AuthProvider holding the current user and its status",
+      "doneWhen": "`AuthProvider` wraps the router, the header reads `status` and `user` through `useAuth()`, and calling `useAuth()` outside the provider throws a clear error",
+      "learnLinks": [
+        {
+          "label": "react.dev: Passing data deeply with context",
+          "url": "https://react.dev/learn/passing-data-deeply-with-context"
+        },
+        {
+          "label": "react.dev: createContext",
+          "url": "https://react.dev/reference/react/createContext"
+        }
+      ],
+      "brief": "### Why this matters\nAuth state is needed everywhere: the header, the routes, the API client. Context is React's tool for that, and \"context vs props vs a state library?\" is a standard interview question. Tomorrow's login page fills this provider with the user registered through today's .NET endpoint.\n\n### What you'll build\n- `features/auth/AuthContext.tsx` with `AuthProvider` and a `useAuth()` hook\n- Context value: `user` (`{ id, email } | null`), `status` (`\"loading\" | \"authenticated\" | \"anonymous\"`), `signIn(user, token)`, `signOut()`\n- The token held in a ref or module variable, not in rendered state\n- `AuthProvider` placed inside `QueryClientProvider` and around `RouterProvider`\n- The header showing \"Signed in as ...\" or \"Not signed in\"\n\n### Step by step\n1. Write the `AuthContextValue` type.\n2. Create the context with `createContext<AuthContextValue | null>(null)`.\n3. Write `useAuth()`: read the context and throw \"useAuth must be used inside AuthProvider\" when it is `null`.\n4. In `AuthProvider`, keep `user` and `status` in state; start as `anonymous` for today.\n5. Implement `signIn` and `signOut`. `signOut` also calls `queryClient.clear()`.\n6. Memoise the value with `useMemo` so consumers do not re-render on unrelated renders.\n7. Read it in the header and test by calling `signIn` with fake data from a temporary button.\n\n```tsx\nconst AuthContext = createContext<AuthContextValue | null>(null);\nexport function useAuth() {\n  // TODO: read the context, throw if null\n}\n```\n\n### Acceptance criteria\n- [ ] Components get auth only through `useAuth()`\n- [ ] Outside the provider, `useAuth()` throws\n- [ ] `signOut` clears the query cache\n- [ ] The token is not rendered anywhere\n\n### Hints\n- In React 19 you can render `<AuthContext value={...}>` directly as the provider, and read it with `use(AuthContext)` or `useContext`.\n- Context is for app-wide client state; server data stays in TanStack Query.\n\n### Common mistakes\n- A new context value object on every render, re-rendering every consumer.\n- Forgetting to clear the cache, so the next user sees the previous user's data.\n\n### Check your understanding\n- When is context the right tool, and when is it overkill?\n- Why does the hook throw instead of returning `null`?\n- Why is `status` a union instead of a boolean?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "api",
+      "learn": "JWT structure, signing and expiry; JwtBearer",
+      "title": "POST /api/auth/login issuing a signed JWT",
+      "doneWhen": "`POST /api/auth/login` returns `{ accessToken, expiresAt }` with a JWT signed by a key from user-secrets, and a wrong email or password returns the same generic 401",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Configure JWT bearer authentication",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/configure-jwt-bearer-authentication"
+        },
+        {
+          "label": "Microsoft Learn: Safe storage of app secrets in development",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets"
+        }
+      ],
+      "brief": "### Why this matters\nJWTs are the most common way SPAs authenticate to APIs: \"what is inside a JWT?\" and \"can the client change it?\" come up in nearly every full-stack interview. Issuing one yourself makes the answers concrete. The React part today stores the token this endpoint returns.\n\n### What you'll build\n- `JwtOptions` (`Issuer`, `Audience`, `SigningKey`, `AccessTokenMinutes`) validated on start\n- The signing key stored with `dotnet user-secrets`\n- `ITokenService` and `JwtTokenService` creating a token with `sub`, `email` and `jti`, signed with HMAC SHA-256\n- `IIdentityService.LoginAsync` checking the password\n- `POST /api/auth/login` returning the token, or a 401 ProblemDetails\n- `AddAuthentication().AddJwtBearer(...)` with full validation parameters\n\n### Step by step\n1. Run `dotnet user-secrets init` in the Api project and set `Jwt:SigningKey` to a random value of at least 32 bytes.\n2. Create and validate `JwtOptions`.\n3. Add `Microsoft.AspNetCore.Authentication.JwtBearer`; validate issuer, audience, lifetime and signing key, with a small clock skew.\n4. Write the token service: a `SecurityTokenDescriptor` with claims, `Expires` and `SigningCredentials`, passed to a token handler.\n5. Implement login with the same 401 for unknown email and wrong password.\n6. Log in from a `.http` file and decode the payload (it is base64url). Change one character and see why the signature matters.\n\n### Acceptance criteria\n- [ ] No signing key in any committed file\n- [ ] Issuer, audience, lifetime and signature are all validated\n- [ ] Login errors do not reveal whether the email exists\n- [ ] Tokens expire after the configured minutes\n\n### Hints\n- The payload is signed, not encrypted. Never put secrets in it.\n- Short-lived access tokens limit damage when one leaks; week 8 adds refresh tokens.\n\n### Common mistakes\n- Turning validation flags off \"to make it work\".\n- A key shorter than the algorithm needs, which throws at startup.\n\n### Check your understanding\n- What are the three parts of a JWT, and which proves it came from you?\n- Why can you not easily revoke a JWT?\n- Why is the same 401 message important?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Login and register forms reusing the week 6 form pattern",
+      "title": "Login and register pages wired to the auth endpoints",
+      "doneWhen": "Registering at `/register` logs the user in automatically, logging in at `/login` fills `AuthProvider` with the user, and a wrong password shows one generic form error",
+      "learnLinks": [
+        {
+          "label": "React Hook Form: useForm",
+          "url": "https://react-hook-form.com/docs/useform"
+        },
+        {
+          "label": "Zod: Defining schemas",
+          "url": "https://zod.dev/api"
+        }
+      ],
+      "brief": "### Why this matters\nLogin and register are just forms, and you already have a pattern for forms. Reusing it shows you can build on your own code instead of starting over. These pages call the register endpoint from Monday and the login endpoint from today's .NET part.\n\n### What you'll build\n- `register(email, password)` and `login(email, password)` in `api.ts`\n- Zod schemas: email format and a password minimum matching the Identity rules\n- `LoginPage` and `RegisterPage` with React Hook Form + Zod, routes `/login` and `/register` outside the layout\n- A form-level error for a 401 and server field errors for register (week 6 `applyServerErrors`)\n- On success: call `signIn(user, token)` and navigate to `/applications`\n\n### Step by step\n1. Add the two API functions. Login returns `{ accessToken, expiresAt }`.\n2. Write the schemas; reuse the same email rule in both.\n3. Build `LoginPage`: email, password (`type=\"password\"`, `autoComplete=\"current-password\"`), submit.\n4. On 401, set a root error \"Email or password is incorrect\".\n5. Build `RegisterPage`; on success, log in with the same credentials.\n6. For the user object, decode `sub` and `email` from the token for today; Friday switches to `/api/auth/me`.\n7. Add links between the two pages and register both routes.\n\n### Acceptance criteria\n- [ ] Both pages use the week 6 form pattern\n- [ ] Wrong password shows one generic message\n- [ ] Duplicate email shows under the email field\n- [ ] Inputs have correct `autoComplete` values\n\n### Hints\n- `autoComplete=\"new-password\"` on register lets password managers suggest a strong one.\n- Never store the password anywhere, not even in state after submit.\n\n### Common mistakes\n- A separate ad hoc form style for auth pages.\n- Logging the login response, which contains the token, to the console.\n\n### Check your understanding\n- Why show the same message for unknown email and wrong password?\n- What does `autoComplete` do for users?\n- Why is decoding the token in the browser fine to read, but never to trust?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Protecting endpoints with RequireAuthorization",
+      "title": "Every applications endpoint requires an authenticated user",
+      "doneWhen": "`GET /api/applications` returns 401 without a token and 200 with `Authorization: Bearer <token>`, while `/health` and `/api/auth/*` stay anonymous",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Introduction to authorization in ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/introduction"
+        },
+        {
+          "label": "Microsoft Learn: Configure JWT bearer authentication",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/configure-jwt-bearer-authentication"
+        },
+        {
+          "label": "MDN: 401 Unauthorized",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/401"
+        }
+      ],
+      "brief": "### Why this matters\nA token is useless until endpoints demand it. Route groups make this one line, and the middleware order decides whether it works at all. \"401 vs 403\" is a classic interview question. After today, the React list shows a 401 until Thursday's React part sends the token.\n\n### What you'll build\n- `UseAuthentication()` and `UseAuthorization()` in the right place in the pipeline\n- `RequireAuthorization()` on the applications route group\n- `AllowAnonymous()` where it is needed\n- `.http` tests: no token, valid token, expired token, tampered token\n\n### Step by step\n1. Add `UseAuthentication()` then `UseAuthorization()` after routing and CORS, before the endpoints run.\n2. Call `.RequireAuthorization()` on the applications group.\n3. Make sure the auth group and `/health` do not inherit it.\n4. Call the list without a header: 401. With a fresh token: 200.\n5. Set `AccessTokenMinutes` to 1 temporarily and confirm an expired token gets 401.\n6. Look at the `WWW-Authenticate` response header on a 401 and note what it says.\n\n```csharp\nvar group = app.MapGroup(\"/api/applications\")\n               .RequireAuthorization();\n```\n\n### Acceptance criteria\n- [ ] Every applications endpoint returns 401 without a valid token\n- [ ] Expired and tampered tokens are rejected\n- [ ] Anonymous endpoints are explicit\n- [ ] Middleware order is correct\n\n### Hints\n- 401 means \"I do not know who you are\"; 403 means \"I know, and you may not\".\n- A fallback authorization policy can make every endpoint require auth unless marked `AllowAnonymous()`.\n\n### Common mistakes\n- `UseAuthorization` before `UseAuthentication`, so the user is never set when policies run.\n- Protecting endpoints one by one and missing a new one later.\n\n### Stretch (optional)\n- Add the fallback policy and check that only marked endpoints stay public.\n\n### Check your understanding\n- What is the difference between 401 and 403?\n- Why does middleware order matter here?\n- What does a fallback policy protect you from?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Protected routes and redirects",
+      "title": "ProtectedRoute that sends anonymous users to /login and back afterwards",
+      "doneWhen": "Visiting `/applications` while signed out redirects to `/login`, and after login the user lands back on the page they first asked for",
+      "learnLinks": [
+        {
+          "label": "React Router: Routing (data mode)",
+          "url": "https://reactrouter.com/start/data/routing"
+        },
+        {
+          "label": "React Router: Data loading",
+          "url": "https://reactrouter.com/start/data/data-loading"
+        }
+      ],
+      "brief": "### Why this matters\nUsers expect to be sent to login and then back to where they were. A protected route is a UX feature, not a security feature: the API protection from today's .NET part is the real guard.\n\n### What you'll build\n- A `ProtectedRoute` layout route: while `status` is `loading` show a loader, when `anonymous` render `<Navigate to=\"/login\" replace state={{ from: location }} />`, otherwise `<Outlet />`\n- The router reorganised: public `/login` and `/register`, and a protected branch holding `AppLayout` and every application route\n- `LoginPage` navigating to `state.from` after success (default `/applications`)\n\n### Step by step\n1. Draw the route tree first: which routes are public, which share the layout.\n2. Write `ProtectedRoute` with `useAuth()`, `useLocation()` and `<Navigate>`.\n3. Move `AppLayout` and its children under it.\n4. In `LoginPage`, read `location.state` as `unknown`, narrow it safely, and navigate with `replace`.\n5. Test: deep link to a detail page while signed out, log in, land on that detail page.\n6. Note: loaders run before `ProtectedRoute` renders. The detail loader will hit the API first and get a 401; Thursday handles that.\n\n```tsx\nexport function ProtectedRoute() {\n  const { status } = useAuth();\n  const location = useLocation();\n  // TODO: loading, anonymous redirect with state, Outlet\n}\n```\n\n### Acceptance criteria\n- [ ] Protected pages never render for anonymous users, not even one frame\n- [ ] After login the user lands on the requested page\n- [ ] Back after login does not return to `/login`\n- [ ] No redirect loop on `/login`\n\n### Hints\n- `replace` keeps the login step out of history.\n- `state` survives in memory only; it is gone after a full reload, so always have a default.\n\n### Common mistakes\n- Thinking this guard is security. Anyone can call the API directly.\n- Trusting `location.state` as typed without narrowing.\n\n### Check your understanding\n- Why is a protected route not a security boundary?\n- Why can `ProtectedRoute` not protect a loader?\n- Why use `replace` on the redirect?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Claims and the current user",
+      "title": "Applications scoped to the logged-in user through the user id claim",
+      "doneWhen": "Two users each see only their own applications, and requesting another user's application id returns 404 for GET, PUT and DELETE",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Claims-based authorization",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/claims"
+        },
+        {
+          "label": "Microsoft Learn: Global query filters",
+          "url": "https://learn.microsoft.com/en-us/ef/core/querying/filters"
+        }
+      ],
+      "brief": "### Why this matters\nA valid token only proves who the caller is; every query still has to ask \"whose data is this?\". Forgetting that check is broken object level authorization, the top risk in the OWASP API list and a favourite interview scenario.\n\n### What you'll build\n- `ICurrentUser` in Application with `Guid UserId`\n- `CurrentUser` in Api reading the id claim from `HttpContext.User` via `IHttpContextAccessor`\n- `UserId` on `JobApplication`, set in the constructor, with an index and a migration\n- Create sets `UserId` from `ICurrentUser`; every query and command filters by it\n- A second test user to prove isolation\n\n### Step by step\n1. In a temporary handler, take `ClaimsPrincipal user` and return all claim types and values. Notice `sub` may appear under a different type because of inbound claim mapping.\n2. Decide: read the mapped `ClaimTypes.NameIdentifier`, or turn mapping off in the JwtBearer options and read `sub`. Note it in a comment.\n3. Write `CurrentUser`, register `AddHttpContextAccessor()` and the service as scoped.\n4. Add `UserId`, configure it, add the migration and give the seed data to a demo user.\n5. Filter by user: in each query and load, or in the global query filter next to `!IsDeleted`.\n6. Register user B, create one application each, and try list, detail, PUT and DELETE across users.\n\n```csharp\npublic sealed class CurrentUser(IHttpContextAccessor accessor) : ICurrentUser\n{\n    public Guid UserId => /* TODO: parse the id claim or throw */;\n}\n```\n\n### Acceptance criteria\n- [ ] The id is read from claims in exactly one class\n- [ ] Every read and write filters by the current user\n- [ ] The client never sends a user id\n- [ ] Domain stores `UserId` as a plain Guid\n\n### Hints\n- 404 instead of 403 avoids confirming that the id exists.\n- If you use the global filter, remember week 6: `IgnoreQueryFilters()` in restore now drops the user filter too. Add the check back there.\n\n### Common mistakes\n- Accepting `userId` from the body or query string.\n- Filtering the list but forgetting detail, update or delete.\n\n### Check your understanding\n- What is a claim, and what is a `ClaimsPrincipal`?\n- What is broken object level authorization, with a JobHunt example?\n- Why 404 rather than 403 here?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Attaching the bearer token in the API client",
+      "title": "api.ts sends the token; a 401 logs the user out",
+      "doneWhen": "Every API call sends `Authorization: Bearer <token>`, the applications list loads again after login, and an expired token logs the user out once and shows the login page",
+      "learnLinks": [
+        {
+          "label": "MDN: Authorization header",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Authorization"
+        },
+        {
+          "label": "React Router: Data loading",
+          "url": "https://reactrouter.com/start/data/data-loading"
+        }
+      ],
+      "brief": "### Why this matters\nAttaching the token in one place, and reacting to 401 centrally, keeps auth out of every component. Week 8 extends this exact spot with refresh and retry. Today the list works again against the protected, per-user API.\n\n### What you'll build\n- `setTokenGetter(fn)` and `setUnauthorizedHandler(fn)` in `api.ts` (it is not a component, so it cannot call `useAuth`)\n- `AuthProvider` registering both in an effect\n- `request<T>` adding the header when a token exists and calling the handler on 401\n- The detail loader turning a 401 into a `redirect` to `/login`\n\n### Step by step\n1. Add two module-level variables and their setters in `api.ts`.\n2. In `request<T>`, merge `Authorization: Bearer <token>` into the headers when the getter returns a token.\n3. On 401, call the handler, but not for the login request itself.\n4. In `AuthProvider`, register a getter that reads the token ref and a handler that calls `signOut()`.\n5. In the detail loader, catch an `ApiError` 401 and throw `redirect(\"/login\")`.\n6. Test: log in, browse, then set a 1 minute token lifetime on the API and wait.\n7. Log in as two users in two browsers and compare lists.\n\n### Acceptance criteria\n- [ ] No component builds an `Authorization` header\n- [ ] A 401 logs out once, not once per query\n- [ ] Deep links to a detail page while signed out end on the login page\n- [ ] Each user sees only their data\n\n### Hints\n- `redirect` from React Router works in loaders and actions.\n- Guard the handler with a flag so five failing queries do not trigger five sign-outs.\n\n### Common mistakes\n- Calling `signOut()` during render, causing \"cannot update a component while rendering\".\n- Retrying 401s in TanStack Query; add 401 to the \"do not retry\" rule from week 5.\n\n### Check your understanding\n- Where does the token come from when a query runs, step by step?\n- Why do loaders need their own 401 handling?\n- Why not call `useAuth` inside `api.ts`?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "api",
+      "learn": "GET /me and what to put in a token",
+      "title": "GET /api/auth/me returning the profile from claims",
+      "doneWhen": "`GET /api/auth/me` returns `{ id, email }` read from the caller's claims with no database call, returns 401 without a token, and the token contains no data beyond `sub`, `email`, `jti` and the standard claims",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Claims-based authorization",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authorization/claims"
+        },
+        {
+          "label": "Microsoft Learn: Configure JWT bearer authentication",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/authentication/configure-jwt-bearer-authentication"
+        }
+      ],
+      "brief": "### Why this matters\nThe client needs to know who is signed in without decoding tokens itself, and the server should decide what a token carries. \"What would you put in a JWT, and what never?\" is a common follow-up question. The React part today uses this endpoint to restore the session. This closes the .NET side of the PR \"Auth\".\n\n### What you'll build\n- `GET /api/auth/me` (requires auth) returning a `MeResponse(Guid Id, string Email)` built from `ICurrentUser` or `ClaimsPrincipal`\n- An `Email` property added to `ICurrentUser`\n- A short \"token contents\" section in the README: what is in it, what is deliberately not, and why\n\n### Step by step\n1. Add `Email` to `ICurrentUser` and read it from the email claim (mind the claim mapping decision from Thursday).\n2. Map `/me` on the auth group with `RequireAuthorization()` on just that endpoint.\n3. Return the record with `TypedResults.Ok`.\n4. Decode a token and list every claim. Remove anything you added that the client does not need.\n5. Write the README section: no passwords, no personal data you would not show the user, no roles you cannot revoke quickly.\n6. Test with and without a token.\n\n### Acceptance criteria\n- [ ] `/me` is protected while the rest of the auth group is anonymous\n- [ ] The response comes from claims only\n- [ ] The README explains the token contents\n- [ ] No sensitive data in the token\n\n### Hints\n- Claims are fixed until the token expires. Data that changes often (display name, plan) belongs in an API response, not in the token.\n- Keeping tokens small also keeps every request small: the token travels with each call.\n\n### Common mistakes\n- Querying the database in `/me` for data the token already holds, or the reverse: stuffing profile data into the token.\n- Forgetting `RequireAuthorization()` on `/me`, so it throws on a null claim for anonymous callers.\n\n### Check your understanding\n- What belongs in a token, and what never does?\n- Why are claims stale until expiry?\n- When would `/me` need to read the database?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Where tokens live and why it matters",
+      "title": "Header with the user's email and a working logout",
+      "doneWhen": "The header shows the user's email and a Logout button, reloading keeps the user signed in by restoring the token and calling `/api/auth/me`, Logout clears token and cache, and PR \"Auth\" is merged",
+      "learnLinks": [
+        {
+          "label": "MDN: Using HTTP cookies",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies"
+        },
+        {
+          "label": "MDN: Content Security Policy",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP"
+        }
+      ],
+      "brief": "### Why this matters\nWhere the token lives decides what an attacker can do with an XSS bug. Memory, `sessionStorage`, `localStorage` and httpOnly cookies each trade convenience against risk, and you must be able to argue your choice in an interview. Today also ends the week with the PR \"Auth\".\n\n### What you'll build\n- A written comparison of the four storage options in the README, and your choice for this week (memory plus `sessionStorage`)\n- `AuthProvider` saving the token on `signIn` and removing it on `signOut`\n- Start-up restore: if a stored token exists, set `status` to `loading`, call `/api/auth/me`, then `authenticated` or `anonymous`\n- The user object from `/me` instead of decoding the token\n- A header with the email and a Logout button\n\n### Step by step\n1. Write the comparison: who can read each option, when it is cleared, and its XSS and CSRF risk.\n2. Save the token to `sessionStorage` in `signIn`; remove it in `signOut`.\n3. On mount, read the stored token and call `me()`. Start `status` as `loading` only when a token exists.\n4. If `me()` fails, clear everything and go `anonymous`.\n5. Replace Tuesday's token decoding with the `/me` response.\n6. Add the header email and Logout; Logout navigates to `/login`.\n7. Run all builds and tests, push, open the PR \"Auth\", review the diff and merge.\n\n### Acceptance criteria\n- [ ] Reload keeps the session until the token expires\n- [ ] No flash of the login page during restore\n- [ ] Logout clears storage, state and the query cache\n- [ ] The README states and justifies the storage choice\n- [ ] PR \"Auth\" is merged\n\n### Hints\n- An httpOnly cookie cannot be read by JavaScript, which protects it from XSS but needs CSRF protection.\n- `sessionStorage` is per tab and cleared when the tab closes; `localStorage` survives forever.\n- Week 8 revisits this with refresh tokens.\n\n### Common mistakes\n- Storing the whole login response or the password.\n- Starting `status` as `anonymous`, so protected routes redirect before the restore finishes.\n\n### Check your understanding\n- Compare memory, `sessionStorage`, `localStorage` and httpOnly cookies for an access token.\n- Why does restore need its own `loading` status?\n- What does a Content Security Policy add against XSS?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "lane": null,
+      "learn": null,
+      "title": "Draw how a JWT becomes a ClaimsPrincipal and how a protected React route decides to redirect, from memory",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nFrom memory, draw how a JWT in an `Authorization` header becomes a `ClaimsPrincipal` and then a filtered SQL query, and how a protected React route decides to redirect, in 20 minutes.\n\n### Rules\n- Blank page or a new whiteboard file outside the repo, JobHunt closed.\n- The outline says from memory: keep docs closed until the timer ends, then check and mark every mistake.\n- No AI assistants. Explain the drawing out loud as if to an interviewer.\n\n### Must include\n- Server: login (password check, claims, signing key, expiry); then a later request through the JwtBearer handler, validation of signature, issuer, audience and lifetime, `HttpContext.User`, `UseAuthentication` before `UseAuthorization`, `RequireAuthorization`, `ICurrentUser`, the `UserId` filter in SQL\n- Where 401 happens, and where 404 happens for another user's application\n- Client: `AuthProvider` statuses, the restore call to `/me`, `ProtectedRoute`, `<Navigate>` with `state.from`, the trip back after login\n- `api.ts` attaching the token and the central 401 handler, and why loaders need their own 401 handling\n- Where the token lives and the risk of that choice\n\n### Self-check\n- [ ] Finished within 20 minutes\n- [ ] Named the three JWT parts and what the signature protects\n- [ ] Placed `UseAuthentication` before `UseAuthorization` without hesitation\n- [ ] Explained why the React guard is not security\n- [ ] Explained the claim mapping gotcha for `sub`\n- [ ] Every arrow has a label\n\n### If you got stuck\n- Identity and hashing: Monday, .NET part.\n- Context and `useAuth`: Monday, React part.\n- JWT parts and validation: Tuesday, .NET part.\n- 401 vs 403 and middleware order: Wednesday, .NET part.\n- Protected routes: Wednesday, React part.\n- Claims and per-user filtering: Thursday, .NET part.\n- Token in `api.ts` and loaders: Thursday, React part. Token storage: Friday, React part."
+    }
+  ]
+}

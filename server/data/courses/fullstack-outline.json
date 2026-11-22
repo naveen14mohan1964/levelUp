@@ -1,0 +1,654 @@
+{
+  "code": "jobhunt-fullstack",
+  "area": "fullstack",
+  "name": "JobHunt Full Stack",
+  "description": "One app, built feature by feature with .NET and React in parallel: every day has a .NET 10 API lesson and a React + TypeScript lesson (about 30 minutes each) on the same feature. Track job applications, interviews and follow-ups; by week 21 it is tested, secured, observable, containerised and deployed.",
+  "stack": [
+    ".NET 10",
+    "ASP.NET Core",
+    "EF Core",
+    "SQL Server",
+    "React 19",
+    "TypeScript",
+    "Vite",
+    "TanStack Query",
+    "React Hook Form + Zod",
+    "xUnit",
+    "Vitest",
+    "Playwright",
+    "Docker",
+    "GitHub Actions"
+  ],
+  "weeks": [
+    {
+      "week": 1,
+      "level": "Basic",
+      "title": "Week 1: Two apps, one repo",
+      "objective": "Set up the monorepo with a layered .NET solution and a Vite React + TypeScript app, and make them talk to each other.",
+      "deliverable": "PR \"Skeleton\" merged: /api solution with 4 layers, /web Vite app, the web page shows the API's health status, both build in CI-ready scripts.",
+      "days": [
+        {
+          "learn": "Git monorepo layout; the .NET SDK and CLI; solutions vs projects; layered architecture",
+          "title": "Monorepo with /api (Api, Application, Domain, Infrastructure projects + references) and a README"
+        },
+        {
+          "learn": "Node, npm and Vite; TypeScript basics: types, interfaces, unions, strict mode",
+          "title": "/web: Vite React + TypeScript app in strict mode, ESLint + Prettier, first typed component"
+        },
+        {
+          "learn": "Minimal APIs, Program.cs and the request pipeline; configuration and environments",
+          "title": "GET /health endpoint returning status, version and environment"
+        },
+        {
+          "learn": "CORS and the browser same-origin policy; fetch + async/await; useEffect basics",
+          "title": "Health badge in the web app that calls /health (CORS configured for the dev origin)"
+        },
+        {
+          "learn": "Scripts that run both apps; .gitignore for .NET + Node; commit hygiene",
+          "title": "One command to run API + web together, documented in the README"
+        }
+      ],
+      "checkpoint": "From a blank folder: a minimal API with one endpoint and a React page that shows its JSON, in 25 minutes"
+    },
+    {
+      "week": 2,
+      "level": "Basic",
+      "title": "Week 2: The job-search domain in C# and TypeScript",
+      "objective": "Model applications, companies and interviews in modern C# with rules and tests, mirror them as TypeScript types, and render them with components.",
+      "deliverable": "PR \"Domain model\" merged: domain entities with guarded status transitions and xUnit tests (80% on Domain); TS types and a static list rendered from components.",
+      "days": [
+        {
+          "learn": "Classes vs records vs structs; nullable reference types; enums",
+          "title": "Domain: Company, JobApplication, Interview, ApplicationStatus"
+        },
+        {
+          "learn": "Exceptions, guard clauses, keeping business rules inside entities",
+          "title": "Status transitions (Applied → Interviewing → Offer/Rejected) with a domain exception"
+        },
+        {
+          "learn": "xUnit: Fact vs Theory, Arrange-Act-Assert, coverage",
+          "title": "Domain.Tests for every rule and transition"
+        },
+        {
+          "learn": "React components, props, lists and keys; TypeScript types for props",
+          "title": "TS types mirroring the domain + ApplicationCard and ApplicationList components"
+        },
+        {
+          "learn": "State with useState; derived state; lifting state up",
+          "title": "Static sample data with a status filter in the list (client side)"
+        }
+      ],
+      "checkpoint": "From a blank file: a record, an enum, one guarded transition with a Theory test, and a typed React component that renders it"
+    },
+    {
+      "week": 3,
+      "level": "Basic",
+      "title": "Week 3: First real feature: the applications list",
+      "objective": "Serve applications from the API through DI and DTOs, and show them in React with loading and error states.",
+      "deliverable": "PR \"Applications list\" merged: GET /api/applications (in-memory store behind an interface) and a list page with loading, empty and error states.",
+      "days": [
+        {
+          "learn": "Dependency injection: lifetimes (singleton, scoped, transient), interfaces in Application",
+          "title": "IApplicationRepository with an in-memory implementation registered in DI"
+        },
+        {
+          "learn": "Controllers vs minimal APIs; DTOs and mapping; HTTP status codes",
+          "title": "GET /api/applications and GET /api/applications/{id} returning DTOs (404 when missing)"
+        },
+        {
+          "learn": "ProblemDetails and global exception handling; the Options pattern",
+          "title": "Exception handler middleware returning ProblemDetails; validated options class"
+        },
+        {
+          "learn": "Fetching data in React: loading, error and empty states; a typed API client module",
+          "title": "api.ts client + ApplicationsPage with loading, empty and error states"
+        },
+        {
+          "learn": "Environment variables in Vite; the dev proxy",
+          "title": "Vite proxy to the API so the web app calls /api without CORS in dev"
+        }
+      ],
+      "checkpoint": "Draw the request from the browser to the endpoint handler and back, naming every layer, the DI lifetime of each service and the status codes"
+    },
+    {
+      "week": 4,
+      "level": "Basic",
+      "title": "Week 4: Real data: EF Core, SQL Server and routing",
+      "objective": "Persist applications in SQL Server with EF Core migrations, and add detail pages with React Router.",
+      "deliverable": "PR \"Persistence + routing\" merged: EF Core DbContext, migrations and seed data in SQL Server; React Router with list and detail pages.",
+      "days": [
+        {
+          "learn": "EF Core: DbContext, entity configuration, value conversions, connection strings",
+          "title": "JobHuntDbContext with Fluent configuration for every entity"
+        },
+        {
+          "learn": "Migrations: add, apply, roll back; seeding data",
+          "title": "Initial migration + seed data; repository switched from in-memory to EF Core"
+        },
+        {
+          "learn": "Tracking vs AsNoTracking; projection to DTOs with Select",
+          "title": "Read queries projected straight to DTOs with AsNoTracking"
+        },
+        {
+          "learn": "React Router: routes, links, URL params, nested layouts",
+          "title": "Routes: /applications and /applications/:id with a shared layout"
+        },
+        {
+          "learn": "Not-found and error routes; useParams and typed loaders",
+          "title": "Application detail page with a not-found screen for unknown ids"
+        }
+      ],
+      "checkpoint": "Blank project → entity + DbContext + migration + GET endpoint, then a routed React page that shows one record, in 30 minutes"
+    },
+    {
+      "week": 5,
+      "level": "Intermediate",
+      "title": "Week 5: Search, filter, sort and paging",
+      "objective": "Add server-side filtering, sorting and paging, and drive them from the URL with TanStack Query.",
+      "deliverable": "PR \"Search + paging\" merged: query parameters with a paged response envelope; a filter bar that keeps state in the URL and caches pages with TanStack Query.",
+      "days": [
+        {
+          "learn": "IQueryable and deferred execution: when SQL actually runs",
+          "title": "Filter by status, company and date range, composed on IQueryable"
+        },
+        {
+          "learn": "Sorting and stable pagination; offset vs keyset paging",
+          "title": "Sort parameter + paged response { items, page, pageSize, total }"
+        },
+        {
+          "learn": "TanStack Query: queries, query keys, caching, stale time",
+          "title": "Applications list moved to useQuery with keys that include the filters"
+        },
+        {
+          "learn": "URL search params as state; controlled inputs",
+          "title": "Filter bar (status, company, sort) synced to the URL"
+        },
+        {
+          "learn": "Pagination UX: placeholder data, keeping the previous page while loading",
+          "title": "Pager with keepPreviousData-style transitions and total count"
+        }
+      ],
+      "checkpoint": "Explain when SQL runs for an IQueryable and how a query key decides what TanStack Query caches; then add a new filter end to end without docs"
+    },
+    {
+      "week": 6,
+      "level": "Intermediate",
+      "title": "Week 6: Create and edit: validation on both sides",
+      "objective": "Create and update applications with validation in the API and in the form, and keep the cache in sync after writes.",
+      "deliverable": "PR \"Create + edit\" merged: POST/PUT with FluentValidation and ProblemDetails errors; React Hook Form + Zod forms with mutations and cache invalidation.",
+      "days": [
+        {
+          "learn": "Commands vs queries; POST, PUT and PATCH semantics; 201 + Location",
+          "title": "POST /api/applications and PUT /api/applications/{id}"
+        },
+        {
+          "learn": "FluentValidation; validation ProblemDetails (400) with field errors",
+          "title": "Validators for create and update returning field-level errors"
+        },
+        {
+          "learn": "React Hook Form + Zod: schemas, resolvers, field errors",
+          "title": "Create/edit form sharing one Zod schema"
+        },
+        {
+          "learn": "useMutation, invalidation and showing server-side field errors",
+          "title": "Mutations that invalidate the list and map API field errors onto inputs"
+        },
+        {
+          "learn": "DELETE semantics, soft delete and confirmation UX",
+          "title": "Soft delete endpoint + delete with a confirm dialog and undo toast"
+        }
+      ],
+      "checkpoint": "Write a useMutation + useQuery pair with invalidation from memory, and a FluentValidation rule with its 400 response shape"
+    },
+    {
+      "week": 7,
+      "level": "Intermediate",
+      "title": "Week 7: Authentication: register and log in",
+      "objective": "Add user accounts with ASP.NET Core Identity and JWT, and a login flow with protected routes in React.",
+      "deliverable": "PR \"Auth\" merged: register/login endpoints issuing JWTs, every applications endpoint requires auth; React auth context, login page and protected routes.",
+      "days": [
+        {
+          "learn": "Authentication vs authorization; ASP.NET Core Identity basics; password hashing",
+          "title": "Identity with a User entity and POST /api/auth/register"
+        },
+        {
+          "learn": "JWT structure, signing, expiry; JwtBearer authentication",
+          "title": "POST /api/auth/login issuing a signed JWT; [Authorize] on the API"
+        },
+        {
+          "learn": "Claims and ClaimsPrincipal; reading the current user",
+          "title": "Applications scoped to the logged-in user (user id from claims)"
+        },
+        {
+          "learn": "React Context for auth; where to keep tokens and why",
+          "title": "AuthProvider + login and register pages"
+        },
+        {
+          "learn": "Protected routes, redirects and attaching the bearer token",
+          "title": "ProtectedRoute wrapper and an API client that sends the token"
+        }
+      ],
+      "checkpoint": "Draw how a JWT becomes a ClaimsPrincipal and how a protected React route decides to redirect, from memory"
+    },
+    {
+      "week": 8,
+      "level": "Intermediate",
+      "title": "Week 8: Authorization and sessions that last",
+      "objective": "Enforce ownership and roles on the server, add refresh tokens, and handle expired sessions gracefully in the client.",
+      "deliverable": "PR \"Authorization + refresh\" merged: policies and resource checks (403 vs 404), refresh-token rotation; client retries once on 401 and logs out cleanly.",
+      "days": [
+        {
+          "learn": "Policy-based and resource-based authorization; 401 vs 403 vs 404",
+          "title": "Ownership checks so a user can never read another user's application"
+        },
+        {
+          "learn": "Roles and claims-based policies",
+          "title": "Admin role with a policy-protected GET /api/admin/stats"
+        },
+        {
+          "learn": "Refresh tokens: rotation, reuse detection, revocation",
+          "title": "POST /api/auth/refresh with rotating refresh tokens stored server side"
+        },
+        {
+          "learn": "Interceptors / fetch wrappers: retry once after refresh, queue concurrent requests",
+          "title": "Client that refreshes on 401 and retries the original request once"
+        },
+        {
+          "learn": "Role-aware UI and logout everywhere",
+          "title": "Admin-only nav item and a logout that revokes the refresh token"
+        }
+      ],
+      "checkpoint": "Explain 401 vs 403 vs 404 for a resource you do not own, and write the refresh-and-retry wrapper from memory"
+    },
+    {
+      "week": 9,
+      "level": "Intermediate",
+      "title": "Week 9: Interviews and notes: related data",
+      "objective": "Model one-to-many relationships for interview rounds and notes, and build a tabbed detail page with optimistic updates.",
+      "deliverable": "PR \"Interviews + notes\" merged: nested endpoints with EF relationships and cascade rules; detail page tabs with optimistic add and rollback.",
+      "days": [
+        {
+          "learn": "EF Core relationships: one-to-many, required vs optional, cascade delete",
+          "title": "Interview and Note entities with migrations and configured cascades"
+        },
+        {
+          "learn": "Nested resource routes and loading related data (Include vs projection)",
+          "title": "GET/POST /api/applications/{id}/interviews and /notes"
+        },
+        {
+          "learn": "Dates and time zones: DateTimeOffset, UTC on the server, local in the UI",
+          "title": "Interview scheduling with UTC storage and local display"
+        },
+        {
+          "learn": "Tabs and nested routes in React; component composition",
+          "title": "Detail page with Overview, Interviews and Notes tabs"
+        },
+        {
+          "learn": "Optimistic updates with TanStack Query: onMutate, rollback, settle",
+          "title": "Add a note instantly with optimistic update and rollback on error"
+        }
+      ],
+      "checkpoint": "Explain Include vs projection and when cascade delete is dangerous; write an optimistic update with rollback from memory"
+    },
+    {
+      "week": 10,
+      "level": "Intermediate",
+      "title": "Week 10: The Kanban board and concurrency",
+      "objective": "Move applications between stages safely with concurrency control, through a drag-and-drop board.",
+      "deliverable": "PR \"Kanban\" merged: PATCH status endpoint enforcing domain transitions with rowversion (409 on conflicts); dnd-kit board with optimistic moves and conflict handling.",
+      "days": [
+        {
+          "learn": "PATCH for state transitions; mapping domain exceptions to 409/422",
+          "title": "PATCH /api/applications/{id}/status using the domain transition rules"
+        },
+        {
+          "learn": "Optimistic concurrency: rowversion, concurrency tokens, DbUpdateConcurrencyException",
+          "title": "RowVersion on JobApplication and a 409 response on stale updates"
+        },
+        {
+          "learn": "dnd-kit basics: draggable, droppable, sensors, accessibility",
+          "title": "Board with one column per status, built with dnd-kit"
+        },
+        {
+          "learn": "Optimistic moves, reverting on failure, explaining conflicts to the user",
+          "title": "Drag to change status with optimistic move and a conflict message on 409"
+        },
+        {
+          "learn": "Keyboard drag and drop and screen reader announcements",
+          "title": "Keyboard-accessible moves with live-region announcements"
+        }
+      ],
+      "checkpoint": "Explain how rowversion prevents a lost update and reproduce a 409 with two browser tabs"
+    },
+    {
+      "week": 11,
+      "level": "Intermediate",
+      "title": "Week 11: Tests that make changes safe",
+      "objective": "Cover the API with real-database integration tests and the web app with component tests against a mocked API.",
+      "deliverable": "PR \"Tests\" merged: WebApplicationFactory + Testcontainers SQL Server tests for auth and applications; Vitest + RTL + MSW tests for the main screens; both run with one command.",
+      "days": [
+        {
+          "learn": "Integration tests with WebApplicationFactory; test auth handlers",
+          "title": "Api.Tests project hitting the real pipeline for list, create and 404"
+        },
+        {
+          "learn": "Testcontainers: a real SQL Server per test run; resetting data",
+          "title": "Tests running against a containerised SQL Server with a clean database each run"
+        },
+        {
+          "learn": "Vitest + React Testing Library: queries by role, user-event",
+          "title": "Component tests for the form (validation errors) and the list states"
+        },
+        {
+          "learn": "MSW: mocking the API at the network level",
+          "title": "MSW handlers so page tests exercise real fetching code"
+        },
+        {
+          "learn": "What to test where: the testing pyramid for a full-stack app",
+          "title": "Coverage reports for both apps and a TESTING.md on the strategy"
+        }
+      ],
+      "checkpoint": "Write an integration test for a 403 case and an RTL test for a loading state, both from scratch"
+    },
+    {
+      "week": 12,
+      "level": "Advanced",
+      "title": "Week 12: Dashboard and performance",
+      "objective": "Build an insights dashboard with efficient aggregate queries and keep the front end fast as it grows.",
+      "deliverable": "PR \"Dashboard\" merged: stats endpoint with grouped queries, indexes and no N+1; dashboard with charts, memoisation where it helps, and route-level code splitting.",
+      "days": [
+        {
+          "learn": "Aggregate queries with GroupBy in EF Core; reading the generated SQL",
+          "title": "GET /api/stats: applications per status, response rate, weekly activity"
+        },
+        {
+          "learn": "The N+1 problem, indexes and execution plans",
+          "title": "Find and fix one N+1; add indexes for the common filters and verify with the plan"
+        },
+        {
+          "learn": "Charts in React; accessible data visualisation",
+          "title": "Dashboard page with status breakdown and weekly activity charts"
+        },
+        {
+          "learn": "Re-renders: React DevTools Profiler, memo, useMemo, useCallback",
+          "title": "Profile the board and dashboard; fix one measured slow render"
+        },
+        {
+          "learn": "Code splitting with lazy and Suspense; bundle analysis",
+          "title": "Lazy-load the dashboard and board routes; compare bundle sizes"
+        }
+      ],
+      "checkpoint": "Explain the N+1 problem and fix one live, then explain when memo actually helps"
+    },
+    {
+      "week": 13,
+      "level": "Advanced",
+      "title": "Week 13: Caching, rate limiting and fast search",
+      "objective": "Cache safely on the server, protect the API from abuse, and make search feel instant in the client.",
+      "deliverable": "PR \"Caching + search\" merged: output caching and Redis distributed cache with correct invalidation, rate limiting; debounced search with prefetching.",
+      "days": [
+        {
+          "learn": "Output caching vs response caching; cache keys that vary by user",
+          "title": "Output caching on stats with per-user variation and tag-based eviction"
+        },
+        {
+          "learn": "IDistributedCache and Redis; cache-aside and invalidation",
+          "title": "Redis cache for company lookups with invalidation on writes"
+        },
+        {
+          "learn": "Rate limiting in ASP.NET Core: fixed window, sliding window, token bucket",
+          "title": "Rate limits on auth endpoints and a 429 with Retry-After"
+        },
+        {
+          "learn": "Debouncing and cancelling requests; AbortController",
+          "title": "useDebounce hook and a company search box that cancels stale requests"
+        },
+        {
+          "learn": "Prefetching on hover and staleTime tuning in TanStack Query",
+          "title": "Prefetch application details on hover; tune staleTime per query"
+        }
+      ],
+      "checkpoint": "Explain one case where output caching would leak another user's data, and write useDebounce from memory"
+    },
+    {
+      "week": 14,
+      "level": "Advanced",
+      "title": "Week 14: Files and background jobs",
+      "objective": "Attach resumes and offer letters to applications, and remind the user about follow-ups with scheduled background jobs.",
+      "deliverable": "PR \"Files + reminders\" merged: validated file upload/download stored outside the database, Hangfire follow-up reminders; upload UI with progress and a reminders list.",
+      "days": [
+        {
+          "learn": "File uploads: IFormFile, size and type limits, streaming, storage outside the DB",
+          "title": "POST /api/applications/{id}/files with validation, and an authorised download endpoint"
+        },
+        {
+          "learn": "Background work in .NET: hosted services vs Hangfire",
+          "title": "Hangfire set up with SQL Server storage and its dashboard behind admin auth"
+        },
+        {
+          "learn": "Scheduling and idempotent jobs",
+          "title": "Follow-up reminder job: X days after applying with no response"
+        },
+        {
+          "learn": "Uploading files from React: FormData, progress, drag and drop",
+          "title": "Attachment uploader with progress and file-type errors"
+        },
+        {
+          "learn": "Notification UI patterns: badges, read/unread",
+          "title": "Reminders panel with unread count and mark-as-read"
+        }
+      ],
+      "checkpoint": "Explain why a reminder job must be idempotent and what happens if it runs twice; then upload a file end to end without docs"
+    },
+    {
+      "week": 15,
+      "level": "Advanced",
+      "title": "Week 15: Real-time updates with SignalR",
+      "objective": "Push reminders and status changes to open browsers in real time.",
+      "deliverable": "PR \"Real-time\" merged: authenticated SignalR hub sending per-user events; React client that updates the cache and shows toasts, with reconnect handling.",
+      "days": [
+        {
+          "learn": "SignalR: hubs, groups, connection lifetime, authentication",
+          "title": "NotificationsHub with per-user groups and JWT auth on the connection"
+        },
+        {
+          "learn": "Publishing from application code through IHubContext",
+          "title": "Reminder job and status changes push events to the user's group"
+        },
+        {
+          "learn": "SignalR JavaScript client: connect, reconnect, handlers",
+          "title": "useSignalR hook with automatic reconnect and connection status"
+        },
+        {
+          "learn": "Updating the TanStack Query cache from pushed events",
+          "title": "Board and list update live when another tab changes an application"
+        },
+        {
+          "learn": "Toasts and attention: when to interrupt and when not to",
+          "title": "Toast notifications for reminders with a quiet mode"
+        }
+      ],
+      "checkpoint": "Draw how a server event reaches one user's open tabs, and explain what happens to messages while a client is disconnected"
+    },
+    {
+      "week": 16,
+      "level": "Advanced",
+      "title": "Week 16: Resilience and observability",
+      "objective": "Make failures survivable and visible: resilient outbound calls, structured logs and traces across the API, plus error boundaries in the UI.",
+      "deliverable": "PR \"Resilience + observability\" merged: HttpClient resilience for an external company-info call, Serilog structured logs, OpenTelemetry traces; React error boundaries and client error reporting to the API.",
+      "days": [
+        {
+          "learn": "Typed HttpClient and IHttpClientFactory; calling an external API",
+          "title": "Company info enrichment through a typed client (public API or a stub)"
+        },
+        {
+          "learn": "Resilience: retry, timeout, circuit breaker; why retries need idempotency",
+          "title": "Standard resilience handler with timeouts and a circuit breaker"
+        },
+        {
+          "learn": "Structured logging with Serilog; correlation ids",
+          "title": "Serilog with request logging, enrichers and a correlation id returned in headers"
+        },
+        {
+          "learn": "OpenTelemetry: traces, spans, exporters",
+          "title": "Traces for HTTP, EF Core and the external call, viewed locally"
+        },
+        {
+          "learn": "React error boundaries and reporting client errors",
+          "title": "Error boundary per route + POST /api/client-errors with the correlation id"
+        }
+      ],
+      "checkpoint": "From one trace, explain where the time went; explain retry vs circuit breaker with JobHunt examples"
+    },
+    {
+      "week": 17,
+      "level": "Advanced",
+      "title": "Week 17: Events, messaging and the outbox",
+      "objective": "Publish domain events reliably with the outbox pattern and RabbitMQ, and show an activity feed built from them.",
+      "deliverable": "PR \"Events\" merged: domain events stored in an outbox and published to RabbitMQ, an idempotent consumer building activity entries and a weekly digest; activity feed page.",
+      "days": [
+        {
+          "learn": "Domain events; why publishing inside a transaction is not enough",
+          "title": "ApplicationStatusChanged event raised by the domain and saved to an outbox table"
+        },
+        {
+          "learn": "RabbitMQ basics: exchanges, queues, acknowledgements",
+          "title": "Outbox publisher background service sending events to RabbitMQ"
+        },
+        {
+          "learn": "Idempotent consumers and at-least-once delivery",
+          "title": "Consumer that writes activity entries exactly once per event id"
+        },
+        {
+          "learn": "Infinite lists in React: cursor paging, intersection observer",
+          "title": "Activity feed page with cursor paging"
+        },
+        {
+          "learn": "Scheduled digests and email (dev SMTP)",
+          "title": "Weekly digest email of the week's activity, sent to a local SMTP catcher"
+        }
+      ],
+      "checkpoint": "Explain the outbox pattern and an idempotent consumer with a diagram"
+    },
+    {
+      "week": 18,
+      "level": "Advanced",
+      "title": "Week 18: Security hardening",
+      "objective": "Harden both apps against the most common web and API attacks, and keep secrets out of the code.",
+      "deliverable": "PR \"Security\" merged: OWASP API Top 10 review with fixes, secrets in user-secrets/Key Vault, security headers and strict CORS; client-side XSS review, CSP and dependency audit.",
+      "days": [
+        {
+          "learn": "OWASP API Security Top 10; broken object level authorization",
+          "title": "Audit every endpoint against the OWASP API Top 10 and fix what you find"
+        },
+        {
+          "learn": "Secrets management: user-secrets, environment variables, Azure Key Vault",
+          "title": "No secrets in the repo: user-secrets locally, Key Vault configuration provider ready for production"
+        },
+        {
+          "learn": "Security headers, HTTPS, HSTS, strict CORS",
+          "title": "Security headers middleware and production CORS limited to the real origin"
+        },
+        {
+          "learn": "XSS in React: dangerouslySetInnerHTML, URL injection, Content Security Policy",
+          "title": "Notes rendered safely (sanitised Markdown) and a CSP for the web app"
+        },
+        {
+          "learn": "Dependency risk: npm audit, dotnet list package --vulnerable, Dependabot",
+          "title": "Vulnerability scan for both apps and Dependabot configuration"
+        }
+      ],
+      "checkpoint": "Name five OWASP API risks and where JobHunt guards against each"
+    },
+    {
+      "week": 19,
+      "level": "Advanced",
+      "title": "Week 19: Accessibility, UX polish and end-to-end tests",
+      "objective": "Make the app usable by everyone on every screen size, and prove the main journeys work end to end.",
+      "deliverable": "PR \"Polish + E2E\" merged: accessibility pass (keyboard, focus, contrast, labels), responsive layouts; Playwright tests for register → add application → move on board → add interview.",
+      "days": [
+        {
+          "learn": "Accessibility basics: semantic HTML, labels, focus management, contrast",
+          "title": "Accessibility audit with axe and fixes for every finding"
+        },
+        {
+          "learn": "Responsive layout with CSS grid and container queries",
+          "title": "Board, list and dashboard usable from 360px to wide screens"
+        },
+        {
+          "learn": "Empty states, skeletons and microcopy",
+          "title": "Skeleton loaders and helpful empty states on every page"
+        },
+        {
+          "learn": "Playwright: locators, fixtures, auth state, test isolation",
+          "title": "Playwright E2E for the main journey against the real API and a test database"
+        },
+        {
+          "learn": "Flaky tests: waiting correctly, traces, retries",
+          "title": "Run E2E three times in a row green; fix any flakiness with traces"
+        }
+      ],
+      "checkpoint": "Build a two-column to one-column responsive layout with CSS grid from memory, and write one Playwright test from scratch"
+    },
+    {
+      "week": 20,
+      "level": "Advanced",
+      "title": "Week 20: Docker, CI/CD and deployment",
+      "objective": "Containerise both apps, run the whole stack with one command, and deploy automatically from main.",
+      "deliverable": "PR \"Ship it\" merged: Dockerfiles for API and web (nginx), docker compose with SQL Server, Redis and RabbitMQ; GitHub Actions building, testing and deploying both apps.",
+      "days": [
+        {
+          "learn": "Dockerfiles: multi-stage builds, small images, non-root users",
+          "title": "Multi-stage Dockerfile for the API"
+        },
+        {
+          "learn": "Serving a SPA from nginx; build-time vs run-time configuration",
+          "title": "Dockerfile for the web app served by nginx with SPA fallback"
+        },
+        {
+          "learn": "docker compose: services, health checks, volumes, networks",
+          "title": "docker compose up runs API, web, SQL Server, Redis and RabbitMQ"
+        },
+        {
+          "learn": "GitHub Actions: jobs, caching, test reports, required checks",
+          "title": "CI workflow: build and test both apps on every pull request"
+        },
+        {
+          "learn": "Deploying containers to the cloud; migrations on deploy; scaling statelessly",
+          "title": "CD to Azure Container Apps (or App Service) with migrations applied safely"
+        }
+      ],
+      "checkpoint": "Explain why the API must be stateless to scale out, with JobHunt examples, and write a multi-stage Dockerfile from memory"
+    },
+    {
+      "week": 21,
+      "level": "Capstone",
+      "title": "Week 21: Capstone: ready to show",
+      "objective": "Turn JobHunt into a portfolio piece: documented architecture, a performance and quality pass, and a recorded walkthrough.",
+      "deliverable": "Release v1.0: architecture diagram and decision records, README with screenshots and a live link, performance pass, and a 2-minute demo video.",
+      "days": [
+        {
+          "learn": "Architecture documentation: C4 diagrams and architecture decision records",
+          "title": "Architecture diagram (C4 level 1-2) and 5 ADRs for your biggest decisions"
+        },
+        {
+          "learn": "Performance budgets: Lighthouse, API latency targets",
+          "title": "Lighthouse and API latency pass; fix the two worst findings"
+        },
+        {
+          "learn": "Code review checklist; refactoring safely with tests",
+          "title": "Self code review of both apps with a checklist; fix the top issues"
+        },
+        {
+          "learn": "Writing a README recruiters read: problem, features, stack, how to run",
+          "title": "README with screenshots, live link, run instructions and test commands"
+        },
+        {
+          "learn": "Telling the story in interviews: trade-offs, failures, what you would change",
+          "title": "2-minute demo video and a one-page interview story sheet"
+        }
+      ],
+      "checkpoint": "Whiteboard the full JobHunt architecture (browser to database, including events, cache and jobs) in 10 minutes"
+    }
+  ]
+}

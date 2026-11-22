@@ -120,7 +120,7 @@ describe('game API', () => {
   test('fresh start: level 1 player, no streak, every roadmap starts at level 1 lesson 1', async () => {
     const g = (await api('GET', '/game')).body;
     assert.deepEqual([g.player.level, g.player.total, g.streak.current, g.focus, g.celebrate], [1, 0, 0, null, []]);
-    assert.deepEqual(g.tracks.map((t) => t.key), ['ai', 'dsa', 'lld', 'hld', 'judge', 'react', 'dotnet', 'node']);
+    assert.deepEqual(g.tracks.map((t) => t.key), ['ai', 'dsa', 'lld', 'hld', 'judge', 'fullstack', 'node']);
     const ai = g.tracks[0];
     assert.deepEqual([ai.next.ref, ai.next.level, ai.currentLevel, ai.total, ai.levelsTotal, ai.levels], ['L1-1', 1, 1, 69, 14, undefined]);
     assert.ok(g.tracks.every((t) => t.next && t.next.level === 1 && t.total > 0), 'every roadmap has a first lesson');

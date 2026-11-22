@@ -3,10 +3,10 @@ const { sql, getPool } = require('../db');
 
 const router = express.Router();
 const wrap = (fn) => (req, res, next) => fn(req, res, next).catch(next);
-const AREAS = ['node', 'dotnet', 'react'];
+const AREAS = ['fullstack', 'node']; // 'archived' = the old separate .NET and React courses (kept, never shown)
 
 const TASK_COLS = `CAST(id AS int) AS id, project_code, week_no, week_title, day_index,
-  CONVERT(char(10), plan_date, 23) AS plan_date, kind, learn, learn_links, learn_done, done_when, brief, title, done, built_from_scratch, notes, done_at`;
+  CONVERT(char(10), plan_date, 23) AS plan_date, kind, lane, learn, learn_links, learn_done, done_when, brief, title, done, built_from_scratch, notes, done_at`;
 // learn_links is stored as JSON text
 const withLinks = (t) => ({ ...t, learn_links: JSON.parse(t.learn_links || '[]') });
 
@@ -20,7 +20,7 @@ router.get('/projects/:area', wrap(async (req, res) => {
     FROM dbo.projects WHERE area = @area ORDER BY sort_order;
     SELECT ${TASK_COLS} FROM dbo.project_tasks
     WHERE project_code IN (SELECT code FROM dbo.projects WHERE area = @area)
-    ORDER BY plan_date, CASE kind WHEN 'build' THEN 0 ELSE 1 END, id;
+    ORDER BY plan_date, CASE kind WHEN 'build' THEN 0 ELSE 1 END, lane, id;
     SELECT project_code, week_no, objective, level, deliverable FROM dbo.project_weeks
     WHERE project_code IN (SELECT code FROM dbo.projects WHERE area = @area);`);
   const [projects, rawTasks, weekInfo] = r.recordsets;

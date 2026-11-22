@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api.js';
 import { formatLong, minutesLabel, todayISO } from '../dates.js';
 import { DiffPill, DocLinks, ErrorBox, Loading, Md, ProgressBar } from '../components/ui.jsx';
+import YouTubeGrid from '../components/YouTubeGrid.jsx';
 import LogSolveDialog from '../components/LogSolveDialog.jsx';
 import MentorDrawer from '../components/MentorDrawer.jsx';
 import { refreshGame } from '../game.jsx';
@@ -153,6 +154,8 @@ export default function Today() {
           </div>
         )}
       </section>
+
+      <YouTubeGrid videos={day.videos} />
 
       {/* wide screens: checklist left, problems right (.split) */}
       <div className="split">

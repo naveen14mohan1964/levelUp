@@ -1,0 +1,221 @@
+{
+  "week": 1,
+  "days": [
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Monorepo layout; the .NET SDK and CLI; solutions vs projects",
+      "title": "Monorepo with /api: JobHunt solution with Api, Application, Domain, Infrastructure and their references",
+      "doneWhen": "`dotnet build` passes in /api and `dotnet sln list` shows the four JobHunt projects",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: .NET CLI overview",
+          "url": "https://learn.microsoft.com/en-us/dotnet/core/tools/"
+        },
+        {
+          "label": "Microsoft Learn: dotnet sln",
+          "url": "https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-sln"
+        },
+        {
+          "label": "Microsoft Learn: Common web application architectures",
+          "url": "https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/common-web-application-architectures"
+        }
+      ],
+      "brief": "### Why this matters\nAt work you open a solution someone else created. Interviews and side projects expect you to start from nothing: pick a folder layout, split the code into layers and explain why the arrows point the way they do. Every later week builds on today, so understand each command instead of copying it.\n\n### What you'll build\n- A Git repo `jobhunt/` with `/api` for .NET (the React part creates `/web` today)\n- A solution `JobHunt` in `/api` (in .NET 10, `dotnet new sln` creates the `.slnx` format)\n- Four projects under `api/src/`: `JobHunt.Domain`, `JobHunt.Application`, `JobHunt.Infrastructure` (class libraries) and `JobHunt.Api` (empty web project)\n- References: Api → Application → Domain, Infrastructure → Application, Api → Infrastructure (only so `Program.cs` can register it later)\n\n### Step by step\n1. Run `dotnet --version` (you need 10.x), then `git init` in `jobhunt/` and create a branch `feature/skeleton`.\n2. Inside `api`, run `dotnet new sln -n JobHunt` and open the `.slnx` file. It is plain XML.\n3. Create the libraries with `dotnet new classlib -n JobHunt.Domain -o src/JobHunt.Domain`, then Application and Infrastructure. Delete `Class1.cs`.\n4. Create the API with `dotnet new web -n JobHunt.Api -o src/JobHunt.Api`.\n5. Add each project with `dotnet sln add`, then wire the references with `dotnet add <project> reference <project>`.\n6. Run `dotnet build` and commit.\n\n### Acceptance criteria\n- [ ] `dotnet build` passes from `/api`\n- [ ] `dotnet sln list` shows exactly four projects\n- [ ] Domain references nothing; Application references only Domain\n- [ ] Work is on `feature/skeleton`, not `main`\n\n### Hints\n- `dotnet list <project> reference` prints a project's references so you can check the arrows.\n- Draw the four boxes on paper first. Arrows point inward, toward Domain.\n\n### Common mistakes\n- Running `dotnet new` inside another project folder and ending up with nested projects.\n- Referencing Infrastructure from Application \"just for now\". The inner layer then knows the database.\n\n### Stretch (optional)\n- Add a `Directory.Build.props` that sets `Nullable` and `ImplicitUsings` once for every project.\n\n### Check your understanding\n- What is the difference between a solution and a project, and what does each compile into?\n- Why does only the Api project get to reference Infrastructure?\n- What would break if Domain referenced Application?"
+    },
+    {
+      "dow": 0,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Node, npm and Vite; what a React + TypeScript project contains",
+      "title": "/web: Vite React + TypeScript app in strict mode with ESLint and Prettier",
+      "doneWhen": "`npm run lint` and `npm run build` pass in /web with `strict` on and the demo code removed",
+      "learnLinks": [
+        {
+          "label": "Vite: Getting started",
+          "url": "https://vite.dev/guide/"
+        },
+        {
+          "label": "ESLint: Getting started",
+          "url": "https://eslint.org/docs/latest/use/getting-started"
+        },
+        {
+          "label": "Prettier: Install",
+          "url": "https://prettier.io/docs/install"
+        }
+      ],
+      "brief": "### Why this matters\nAt work someone else chose the build tool, the lint rules and the TypeScript settings. Knowing what Vite does and what `strict` turns on is what separates \"I can edit components\" from \"I can start a front end\".\n\n### What you'll build\n- `/web`: a Vite app from the `react-ts` template (React 19 + TypeScript)\n- `strict: true` confirmed, plus `noUncheckedIndexedAccess`\n- ESLint (already in the template) and Prettier, with `lint` and `format` npm scripts\n- The template's demo counter and logos removed\n\n### Step by step\n1. Check `node --version`. Use a current LTS release (22 or later).\n2. From the repo root run `npm create vite@latest web -- --template react-ts`, then `cd web` and `npm install`.\n3. Run `npm run dev` and open the URL. Then read `package.json`, `vite.config.ts`, `tsconfig.app.json` and `eslint.config.js` and write one line in your notes about what each does.\n4. In `tsconfig.app.json` confirm `strict` is `true` and add `noUncheckedIndexedAccess`.\n5. Install `prettier` and `eslint-config-prettier` as dev dependencies, add a `.prettierrc`, and add the Prettier config last in the ESLint config.\n6. Add `\"format\": \"prettier --write .\"` to the scripts.\n7. Replace `App.tsx` with a single heading, delete the demo assets, run `npm run lint` and `npm run build`, and commit.\n\n### Acceptance criteria\n- [ ] `npm run build` runs `tsc` and Vite with zero errors\n- [ ] `npm run lint` passes with zero warnings\n- [ ] `strict` and `noUncheckedIndexedAccess` are on\n- [ ] Demo counter and logos are gone\n\n### Hints\n- Look at the `build` script: it type-checks first and only then bundles.\n- Set your editor to format on save with Prettier once, now.\n\n### Common mistakes\n- Turning off `strict` later to make an error go away. Fix the type instead.\n- Running ESLint style rules and Prettier together, so they fight forever. `eslint-config-prettier` turns the clashing rules off.\n- Creating the app inside `/api` by accident. It lives next to it.\n\n### Check your understanding\n- What does Vite do in dev that it does not do in a production build?\n- Name three checks that `strict` turns on.\n- Why does `build` run `tsc` before Vite?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Minimal APIs, Program.cs and the request pipeline",
+      "title": "GET /health returning status, version and environment",
+      "doneWhen": "`GET /health` returns 200 JSON with camelCase `status`, `version` and `environment`, and `Program.cs` calls one `MapHealthEndpoints()` line",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Minimal APIs overview",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis"
+        },
+        {
+          "label": "Microsoft Learn: Create responses in Minimal API applications",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses"
+        }
+      ],
+      "brief": "### Why this matters\nA health endpoint is the first thing load balancers, containers and your own front end call. Building it by hand makes you read `Program.cs` line by line: the builder, the services, the app and the pipeline. \"Walk me through Program.cs\" is a common .NET interview question.\n\n### What you'll build\n- `GET /health` in `JobHunt.Api` returning `{ \"status\": \"Healthy\", \"version\": \"1.0.0\", \"environment\": \"Development\" }`\n- A `HealthResponse` positional record for the shape\n- The endpoint in its own extension method `MapHealthEndpoints()`, so `Program.cs` stays short\n\n### Step by step\n1. Open `Program.cs` and label each part with a comment: builder, service registration, `Build()`, middleware pipeline, endpoints, `Run()`.\n2. Create `HealthResponse(string Status, string Version, string Environment)`.\n3. Write a static class with an extension method on `IEndpointRouteBuilder` that calls `MapGet(\"/health\", ...)` and returns `TypedResults.Ok(...)`.\n4. Inject `IHostEnvironment` as a handler parameter and use its `EnvironmentName`. Hard-code the version for now; Wednesday moves it to configuration.\n5. Run with `dotnet run` and call the endpoint from the browser or a `.http` file.\n\n```csharp\npublic static IEndpointRouteBuilder MapHealthEndpoints(this IEndpointRouteBuilder app)\n{\n    app.MapGet(\"/health\", (IHostEnvironment env) => /* TODO */);\n    return app;\n}\n```\n\n### Acceptance criteria\n- [ ] `GET /health` returns 200 with `application/json`\n- [ ] Property names are camelCase\n- [ ] The environment comes from `IHostEnvironment`, not a string literal\n- [ ] `Program.cs` has no inline handler\n\n### Hints\n- Handlers can take services as parameters; the framework resolves them from DI.\n- `TypedResults.Ok(...)` makes the status code explicit and shows up in OpenAPI metadata later.\n\n### Common mistakes\n- Using the full `webapi` template sample code instead of writing the handler.\n- Confusing this with the built-in `AddHealthChecks`. It exists; today the goal is to write a handler yourself.\n\n### Check your understanding\n- What is the difference between `WebApplicationBuilder` and `WebApplication`?\n- Where does a minimal API handler get its parameters from?\n- What does middleware order mean, and where do endpoints sit in it?"
+    },
+    {
+      "dow": 1,
+      "kind": "build",
+      "lane": "web",
+      "learn": "TypeScript basics: types, interfaces, unions, strict null checks",
+      "title": "Typed HealthStatus model and a first typed component that renders it from sample data",
+      "doneWhen": "`HealthCard` renders a sample `HealthStatus` object, and passing an invalid `status` value is a compile error",
+      "learnLinks": [
+        {
+          "label": "TypeScript: Everyday types",
+          "url": "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html"
+        },
+        {
+          "label": "TypeScript: Narrowing",
+          "url": "https://www.typescriptlang.org/docs/handbook/2/narrowing.html"
+        },
+        {
+          "label": "react.dev: Using TypeScript",
+          "url": "https://react.dev/learn/typescript"
+        }
+      ],
+      "brief": "### Why this matters\nStrict TypeScript catches the bugs interviewers love to ask about: `undefined is not a function`, a typo in a status string, a missing field. Today you describe the JSON your .NET part returns as a type, so the compiler checks every place you use it.\n\n### What you'll build\n- `web/src/types/health.ts` with a `HealthStatus` interface: `status`, `version`, `environment`\n- `status` typed as a union, for example `\"Healthy\" | \"Degraded\" | \"Unhealthy\"`, not `string`\n- A `HealthCard` component with typed props that renders a sample `HealthStatus`\n- A colour or label chosen with a `switch` on `status`\n\nThe shape matches the `/health` JSON from today's .NET part.\n\n### Step by step\n1. Write the `HealthStatus` interface and a `HealthState` union type.\n2. Create `const sample: HealthStatus = { ... }` and try leaving out a field or misspelling `\"Healthy\"` to read the errors.\n3. Write `HealthCard({ health }: HealthCardProps)` as a plain function with a props interface.\n4. Add a function `labelFor(status: HealthState): string` with a `switch` and assign the value to `never` in the `default` case.\n5. Render `<HealthCard health={sample} />` from `App.tsx`, run `npm run build`.\n\n```ts\ntype HealthState = \"Healthy\" | \"Degraded\" | \"Unhealthy\";\nexport interface HealthStatus { status: HealthState; /* TODO */ }\n```\n\n### Acceptance criteria\n- [ ] No `any` anywhere\n- [ ] `status` is a union of literals\n- [ ] Adding a new union member makes `labelFor` fail to compile until handled\n- [ ] `npm run build` passes\n\n### Hints\n- Use `interface` for object shapes and props, `type` for unions. Be ready to explain the difference.\n- Optional fields (`version?: string`) force you to handle `undefined` under strict null checks.\n\n### Common mistakes\n- Using `React.FC` by habit. Plain functions with typed props are the current recommendation.\n- Typing `status` as `string`, which accepts any typo.\n\n### Check your understanding\n- When would you choose a union of literals over a TypeScript `enum`?\n- What does strict null checking change about `user.name.length`?\n- How does the `never` trick make a `switch` exhaustive?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "api",
+      "learn": "Configuration and environments: appsettings, environment variables, launch profiles",
+      "title": "Version and environment read from configuration, different in Development and Production",
+      "doneWhen": "`/health` shows a version and environment from configuration, and they differ between the Development and Production launch profiles",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: Configuration in ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/"
+        },
+        {
+          "label": "Microsoft Learn: Use multiple environments",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/environments"
+        }
+      ],
+      "brief": "### Why this matters\nEvery real deployment runs the same build with different settings. Knowing which configuration source wins, and how the environment name is chosen, saves hours of \"works on my machine\" debugging and is a standard interview question.\n\n### What you'll build\n- An `App` section in `appsettings.json` with `Version` and `DisplayName`\n- An override of `DisplayName` in `appsettings.Development.json`\n- A second launch profile in `launchSettings.json` with `ASPNETCORE_ENVIRONMENT` set to `Production`\n- `/health` reading `App:Version` from `IConfiguration` and returning `displayName` as an extra field\n\n### Step by step\n1. Add the `App` section to `appsettings.json` and only `DisplayName` to the Development file.\n2. Inject `IConfiguration` into the handler and read `config[\"App:Version\"]`.\n3. Open `Properties/launchSettings.json`, copy the existing profile and set its environment to `Production`.\n4. Run with `dotnet run --launch-profile <name>` for each profile and compare the JSON.\n5. Override the version from the shell with an environment variable named `App__Version` and see that it wins.\n\n### Acceptance criteria\n- [ ] No hard-coded version in C#\n- [ ] Development and Production return different `environment` and `displayName`\n- [ ] An `App__Version` environment variable overrides the file value\n- [ ] No secrets in `appsettings.json`\n\n### Hints\n- Sources are layered: `appsettings.json`, then `appsettings.{Environment}.json`, then user secrets (Development only), environment variables, command line. Later wins.\n- The double underscore in environment variable names maps to the `:` separator.\n\n### Common mistakes\n- Putting real secrets into `appsettings.json`. It is committed; secrets come later.\n- Thinking `launchSettings.json` is used in production. It is only read by `dotnet run` and IDEs on your machine.\n\n### Stretch (optional)\n- Read the version from the assembly instead and keep configuration only for the display name.\n\n### Check your understanding\n- In which order are the configuration sources applied, and which wins?\n- Where does the environment name come from when you deploy?\n- Why is `launchSettings.json` not a deployment setting?"
+    },
+    {
+      "dow": 2,
+      "kind": "build",
+      "lane": "web",
+      "learn": "fetch, async/await and useEffect for loading data",
+      "title": "Health badge that calls /health and shows loading, ok and error states",
+      "doneWhen": "The badge shows loading first, then the API's status, and shows the error state when the API is stopped or blocked",
+      "learnLinks": [
+        {
+          "label": "MDN: Using the Fetch API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch"
+        },
+        {
+          "label": "React: Synchronizing with Effects",
+          "url": "https://react.dev/learn/synchronizing-with-effects"
+        }
+      ],
+      "brief": "### Why this matters\nFetching in an effect with proper loading and error handling is the base you will replace with TanStack Query in week 5, so you will know exactly what it saves you. Today the React part calls the `/health` endpoint from the .NET part.\n\n### What you'll build\n- `getHealth(signal?)` that calls `/health` with `fetch` and returns `Promise<HealthStatus>`\n- A single `API_BASE_URL` constant (week 3 replaces it)\n- A `HealthBadge` component with three states: loading, ok and error\n\n### Step by step\n1. Write `getHealth`: call `fetch`, throw when `!res.ok`, return the parsed JSON as `HealthStatus`.\n2. In `HealthBadge`, keep `data`, `error` and `loading` in `useState`.\n3. In `useEffect`, define an async function inside and call it. Give the effect an explicit `[]` dependency array.\n4. Add a cleanup that ignores a late result (an `ignore` flag or an `AbortController`).\n5. Run both apps. The call is probably blocked: read the console error and the Network tab. That is your error state working; Thursday's .NET part adds CORS and the badge turns green.\n6. Stop the API and reload to see a network failure end in the same error state.\n\n```ts\nexport async function getHealth(signal?: AbortSignal): Promise<HealthStatus> {\n  const res = await fetch(`${API_BASE_URL}/health`, { signal });\n  // TODO: check res.ok, parse and return\n}\n```\n\n### Acceptance criteria\n- [ ] Loading, ok and error states are all visible at some point\n- [ ] Network failures and non-2xx responses both end in the error state\n- [ ] The effect has a cleanup and a dependency array\n- [ ] No `any` in the fetch code\n\n### Hints\n- `fetch` only rejects on network failure. A 500 still resolves, so check `res.ok`.\n- In development, StrictMode runs effects twice on mount. That is why the cleanup matters.\n\n### Common mistakes\n- Making the effect callback itself `async`. It must return nothing or a cleanup function.\n- Treating `res.json()` as typed. It returns `any`; the annotation is a promise you make, not a check.\n\n### Check your understanding\n- Why does `fetch` resolve for a 500 response?\n- Why does the effect run twice in development, and why is that useful?\n- What would go wrong without the cleanup if the component unmounted mid-request?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "api",
+      "learn": "CORS and the browser same-origin policy",
+      "title": "Named CORS policy allowing only the Vite dev origin",
+      "doneWhen": "The health badge turns green, the response has `Access-Control-Allow-Origin` for the Vite origin, and a request from any other origin gets no such header",
+      "learnLinks": [
+        {
+          "label": "MDN: Same-origin policy",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy"
+        },
+        {
+          "label": "Microsoft Learn: Enable CORS in ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/security/cors"
+        }
+      ],
+      "brief": "### Why this matters\nYesterday the browser blocked your React app. Many developers paste `AllowAnyOrigin` and move on. You will understand why the browser blocks the call, what a preflight is, and how to allow exactly one origin. This unblocks the badge from Wednesday's React part.\n\n### What you'll build\n- A `Cors:AllowedOrigins` array in `appsettings.Development.json` with the Vite dev origin (for example `http://localhost:5173`)\n- A named CORS policy registered with `AddCors` that reads those origins\n- `UseCors(\"<name>\")` in the pipeline before the endpoints\n\n### Step by step\n1. Read the blocked request in the browser's Network tab once more and write down which header was missing.\n2. Add the origins array to the Development settings file.\n3. Bind it with `builder.Configuration.GetSection(...).Get<string[]>()` and call `AddCors(o => o.AddPolicy(name, p => p.WithOrigins(origins)...))`.\n4. Add `app.UseCors(name)` before you map the endpoints.\n5. Reload the web app and find `Access-Control-Allow-Origin` in the response headers.\n6. Change the configured port to a wrong one and confirm the badge breaks again.\n\n### Acceptance criteria\n- [ ] No `AllowAnyOrigin` anywhere\n- [ ] Origins come from configuration, not a C# literal\n- [ ] The badge shows ok with the API running\n- [ ] A wrong origin in config breaks the call again\n\n### Hints\n- CORS is enforced by the browser, not the server. The server only says which origins it trusts. That is why a `.http` file call worked without CORS.\n- Origin means scheme + host + port. `localhost:5173` and `127.0.0.1:5173` are different origins.\n- A simple `GET` has no preflight; a `PUT` with JSON will send an `OPTIONS` request first.\n\n### Common mistakes\n- Calling `UseCors` after the endpoints, so headers never appear.\n- A trailing slash in the origin string, which never matches.\n- Thinking CORS protects your API from scripts or curl. It does not; it protects users' browsers.\n\n### Check your understanding\n- What makes two URLs the \"same origin\"?\n- When does the browser send a preflight `OPTIONS` request?\n- Why can Postman call the API when the browser cannot?"
+    },
+    {
+      "dow": 3,
+      "kind": "build",
+      "lane": "web",
+      "learn": "Project structure: components, pages, lib; a simple layout component",
+      "title": "App layout with a header (showing the health badge) and a pages folder",
+      "doneWhen": "`App.tsx` only renders `<Layout>` with a page inside, the header shows the health badge, and `npm run build` passes",
+      "learnLinks": [
+        {
+          "label": "react.dev: Importing and exporting components",
+          "url": "https://react.dev/learn/importing-and-exporting-components"
+        },
+        {
+          "label": "react.dev: Passing props to a component",
+          "url": "https://react.dev/learn/passing-props-to-a-component"
+        }
+      ],
+      "brief": "### Why this matters\nA pile of components in `src/` is fine for a demo and painful by week 5. Choosing a simple folder structure now, and a layout that wraps every page, is the kind of decision you must make yourself when building from scratch.\n\n### What you'll build\n- Folders: `src/components` (reusable pieces), `src/pages` (one per screen), `src/lib` (non-UI code like `getHealth`), `src/types`\n- A `Layout` component with a header and a `<main>` that renders `children`\n- The `HealthBadge` from Wednesday shown in the header\n- A `HomePage` in `pages/` rendered inside the layout\n\n### Step by step\n1. Create the four folders and move existing files: `getHealth` to `lib/`, `HealthStatus` to `types/`, `HealthBadge` and `HealthCard` to `components/`.\n2. Write `Layout` with a `children: React.ReactNode` prop, a `<header>` with the app name and the badge, and a `<main>`.\n3. Write `HomePage` with a heading and a short paragraph.\n4. Make `App.tsx` render `<Layout><HomePage /></Layout>` and nothing else.\n5. Fix every import, then run `npm run lint` and `npm run build`.\n\n### Acceptance criteria\n- [ ] Four folders with files in the right place\n- [ ] `Layout` takes typed `children`\n- [ ] The header shows the badge on every page\n- [ ] No component file contains `fetch`\n\n### Hints\n- One component per file, named the same as the file, makes imports predictable.\n- Use semantic elements (`header`, `nav`, `main`). They help screen readers and later tests.\n- Week 4 replaces `children` with a router outlet; the layout idea stays the same.\n\n### Common mistakes\n- Deep folder trees on day 4. Four folders is enough until a folder gets crowded.\n- Putting fetching code inside components, which makes them hard to reuse and test.\n\n### Stretch (optional)\n- Add a footer that shows the API version from the health data.\n\n### Check your understanding\n- What belongs in `lib/` versus `components/`?\n- What is the `children` prop, and what type does it have?\n- Why keep `App.tsx` almost empty?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "api",
+      "learn": "dotnet watch, debugging and logging basics",
+      "title": "Run the API with hot reload and hit a breakpoint inside the /health handler",
+      "doneWhen": "With `dotnet watch` running, a change in the handler reloads without a restart, and you have hit a breakpoint inside the `/health` handler and inspected `env`",
+      "learnLinks": [
+        {
+          "label": "Microsoft Learn: dotnet watch",
+          "url": "https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-watch"
+        },
+        {
+          "label": "Microsoft Learn: Logging in .NET and ASP.NET Core",
+          "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging/"
+        }
+      ],
+      "brief": "### Why this matters\nBuilding from scratch means you will break things often. A fast loop (save, see the change) and the habit of using a debugger and logs instead of guessing are what make you quick. Interviewers notice when you can set a breakpoint and read a stack instead of adding print lines.\n\n### What you'll build\n- The API running under `dotnet watch` with hot reload\n- A breakpoint hit inside the `/health` handler in your editor's debugger\n- An `ILogger` log line in the handler at Information level\n- A log level override in `appsettings.Development.json` so your namespace logs at Debug\n\n### Step by step\n1. Run `dotnet watch --project src/JobHunt.Api` and change the status string. Watch the console say it applied the change.\n2. Stop it. Start the API from your editor's debugger (VS Code with the C# Dev Kit, Visual Studio or Rider), set a breakpoint in the handler and call `/health`.\n3. At the breakpoint, inspect `env`, step over a line and look at the call stack.\n4. Inject `ILogger<Program>` (or a logger for your endpoint class) and log the environment with a message template: `\"Health checked in {Environment}\"`.\n5. Add a `Logging:LogLevel` entry for `JobHunt` at `Debug` and add one `LogDebug` line to prove it appears.\n\n### Acceptance criteria\n- [ ] Hot reload applied at least one change without a restart\n- [ ] A breakpoint in the handler was hit\n- [ ] Log lines use message templates, not string interpolation\n- [ ] The Debug line shows only in Development\n\n### Hints\n- Some edits (for example changing a record's shape) are \"rude edits\" that need a restart; `dotnet watch` will offer it.\n- Message templates keep `Environment` as a structured property that log tools can search.\n\n### Common mistakes\n- Using `$\"...\"` in log calls, which loses the structure and allocates even when the level is off.\n- Leaving `Console.WriteLine` debugging in committed code.\n\n### Check your understanding\n- What is the difference between hot reload and a restart?\n- Why are message templates better than interpolated strings in logs?\n- How do log level overrides by category work?"
+    },
+    {
+      "dow": 4,
+      "kind": "build",
+      "lane": "web",
+      "learn": "npm scripts and running two apps together; React DevTools",
+      "title": "One root command that starts API and web together, documented in the README",
+      "doneWhen": "From a fresh clone, following only the README, `npm run dev` at the root starts both apps and the badge shows ok; PR \"Skeleton\" is open",
+      "learnLinks": [
+        {
+          "label": "npm Docs: scripts",
+          "url": "https://docs.npmjs.com/cli/v10/using-npm/scripts"
+        },
+        {
+          "label": "Git: gitignore",
+          "url": "https://git-scm.com/docs/gitignore"
+        },
+        {
+          "label": "react.dev: React Developer Tools",
+          "url": "https://react.dev/learn/react-developer-tools"
+        }
+      ],
+      "brief": "### Why this matters\nA project that needs five terminal tabs and a secret ritual to start is a project nobody wants to run. One command, a clean `.gitignore` and a clear README are what reviewers notice first in a take-home or portfolio repo. Today you also finish the week: the PR \"Skeleton\".\n\n### What you'll build\n- A root `package.json` (`\"private\": true`) with a process runner such as `concurrently` and scripts `dev:api`, `dev:web`, `dev`, `build`\n- A root `.gitignore` for .NET (`bin/`, `obj/`, `.vs/`) and Node (`node_modules/`, `dist/`, `.env.local`)\n- README sections: prerequisites, first run, scripts, folder layout\n- React DevTools installed in your browser\n\n### Step by step\n1. In the root run `npm init -y`, set `\"private\": true`, install `concurrently` as a dev dependency.\n2. Add `dev:api` (`dotnet watch --project api/src/JobHunt.Api`), `dev:web` (`npm --prefix web run dev`) and a `dev` script that runs both with name prefixes.\n3. Add `build` that builds the solution and the web app and stops on the first failure.\n4. Create `.gitignore` (`dotnet new gitignore` is a good base, then add the Node entries). Check `git status` shows no `bin`, `obj` or `node_modules`.\n5. Install React DevTools, open the Components tab and find `HealthBadge` and its state.\n6. Write the README, clone the repo into a temp folder and follow it exactly.\n7. Push and open the PR \"Skeleton\". Read the whole diff once before merging.\n\n### Acceptance criteria\n- [ ] `npm run dev` starts both apps with prefixed output\n- [ ] `npm run build` fails if either app fails\n- [ ] `git status` is clean after a build\n- [ ] A fresh clone works using only the README\n- [ ] PR \"Skeleton\" is merged into `main`\n\n### Hints\n- npm scripts have `node_modules/.bin` on the path, so local tools run without `npx`.\n- If something ignored was already committed, `git rm -r --cached <path>` removes it from the index only.\n\n### Common mistakes\n- Using `&` between commands in a script: it behaves differently on Windows and Linux.\n- Commit messages like \"fix\" or \"wip\". Use the imperative: \"Add health endpoint\".\n\n### Check your understanding\n- Why put scripts in a root `package.json` instead of a shell script?\n- What does `git rm --cached` do that plain `git rm` does not?\n- What can React DevTools show you that the Elements tab cannot?"
+    },
+    {
+      "dow": 4,
+      "kind": "checkpoint",
+      "lane": null,
+      "learn": null,
+      "title": "From a blank folder: a minimal API with one endpoint and a React page that shows its JSON, in 25 minutes",
+      "doneWhen": null,
+      "learnLinks": [],
+      "brief": "### The drill\nFrom a blank folder, build a minimal API with one JSON endpoint and a Vite React page that fetches and shows that JSON, in 25 minutes.\n\n### Rules\n- Work in a new empty folder outside the JobHunt repo.\n- Create everything with the CLI: `dotnet new` and `npm create vite`.\n- Official docs are allowed, but try without them first and note every lookup. No AI assistants, no copying from JobHunt.\n- Set a 25 minute timer and stop when it rings, finished or not.\n\n### Must include\n- An empty web project with one endpoint, for example `GET /quote` returning a record like `{ \"text\": \"...\", \"author\": \"...\" }`\n- A CORS policy that allows only the Vite dev origin\n- A strict TypeScript type for the response, with no `any`\n- `fetch` inside `useEffect` with loading and error states and a cleanup\n- Both apps running at the same time and the page showing the JSON\n\n### Self-check\n- [ ] Finished within 25 minutes\n- [ ] Wrote the `dotnet new` and `npm create vite` commands without looking them up\n- [ ] CORS allows one origin, not any origin\n- [ ] The fetch checks `response.ok`\n- [ ] The effect has a cleanup and a dependency array\n- [ ] You can explain why the browser blocked the call before CORS was added\n- [ ] Your lookup list has three items or fewer\n\n### If you got stuck\n- CLI commands, solutions and projects: Monday, .NET part.\n- Vite setup and strict mode: Monday, React part.\n- `MapGet`, records as responses, `Program.cs` order: Tuesday, .NET part.\n- Types and unions for the response: Tuesday, React part.\n- `fetch`, `useEffect` and cleanup: Wednesday, React part.\n- CORS: Thursday, .NET part."
+    }
+  ]
+}
